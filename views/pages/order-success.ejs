@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <h1 data-aos="fade-up">Order Placed!</h1>
+      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
+        <a href="/">Home</a> <span>/</span> <a href="/orders">Orders</a> <span>/</span> <span>Success</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="order-success" data-aos="fade-up">
+        <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+        <h2>Thank You for Your Order!</h2>
+        <p class="success-message">Your order has been placed successfully.</p>
+        <div class="order-details-card">
+          <p><strong>Order Number:</strong> <%= order.orderNumber %></p>
+          <p><strong>Total:</strong> <%= currencySymbol %> <%= Number(order.total).toLocaleString() %></p>
+          <p><strong>Payment Method:</strong> <%= order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Bank Transfer' %></p>
+          <p><strong>Estimated Delivery:</strong> 3-5 business days</p>
+        </div>
+        <div class="success-actions">
+          <a href="/orders" class="btn btn-gold">View Orders</a>
+          <a href="/shop" class="btn btn-outline">Continue Shopping</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

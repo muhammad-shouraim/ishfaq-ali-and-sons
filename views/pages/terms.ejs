@@ -1,0 +1,39 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <h1 data-aos="fade-up">Terms & Conditions</h1>
+      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
+        <a href="/">Home</a> <span>/</span> <span>Terms & Conditions</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section policy-section">
+    <div class="container">
+      <div class="policy-content" data-aos="fade-up">
+        <h2>Terms & Conditions</h2>
+        <p>Please read these terms carefully before using our website.</p>
+        
+        <h3>General</h3>
+        <p>By accessing and using this website, you accept these terms and conditions. ISHFAQ ALI & SONS reserves the right to update these terms at any time.</p>
+        
+        <h3>Products</h3>
+        <p>All products are subject to availability. We reserve the right to discontinue any product at any time. Product images are for illustration purposes; actual products may vary slightly.</p>
+        
+        <h3>Pricing</h3>
+        <p>All prices are in Pakistani Rupees (PKR) and include applicable taxes unless stated otherwise. Prices are subject to change without prior notice.</p>
+        
+        <h3>Orders</h3>
+        <p>We reserve the right to refuse or cancel any order. In case of cancellation, full refund will be processed.</p>
+        <h3>Contact</h3>
+        <p>For questions, contact <a href="mailto:<%= contactEmail %>"><%= contactEmail %></a> or <%= contactPhone %>.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

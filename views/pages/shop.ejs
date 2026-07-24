@@ -1,0 +1,75 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <h1 data-aos="fade-up">Shop</h1>
+      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
+        <a href="/">Home</a> <span>/</span> <span>Shop</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section shop-section">
+    <div class="container">
+      <div class="shop-layout">
+        <aside class="shop-sidebar" data-aos="fade-right">
+          <div class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-sliders-h"></i> Filters
+          </div>
+          <div class="sidebar-content" id="sidebarContent">
+            <div class="filter-section">
+              <h4>Categories</h4>
+              <div class="filter-options" id="categoryFilter">
+                <label><input type="radio" name="category" value="" checked> All</label>
+                <label><input type="radio" name="category" value="karit"> Karit</label>
+                <label><input type="radio" name="category" value="turkish-jewelry"> Turkish Jewelry</label>
+              </div>
+            </div>
+
+            <div class="filter-section">
+              <h4>Price Range</h4>
+              <div class="price-inputs">
+                <input type="number" id="minPrice" placeholder="Min" min="0">
+                <span>-</span>
+                <input type="number" id="maxPrice" placeholder="Max" min="0">
+              </div>
+              <button class="btn btn-sm btn-gold" id="priceFilterBtn">Apply</button>
+            </div>
+
+            <div class="filter-section">
+              <h4>Sort By</h4>
+              <select id="sortSelect" class="sort-select">
+                <option value="">Newest First</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="name_asc">Name: A-Z</option>
+                <option value="name_desc">Name: Z-A</option>
+              </select>
+            </div>
+
+            <button class="btn btn-outline btn-sm" id="clearFilters">Clear All Filters</button>
+          </div>
+        </aside>
+
+        <div class="shop-main" data-aos="fade-left">
+          <div class="shop-header">
+            <p class="result-count" id="resultCount">Showing 0 products</p>
+          </div>
+          <div class="products-grid" id="productsGrid">
+            <div class="empty-collection">
+              <i class="fas fa-gem"></i>
+              <h3>No Products Yet</h3>
+              <p>Products will be added soon. Stay tuned for our luxury collection.</p>
+            </div>
+          </div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

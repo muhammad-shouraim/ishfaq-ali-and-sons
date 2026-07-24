@@ -1,0 +1,104 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1 class="page-title"><%= isEditing ? 'Edit Category' : 'Create Category' %></h1>
+  <a href="/admin/categories" class="admin-btn">Back to Categories</a>
+</div>
+
+<div class="admin-card">
+  <div class="admin-card-body">
+    <form action="/admin/categories<%= isEditing ? '/' + category.id : '' %>" method="POST" enctype="multipart/form-data" class="admin-form">
+      <% if (isEditing) { %>
+        <input type="hidden" name="_method" value="PUT">
+      <% } %>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Category Name *</label>
+          <input type="text" id="name" name="name" class="form-input" value="<%= isEditing ? category.name : '' %>" required>
+        </div>
+        <div class="form-group">
+          <label for="slug">Slug</label>
+          <input type="text" id="slug" name="slug" class="form-input" value="<%= isEditing ? category.slug : '' %>">
+          <span class="form-hint">Leave blank to auto-generate from name</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" class="form-input" rows="4"><%= isEditing ? category.description : '' %></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="image">Category Image</label>
+          <input type="file" id="image" name="image" class="form-input" accept="image/*">
+          <% if (isEditing && category.image) { %>
+            <div class="image-preview">
+              <img src="<%= category.image %>" alt="Current image">
+            </div>
+          <% } %>
+        </div>
+        <div class="form-group">
+          <label for="banner">Banner Image</label>
+          <input type="file" id="banner" name="banner" class="form-input" accept="image/*">
+          <% if (isEditing && category.banner) { %>
+            <div class="image-preview">
+              <img src="<%= category.banner %>" alt="Current banner">
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="parentId">Parent Category</label>
+          <select id="parentId" name="parentId" class="form-input">
+            <option value="">None (Top Level)</option>
+            <% if (typeof categories !== 'undefined') { %>
+              <% categories.forEach(function(cat) { %>
+                <% if (!isEditing || cat.id !== category.id) { %>
+                <option value="<%= cat.id %>" <%= isEditing && category.parentId == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                <% } %>
+              <% }) %>
+            <% } %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="displayOrder">Display Order</label>
+          <input type="number" id="displayOrder" name="displayOrder" class="form-input" min="0" value="<%= isEditing ? category.displayOrder : 0 %>">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-check">
+          <input type="checkbox" name="isActive" value="1" <%= isEditing && category.isActive ? 'checked' : 'checked' %>>
+          <span>Active</span>
+        </label>
+      </div>
+
+      <hr>
+
+      <h3>SEO Settings</h3>
+      <div class="form-group">
+        <label for="metaTitle">Meta Title</label>
+        <input type="text" id="metaTitle" name="metaTitle" class="form-input" value="<%= isEditing ? category.metaTitle : '' %>">
+      </div>
+      <div class="form-group">
+        <label for="metaDescription">Meta Description</label>
+        <textarea id="metaDescription" name="metaDescription" class="form-input" rows="3"><%= isEditing ? category.metaDescription : '' %></textarea>
+      </div>
+      <div class="form-group">
+        <label for="metaKeywords">Meta Keywords</label>
+        <input type="text" id="metaKeywords" name="metaKeywords" class="form-input" value="<%= isEditing ? category.metaKeywords : '' %>" placeholder="Comma separated">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="admin-btn admin-btn-primary"><%= isEditing ? 'Update Category' : 'Create Category' %></button>
+        <a href="/admin/categories" class="admin-btn">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

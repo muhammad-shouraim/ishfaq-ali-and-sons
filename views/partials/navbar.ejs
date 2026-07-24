@@ -1,0 +1,73 @@
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <div class="nav-toggle" id="navToggle">
+      <span></span><span></span><span></span>
+    </div>
+
+    <a href="/" class="nav-logo">
+      <img src="/images/logo.jpeg" alt="ISHFAQ ALI & SONS">
+    </a>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>">Home</a></li>
+      <li><a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>">Shop</a></li>
+      <li><a href="/categories" class="<%= currentUrl.includes('/categories') ? 'active' : '' %>">Categories</a></li>
+      <li><a href="/about" class="<%= currentUrl === '/about' ? 'active' : '' %>">About</a></li>
+      <li><a href="/contact" class="<%= currentUrl === '/contact' ? 'active' : '' %>">Contact</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="<%= socialLinks.facebook %>" target="_blank" class="action-btn social-nav" aria-label="Facebook">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+      <a href="<%= socialLinks.tiktok %>" target="_blank" class="action-btn social-nav" aria-label="TikTok">
+        <i class="fab fa-tiktok"></i>
+      </a>
+      <button class="action-btn search-toggle" id="searchToggle" aria-label="Search">
+        <i class="fas fa-search"></i>
+      </button>
+      <a href="/wishlist" class="action-btn" aria-label="Wishlist">
+        <i class="far fa-heart"></i>
+        <span class="badge wishlist-count" id="wishlistCount">0</span>
+      </a>
+      <button class="action-btn cart-toggle" id="cartToggle" aria-label="Cart">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="badge cart-count" id="cartCount">0</span>
+      </button>
+      <% if (user) { %>
+      <div class="user-dropdown">
+        <button class="action-btn" id="userToggle">
+          <i class="far fa-user"></i>
+        </button>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <a href="/profile">My Profile</a>
+          <a href="/orders">My Orders</a>
+          <a href="/wishlist">Wishlist</a>
+          <% if (user.role === 'super_admin' || user.role === 'admin' || user.role === 'staff') { %>
+          <div class="dropdown-divider"></div>
+          <a href="/admin"><i class="fas fa-shield-alt"></i> Admin Panel</a>
+          <% } %>
+          <div class="dropdown-divider"></div>
+          <a href="/logout">Logout</a>
+        </div>
+      </div>
+      <% } else { %>
+      <a href="/login" class="action-btn" aria-label="Login">
+        <i class="far fa-user"></i>
+      </a>
+      <% } %>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Overlay -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-overlay-content">
+    <button class="search-close" id="searchClose"><i class="fas fa-times"></i></button>
+    <form action="/search" method="GET" class="search-form" id="searchForm">
+      <input type="text" name="q" id="searchInput" placeholder="Search luxury jewelry..." autocomplete="off">
+      <button type="submit"><i class="fas fa-search"></i></button>
+    </form>
+    <div class="search-suggestions" id="searchSuggestions"></div>
+  </div>
+</div>

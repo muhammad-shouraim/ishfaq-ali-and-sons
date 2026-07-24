@@ -1,0 +1,107 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1 class="page-title">Orders</h1>
+</div>
+
+<div class="admin-card">
+  <div class="admin-card-body">
+    <form action="/admin/orders" method="GET" class="filter-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" name="status" class="form-input" onchange="this.form.submit()">
+            <option value="">All Statuses</option>
+            <option value="pending" <%= filterStatus == 'pending' ? 'selected' : '' %>>Pending</option>
+            <option value="processing" <%= filterStatus == 'processing' ? 'selected' : '' %>>Processing</option>
+            <option value="shipped" <%= filterStatus == 'shipped' ? 'selected' : '' %>>Shipped</option>
+            <option value="delivered" <%= filterStatus == 'delivered' ? 'selected' : '' %>>Delivered</option>
+            <option value="cancelled" <%= filterStatus == 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+            <option value="refunded" <%= filterStatus == 'refunded' ? 'selected' : '' %>>Refunded</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="dateFrom">From</label>
+          <input type="date" id="dateFrom" name="dateFrom" class="form-input" value="<%= filterDateFrom || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="dateTo">To</label>
+          <input type="date" id="dateTo" name="dateTo" class="form-input" value="<%= filterDateTo || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="search">Search</label>
+          <input type="text" id="search" name="search" class="form-input" placeholder="Order # or customer..." value="<%= search || '' %>">
+        </div>
+        <div class="form-group" style="align-self:flex-end">
+          <button type="submit" class="admin-btn admin-btn-primary">Filter</button>
+          <a href="/admin/orders" class="admin-btn">Reset</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="admin-card">
+  <div class="admin-card-body">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Customer</th>
+          <th>Total</th>
+          <th>Payment</th>
+          <th>Payment Status</th>
+          <th>Order Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (typeof orders !== 'undefined' && orders.length > 0) { %>
+          <% orders.forEach(function(order) { %>
+          <tr>
+            <td><a href="/admin/orders/<%= order.id %>">#<%= order.orderNumber %></a></td>
+            <td><%= order.customerName %></td>
+            <td>$<%= (order.total || 0).toFixed(2) %></td>
+            <td><%= order.paymentMethod || '-' %></td>
+            <td>
+              <% var pClass = { paid: 'admin-badge-success', pending: 'admin-badge-warning', failed: 'admin-badge-danger', refunded: 'admin-badge-info' } %>
+              <span class="admin-badge <%= pClass[order.paymentStatus] || 'admin-badge-secondary' %>"><%= order.paymentStatus || 'pending' %></span>
+            </td>
+            <td>
+              <% var sClass = { pending: 'admin-badge-warning', processing: 'admin-badge-info', shipped: 'admin-badge-primary', delivered: 'admin-badge-success', cancelled: 'admin-badge-danger', refunded: 'admin-badge-secondary' } %>
+              <span class="admin-badge <%= sClass[order.status] || 'admin-badge-secondary' %>"><%= order.status %></span>
+            </td>
+            <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+            <td>
+              <a href="/admin/orders/<%= order.id %>" class="admin-btn admin-btn-sm" title="View"><i class="fas fa-eye"></i></a>
+              <a href="/admin/orders/<%= order.id %>/invoice" class="admin-btn admin-btn-sm" title="Invoice" target="_blank"><i class="fas fa-file-invoice"></i></a>
+            </td>
+          </tr>
+          <% }) %>
+        <% } else { %>
+          <tr><td colspan="8" class="text-center">No orders found</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<% if (typeof pagination !== 'undefined' && pagination.pages > 1) { %>
+<div class="admin-pagination">
+  <span>Showing <%= pagination.from %> to <%= pagination.to %> of <%= pagination.total %></span>
+  <div class="pagination-links">
+    <% if (pagination.current > 1) { %>
+      <a href="?page=<%= pagination.current - 1 %>&status=<%= filterStatus || '' %>&search=<%= search || '' %>&dateFrom=<%= filterDateFrom || '' %>&dateTo=<%= filterDateTo || '' %>" class="admin-btn admin-btn-sm">&laquo; Prev</a>
+    <% } %>
+    <% for (var i = 1; i <= pagination.pages; i++) { %>
+      <a href="?page=<%= i %>&status=<%= filterStatus || '' %>&search=<%= search || '' %>&dateFrom=<%= filterDateFrom || '' %>&dateTo=<%= filterDateTo || '' %>" class="admin-btn admin-btn-sm <%= pagination.current == i ? 'admin-btn-primary' : '' %>"><%= i %></a>
+    <% } %>
+    <% if (pagination.current < pagination.pages) { %>
+      <a href="?page=<%= pagination.current + 1 %>&status=<%= filterStatus || '' %>&search=<%= search || '' %>&dateFrom=<%= filterDateFrom || '' %>&dateTo=<%= filterDateTo || '' %>" class="admin-btn admin-btn-sm">Next &raquo;</a>
+    <% } %>
+  </div>
+</div>
+<% } %>
+
+<%- include('../partials/footer') %>

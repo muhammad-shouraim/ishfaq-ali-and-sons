@@ -1,0 +1,196 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1 class="page-title">Order #<%= order.orderNumber %></h1>
+  <div>
+    <a href="/admin/orders" class="admin-btn">Back to Orders</a>
+    <a href="/admin/orders/<%= order.id %>/invoice" class="admin-btn admin-btn-primary" target="_blank">Invoice</a>
+  </div>
+</div>
+
+<div class="grid-3">
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h3>Order Info</h3>
+    </div>
+    <div class="admin-card-body">
+      <table class="info-table">
+        <tr><td>Order #</td><td><strong>#<%= order.orderNumber %></strong></td></tr>
+        <tr><td>Date</td><td><%= new Date(order.createdAt).toLocaleString() %></td></tr>
+        <tr><td>Status</td><td>
+          <% var sClass = { pending: 'admin-badge-warning', processing: 'admin-badge-info', shipped: 'admin-badge-primary', delivered: 'admin-badge-success', cancelled: 'admin-badge-danger', refunded: 'admin-badge-secondary' } %>
+          <span class="admin-badge <%= sClass[order.status] || 'admin-badge-secondary' %>"><%= order.status %></span>
+        </td></tr>
+        <tr><td>Payment</td><td><%= order.paymentMethod || '-' %></td></tr>
+        <tr><td>Payment Status</td><td>
+          <% var pClass = { paid: 'admin-badge-success', pending: 'admin-badge-warning', failed: 'admin-badge-danger', refunded: 'admin-badge-info' } %>
+          <span class="admin-badge <%= pClass[order.paymentStatus] || 'admin-badge-secondary' %>"><%= order.paymentStatus || 'pending' %></span>
+        </td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h3>Customer Info</h3>
+    </div>
+    <div class="admin-card-body">
+      <table class="info-table">
+        <tr><td>Name</td><td><strong><%= order.customerName %></strong></td></tr>
+        <tr><td>Email</td><td><%= order.customerEmail %></td></tr>
+        <tr><td>Phone</td><td><%= order.customerPhone || '-' %></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h3>Shipping Info</h3>
+    </div>
+    <div class="admin-card-body">
+      <table class="info-table">
+        <tr><td>Address</td><td><%= order.shippingAddress || '-' %></td></tr>
+        <tr><td>City</td><td><%= order.shippingCity || '-' %></td></tr>
+        <tr><td>State</td><td><%= order.shippingState || '-' %></td></tr>
+        <tr><td>Zip</td><td><%= order.shippingZip || '-' %></td></tr>
+        <tr><td>Country</td><td><%= order.shippingCountry || '-' %></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="admin-card">
+  <div class="admin-card-header">
+    <h3>Order Items</h3>
+  </div>
+  <div class="admin-card-body">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Qty</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (order.items && order.items.length > 0) { %>
+          <% order.items.forEach(function(item) { %>
+          <tr>
+            <td><%= item.productName %></td>
+            <td>$<%= (item.price || 0).toFixed(2) %></td>
+            <td><%= item.quantity %></td>
+            <td>$<%= ((item.price || 0) * item.quantity).toFixed(2) %></td>
+          </tr>
+          <% }) %>
+        <% } else { %>
+          <tr><td colspan="4" class="text-center">No items</td></tr>
+        <% } %>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" class="text-right"><strong>Subtotal</strong></td>
+          <td>$<%= (order.subtotal || 0).toFixed(2) %></td>
+        </tr>
+        <tr>
+          <td colspan="3" class="text-right">Shipping</td>
+          <td>$<%= (order.shippingCost || 0).toFixed(2) %></td>
+        </tr>
+        <tr>
+          <td colspan="3" class="text-right">Tax</td>
+          <td>$<%= (order.tax || 0).toFixed(2) %></td>
+        </tr>
+        <% if (order.discount > 0) { %>
+        <tr>
+          <td colspan="3" class="text-right">Discount</td>
+          <td>-$<%= (order.discount || 0).toFixed(2) %></td>
+        </tr>
+        <% } %>
+        <tr>
+          <td colspan="3" class="text-right"><strong>Total</strong></td>
+          <td><strong>$<%= (order.total || 0).toFixed(2) %></strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h3>Status Timeline</h3>
+    </div>
+    <div class="admin-card-body">
+      <div class="timeline">
+        <% if (order.timeline && order.timeline.length > 0) { %>
+          <% order.timeline.forEach(function(entry) { %>
+          <div class="timeline-item">
+            <div class="timeline-marker <%= entry.status %>"></div>
+            <div class="timeline-content">
+              <span class="timeline-status"><%= entry.status %></span>
+              <span class="timeline-date"><%= new Date(entry.date).toLocaleString() %></span>
+              <% if (entry.note) { %><p class="timeline-note"><%= entry.note %></p><% } %>
+            </div>
+          </div>
+          <% }) %>
+        <% } else { %>
+          <p class="text-center">No status updates yet</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3>Update Status</h3>
+      </div>
+      <div class="admin-card-body">
+        <form action="/admin/orders/<%= order.id %>/status" method="POST" class="admin-form">
+          <div class="form-group">
+            <select name="status" class="form-input" required>
+              <option value="">Select Status</option>
+              <option value="pending" <%= order.status == 'pending' ? 'disabled' : '' %>>Pending</option>
+              <option value="processing" <%= order.status == 'processing' ? 'disabled' : '' %>>Processing</option>
+              <option value="shipped" <%= order.status == 'shipped' ? 'disabled' : '' %>>Shipped</option>
+              <option value="delivered" <%= order.status == 'delivered' ? 'disabled' : '' %>>Delivered</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="refunded">Refunded</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <textarea name="note" class="form-input" rows="2" placeholder="Add a note (optional)"></textarea>
+          </div>
+          <button type="submit" class="admin-btn admin-btn-primary">Update Status</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3>Tracking Info</h3>
+      </div>
+      <div class="admin-card-body">
+        <form action="/admin/orders/<%= order.id %>/tracking" method="POST" class="admin-form">
+          <div class="form-group">
+            <label for="trackingNumber">Tracking Number</label>
+            <input type="text" id="trackingNumber" name="trackingNumber" class="form-input" value="<%= order.trackingNumber || '' %>">
+          </div>
+          <div class="form-group">
+            <label for="carrier">Carrier</label>
+            <select id="carrier" name="carrier" class="form-input">
+              <option value="">Select Carrier</option>
+              <option value="fedex" <%= order.carrier == 'fedex' ? 'selected' : '' %>>FedEx</option>
+              <option value="ups" <%= order.carrier == 'ups' ? 'selected' : '' %>>UPS</option>
+              <option value="usps" <%= order.carrier == 'usps' ? 'selected' : '' %>>USPS</option>
+              <option value="dhl" <%= order.carrier == 'dhl' ? 'selected' : '' %>>DHL</option>
+            </select>
+          </div>
+          <button type="submit" class="admin-btn admin-btn-primary">Update Tracking</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

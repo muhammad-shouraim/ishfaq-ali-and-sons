@@ -1,0 +1,48 @@
+<%- include('../partials/header') %>
+
+<div class="admin-card">
+  <div class="admin-card-header">
+    <h3>Upload Media</h3>
+  </div>
+  <div id="mediaDropzone" style="border:2px dashed var(--admin-border);border-radius:var(--admin-radius);padding:60px 20px;text-align:center;cursor:pointer;transition:border-color 0.2s;background:#fafafa;margin-bottom:20px;">
+    <i class="fas fa-cloud-upload-alt" style="font-size:2.5rem;color:var(--admin-text-light);display:block;margin-bottom:12px;"></i>
+    <p style="color:var(--admin-text-light);font-size:0.9rem;margin:0;">Click or drag files here</p>
+  </div>
+  <input type="file" id="mediaFileInput" name="media" multiple accept="image/*" style="display:none;">
+</div>
+
+<div class="admin-card">
+  <div class="admin-card-header">
+    <h3>Create Folder</h3>
+  </div>
+  <form class="admin-form" method="POST" action="/admin/media/folder" style="max-width:400px;">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="folderName">Folder Name</label>
+        <input type="text" id="folderName" name="folderName" placeholder="e.g. Banners" required>
+      </div>
+    </div>
+    <button type="submit" class="admin-btn admin-btn-primary"><i class="fas fa-folder-plus"></i> Create Folder</button>
+  </form>
+</div>
+
+<div class="admin-card">
+  <div class="admin-card-header">
+    <h3>Media Library</h3>
+  </div>
+  <div class="media-grid">
+    <% if (media && media.length) { %>
+      <% media.forEach(function(item) { %>
+        <div class="media-item">
+          <img src="<%= item.url || '/uploads/' + item.filename %>" alt="<%= item.originalname || item.filename %>">
+          <div class="media-item-overlay"><%= item.originalname || item.filename %></div>
+          <button class="delete-media" data-id="<%= item._id %>" data-confirm="Delete this file?" onclick="var that=this;fetch('/admin/media/'+this.dataset.id,{method:'DELETE'}).then(function(){that.closest('.media-item').remove();}).catch(function(e){adminToast('Delete failed','error');});"><i class="fas fa-trash"></i></button>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <p style="grid-column:1/-1;text-align:center;color:var(--admin-text-light);padding:40px;">No media files yet.</p>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

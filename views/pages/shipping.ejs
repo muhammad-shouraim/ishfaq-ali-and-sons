@@ -1,0 +1,45 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <h1 data-aos="fade-up">Shipping Policy</h1>
+      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
+        <a href="/">Home</a> <span>/</span> <span>Shipping Policy</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section policy-section">
+    <div class="container">
+      <div class="policy-content" data-aos="fade-up">
+        <h2>Shipping Policy</h2>
+        <p>We ensure your jewelry reaches you safely and on time.</p>
+        
+        <h3>Delivery Areas</h3>
+        <p>We currently ship across all cities in Pakistan.</p>
+        
+        <h3>Shipping Charges</h3>
+        <p>Standard shipping: Rs. 200. Free shipping on orders above Rs. 5,000.</p>
+        
+        <h3>Processing Time</h3>
+        <p>Orders are processed within 1-2 business days after confirmation.</p>
+        
+        <h3>Delivery Time</h3>
+        <p>Delivery typically takes 3-5 business days within Pakistan, depending on your location.</p>
+        
+        <h3>Order Tracking</h3>
+        <p>You will receive a tracking number once your order is shipped.</p>
+        
+        <h3>International Shipping</h3>
+        <p>International shipping is not available yet. Stay tuned.</p>
+        <h3>Contact</h3>
+        <p>For shipping inquiries, email <a href="mailto:<%= contactEmail %>"><%= contactEmail %></a> or call <%= contactPhone %>.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

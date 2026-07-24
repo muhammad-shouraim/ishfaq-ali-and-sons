@@ -1,0 +1,394 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1 class="page-title"><%= isEditing ? 'Edit Product' : 'Create Product' %></h1>
+  <a href="/admin/products" class="admin-btn">Back to Products</a>
+</div>
+
+<div class="admin-card">
+  <div class="admin-card-body">
+    <form action="/admin/products<%= isEditing ? '/' + product.id : '' %>" method="POST" enctype="multipart/form-data" class="admin-form">
+      <% if (isEditing) { %>
+        <input type="hidden" name="_method" value="PUT">
+      <% } %>
+
+      <div class="form-tabs">
+        <nav class="tab-nav">
+          <a href="#tab-basic" class="tab-link active">Basic</a>
+          <a href="#tab-pricing" class="tab-link">Pricing</a>
+          <a href="#tab-inventory" class="tab-link">Inventory</a>
+          <a href="#tab-description" class="tab-link">Description</a>
+          <a href="#tab-media" class="tab-link">Media</a>
+          <a href="#tab-attributes" class="tab-link">Attributes</a>
+          <a href="#tab-flags" class="tab-link">Flags</a>
+          <a href="#tab-seo" class="tab-link">SEO</a>
+          <a href="#tab-variants" class="tab-link">Variants</a>
+          <a href="#tab-specs" class="tab-link">Specifications</a>
+          <a href="#tab-video" class="tab-link">Video</a>
+        </nav>
+
+        <div class="tab-content">
+          <div id="tab-basic" class="tab-pane active">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Product Name *</label>
+                <input type="text" id="name" name="name" class="form-input" value="<%= isEditing ? product.name : '' %>" required>
+              </div>
+              <div class="form-group">
+                <label for="slug">Slug</label>
+                <input type="text" id="slug" name="slug" class="form-input" value="<%= isEditing ? product.slug : '' %>">
+                <span class="form-hint">Leave blank to auto-generate from name</span>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="sku">SKU</label>
+                <input type="text" id="sku" name="sku" class="form-input" value="<%= isEditing ? product.sku : '' %>">
+              </div>
+              <div class="form-group">
+                <label for="barcode">Barcode</label>
+                <input type="text" id="barcode" name="barcode" class="form-input" value="<%= isEditing ? product.barcode : '' %>">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="brand">Brand</label>
+                <input type="text" id="brand" name="brand" class="form-input" value="<%= isEditing ? product.brand : '' %>">
+              </div>
+              <div class="form-group">
+                <label for="categoryId">Category *</label>
+                <select id="categoryId" name="categoryId" class="form-input" required>
+                  <option value="">Select Category</option>
+                  <% if (typeof categories !== 'undefined') { %>
+                    <% categories.forEach(function(cat) { %>
+                    <option value="<%= cat.id %>" <%= isEditing && product.categoryId == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                    <% }) %>
+                  <% } %>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-pricing" class="tab-pane">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="price">Price *</label>
+                <input type="number" id="price" name="price" class="form-input" step="0.01" min="0" value="<%= isEditing ? product.price : '' %>" required>
+              </div>
+              <div class="form-group">
+                <label for="comparePrice">Compare Price</label>
+                <input type="number" id="comparePrice" name="comparePrice" class="form-input" step="0.01" min="0" value="<%= isEditing ? product.comparePrice : '' %>">
+                <span class="form-hint">Original price for showing discount</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="costPrice">Cost Price</label>
+              <input type="number" id="costPrice" name="costPrice" class="form-input" step="0.01" min="0" value="<%= isEditing ? product.costPrice : '' %>">
+              <span class="form-hint">For profit calculation, not shown to customers</span>
+            </div>
+          </div>
+
+          <div id="tab-inventory" class="tab-pane">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="stock">Stock</label>
+                <input type="number" id="stock" name="stock" class="form-input" min="0" value="<%= isEditing ? product.stock : 0 %>">
+              </div>
+              <div class="form-group">
+                <label for="lowStockThreshold">Low Stock Threshold</label>
+                <input type="number" id="lowStockThreshold" name="lowStockThreshold" class="form-input" min="0" value="<%= isEditing ? product.lowStockThreshold : 5 %>">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="minOrderQty">Min Order Quantity</label>
+                <input type="number" id="minOrderQty" name="minOrderQty" class="form-input" min="1" value="<%= isEditing ? product.minOrderQty : 1 %>">
+              </div>
+              <div class="form-group">
+                <label for="maxOrderQty">Max Order Quantity</label>
+                <input type="number" id="maxOrderQty" name="maxOrderQty" class="form-input" min="1" value="<%= isEditing ? product.maxOrderQty : '' %>">
+                <span class="form-hint">Leave empty for no limit</span>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="weight">Weight (kg)</label>
+                <input type="number" id="weight" name="weight" class="form-input" step="0.01" min="0" value="<%= isEditing ? product.weight : '' %>">
+              </div>
+              <div class="form-group">
+                <label for="dimensions">Dimensions (L x W x H cm)</label>
+                <input type="text" id="dimensions" name="dimensions" class="form-input" value="<%= isEditing ? product.dimensions : '' %>" placeholder="e.g. 30 x 20 x 10">
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-description" class="tab-pane">
+            <div class="form-group">
+              <label for="shortDescription">Short Description</label>
+              <textarea id="shortDescription" name="shortDescription" class="form-input" rows="3"><%= isEditing ? product.shortDescription : '' %></textarea>
+            </div>
+            <div class="form-group">
+              <label for="description">Full Description</label>
+              <textarea id="description" name="description" class="rich-editor" rows="12"><%= isEditing ? product.description : '' %></textarea>
+            </div>
+          </div>
+
+          <div id="tab-media" class="tab-pane">
+            <div class="form-group">
+              <label for="thumbnail">Thumbnail Image</label>
+              <input type="file" id="thumbnail" name="thumbnail" class="form-input" accept="image/*" data-preview="thumbnailPreview">
+              <div id="thumbnailPreview" class="image-preview">
+                <% if (isEditing && product.thumbnail) { %>
+                  <img src="<%= product.thumbnail %>" alt="Current thumbnail">
+                <% } %>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="images">Additional Images</label>
+              <input type="file" id="images" name="images" class="form-input" accept="image/*" multiple>
+              <% if (isEditing && product.images && product.images.length > 0) { %>
+              <div class="image-gallery">
+                <% product.images.forEach(function(img) { %>
+                  <div class="gallery-item">
+                    <img src="<%= img %>" alt="Product image">
+                    <label class="form-check">
+                      <input type="checkbox" name="removeImages" value="<%= img %>"> Remove
+                    </label>
+                  </div>
+                <% }) %>
+              </div>
+              <% } %>
+            </div>
+          </div>
+
+          <div id="tab-attributes" class="tab-pane">
+            <div class="form-group">
+              <label for="material">Material</label>
+              <input type="text" id="material" name="material" class="form-input" value="<%= isEditing ? product.material : '' %>">
+            </div>
+            <div class="form-group">
+              <label for="tags">Tags</label>
+              <input type="text" id="tags" name="tags" class="form-input" value="<%= isEditing ? product.tags : '' %>" placeholder="Comma separated">
+              <span class="form-hint">Separate tags with commas</span>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="taxClass">Tax Class</label>
+                <select id="taxClass" name="taxClass" class="form-input">
+                  <option value="">None</option>
+                  <option value="standard" <%= isEditing && product.taxClass == 'standard' ? 'selected' : '' %>>Standard</option>
+                  <option value="reduced" <%= isEditing && product.taxClass == 'reduced' ? 'selected' : '' %>>Reduced</option>
+                  <option value="zero" <%= isEditing && product.taxClass == 'zero' ? 'selected' : '' %>>Zero Rated</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="shippingClass">Shipping Class</label>
+                <select id="shippingClass" name="shippingClass" class="form-input">
+                  <option value="">Default</option>
+                  <option value="heavy" <%= isEditing && product.shippingClass == 'heavy' ? 'selected' : '' %>>Heavy Items</option>
+                  <option value="fragile" <%= isEditing && product.shippingClass == 'fragile' ? 'selected' : '' %>>Fragile</option>
+                  <option value="digital" <%= isEditing && product.shippingClass == 'digital' ? 'selected' : '' %>>Digital</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="returnPolicy">Return Policy</label>
+                <select id="returnPolicy" name="returnPolicy" class="form-input">
+                  <option value="">Store Default</option>
+                  <option value="30-days" <%= isEditing && product.returnPolicy == '30-days' ? 'selected' : '' %>>30 Days Return</option>
+                  <option value="7-days" <%= isEditing && product.returnPolicy == '7-days' ? 'selected' : '' %>>7 Days Return</option>
+                  <option value="no-return" <%= isEditing && product.returnPolicy == 'no-return' ? 'selected' : '' %>>No Returns</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="warranty">Warranty</label>
+                <input type="text" id="warranty" name="warranty" class="form-input" value="<%= isEditing ? product.warranty : '' %>" placeholder="e.g. 1 Year Warranty">
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-flags" class="tab-pane">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-check">
+                  <input type="checkbox" name="isActive" value="1" <%= isEditing && product.isActive ? 'checked' : '' %>>
+                  <span>Active</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="form-check">
+                  <input type="checkbox" name="isFeatured" value="1" <%= isEditing && product.isFeatured ? 'checked' : '' %>>
+                  <span>Featured</span>
+                </label>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-check">
+                  <input type="checkbox" name="isTrending" value="1" <%= isEditing && product.isTrending ? 'checked' : '' %>>
+                  <span>Trending</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="form-check">
+                  <input type="checkbox" name="isNewArrival" value="1" <%= isEditing && product.isNewArrival ? 'checked' : '' %>>
+                  <span>New Arrival</span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-check">
+                <input type="checkbox" name="isSale" value="1" <%= isEditing && product.isSale ? 'checked' : '' %>>
+                <span>On Sale</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="tab-seo" class="tab-pane">
+            <div class="form-group">
+              <label for="metaTitle">Meta Title</label>
+              <input type="text" id="metaTitle" name="metaTitle" class="form-input" value="<%= isEditing ? product.metaTitle : '' %>">
+            </div>
+            <div class="form-group">
+              <label for="metaDescription">Meta Description</label>
+              <textarea id="metaDescription" name="metaDescription" class="form-input" rows="4"><%= isEditing ? product.metaDescription : '' %></textarea>
+            </div>
+            <div class="form-group">
+              <label for="seoKeywords">SEO Keywords</label>
+              <input type="text" id="seoKeywords" name="seoKeywords" class="form-input" value="<%= isEditing ? product.seoKeywords : '' %>" placeholder="Comma separated">
+              <span class="form-hint">Separate keywords with commas</span>
+            </div>
+          </div>
+
+          <div id="tab-variants" class="tab-pane">
+            <div id="variantsContainer">
+              <% if (isEditing && product.variants && product.variants.length > 0) { %>
+                <% product.variants.forEach(function(variant, index) { %>
+                <div class="variant-item">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Variant Name</label>
+                      <input type="text" name="variants[<%= index %>][name]" class="form-input" value="<%= variant.name %>">
+                    </div>
+                    <div class="form-group">
+                      <label>SKU</label>
+                      <input type="text" name="variants[<%= index %>][sku]" class="form-input" value="<%= variant.sku %>">
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Price</label>
+                      <input type="number" name="variants[<%= index %>][price]" class="form-input" step="0.01" min="0" value="<%= variant.price %>">
+                    </div>
+                    <div class="form-group">
+                      <label>Stock</label>
+                      <input type="number" name="variants[<%= index %>][stock]" class="form-input" min="0" value="<%= variant.stock %>">
+                    </div>
+                  </div>
+                  <button type="button" class="admin-btn admin-btn-danger admin-btn-sm remove-variant" onclick="this.parentElement.remove()">Remove</button>
+                  <hr>
+                </div>
+                <% }) %>
+              <% } %>
+            </div>
+            <button type="button" class="admin-btn admin-btn-sm" onclick="addVariant()">Add Variant</button>
+          </div>
+
+          <div id="tab-specs" class="tab-pane">
+            <div id="specsContainer">
+              <% if (isEditing && product.specifications && product.specifications.length > 0) { %>
+                <% product.specifications.forEach(function(spec, index) { %>
+                <div class="spec-item">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Label</label>
+                      <input type="text" name="specifications[<%= index %>][label]" class="form-input" value="<%= spec.label %>">
+                    </div>
+                    <div class="form-group">
+                      <label>Value</label>
+                      <input type="text" name="specifications[<%= index %>][value]" class="form-input" value="<%= spec.value %>">
+                    </div>
+                  </div>
+                  <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="this.parentElement.remove()">Remove</button>
+                  <hr>
+                </div>
+                <% }) %>
+              <% } %>
+            </div>
+            <button type="button" class="admin-btn admin-btn-sm" onclick="addSpec()">Add Specification</button>
+          </div>
+
+          <div id="tab-video" class="tab-pane">
+            <div class="form-group">
+              <label for="videoUrl">Video URL</label>
+              <input type="url" id="videoUrl" name="videoUrl" class="form-input" value="<%= isEditing ? product.videoUrl : '' %>" placeholder="YouTube or Vimeo URL">
+              <span class="form-hint">Paste a YouTube or Vimeo video URL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="admin-btn admin-btn-primary"><%= isEditing ? 'Update Product' : 'Create Product' %></button>
+        <a href="/admin/products" class="admin-btn">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  var variantIndex = <%= isEditing && product.variants ? product.variants.length : 0 %>;
+  var specIndex = <%= isEditing && product.specifications ? product.specifications.length : 0 %>;
+
+  function addVariant() {
+    var container = document.getElementById('variantsContainer');
+    var html = '<div class="variant-item">' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label>Variant Name</label><input type="text" name="variants[' + variantIndex + '][name]" class="form-input"></div>' +
+        '<div class="form-group"><label>SKU</label><input type="text" name="variants[' + variantIndex + '][sku]" class="form-input"></div>' +
+      '</div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label>Price</label><input type="number" name="variants[' + variantIndex + '][price]" class="form-input" step="0.01" min="0"></div>' +
+        '<div class="form-group"><label>Stock</label><input type="number" name="variants[' + variantIndex + '][stock]" class="form-input" min="0"></div>' +
+      '</div>' +
+      '<button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="this.parentElement.remove()">Remove</button><hr></div>';
+    container.insertAdjacentHTML('beforeend', html);
+    variantIndex++;
+  }
+
+  function addSpec() {
+    var container = document.getElementById('specsContainer');
+    var html = '<div class="spec-item">' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label>Label</label><input type="text" name="specifications[' + specIndex + '][label]" class="form-input"></div>' +
+        '<div class="form-group"><label>Value</label><input type="text" name="specifications[' + specIndex + '][value]" class="form-input"></div>' +
+      '</div>' +
+      '<button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="this.parentElement.remove()">Remove</button><hr></div>';
+    container.insertAdjacentHTML('beforeend', html);
+    specIndex++;
+  }
+
+  document.querySelectorAll('.tab-link').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.tab-link').forEach(function(l) { l.classList.remove('active'); });
+      document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
+      this.classList.add('active');
+      document.querySelector(this.getAttribute('href')).classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('[data-preview]').forEach(function(input) {
+    input.addEventListener('change', function() {
+      var preview = document.getElementById(this.getAttribute('data-preview'));
+      if (this.files && this.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) { preview.innerHTML = '<img src="' + e.target.result + '">'; };
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
+  });
+</script>
+
+<%- include('../partials/footer') %>

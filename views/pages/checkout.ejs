@@ -1,0 +1,104 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <h1 data-aos="fade-up">Checkout</h1>
+      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
+        <a href="/">Home</a> <span>/</span> <a href="/cart">Cart</a> <span>/</span> <span>Checkout</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section checkout-section">
+    <div class="container">
+      <div class="checkout-layout" data-aos="fade-up">
+        <div class="checkout-form-container">
+          <h2>Shipping Information</h2>
+          <form id="checkoutForm" class="checkout-form">
+            <div class="form-group">
+              <label for="name">Full Name *</label>
+              <input type="text" id="name" name="name" value="<%= user ? user.name : '' %>" required>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number *</label>
+              <input type="tel" id="phone" name="phone" value="<%= user ? user.phone : '' %>" required>
+            </div>
+            <div class="form-group">
+              <label for="address">Shipping Address *</label>
+              <textarea id="address" name="address" rows="3" required></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="city">City *</label>
+                <input type="text" id="city" name="city" required>
+              </div>
+              <div class="form-group">
+                <label for="postalCode">Postal Code</label>
+                <input type="text" id="postalCode" name="postalCode">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="notes">Order Notes</label>
+              <textarea id="notes" name="notes" rows="2" placeholder="Special instructions (optional)"></textarea>
+            </div>
+
+            <h2>Payment Method</h2>
+            <div class="payment-methods">
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="cod" checked>
+                <div class="payment-option-content">
+                  <i class="fas fa-money-bill-wave"></i>
+                  <div>
+                    <strong>Cash on Delivery</strong>
+                    <p>Pay when you receive your order</p>
+                  </div>
+                </div>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="bank_transfer">
+                <div class="payment-option-content">
+                  <i class="fas fa-university"></i>
+                  <div>
+                    <strong>Bank Transfer</strong>
+                    <p>Direct bank transfer (details provided after order)</p>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-gold btn-block" id="placeOrderBtn">
+              Place Order
+            </button>
+          </form>
+        </div>
+        <aside class="checkout-summary">
+          <h3>Order Summary</h3>
+          <div id="checkoutItems"></div>
+          <div class="summary-divider"></div>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="checkoutSubtotal">Rs. 0</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span id="checkoutShipping">Rs. 200</span>
+          </div>
+          <div class="summary-row discount-row" id="checkoutDiscountRow" style="display:none">
+            <span>Discount</span>
+            <span id="checkoutDiscount" class="gold-text">-Rs. 0</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-row total-row">
+            <span>Total</span>
+            <span id="checkoutTotal">Rs. 0</span>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

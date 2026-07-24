@@ -1,0 +1,21 @@
+</div><!-- admin-content -->
+    <footer class="admin-footer">
+      &copy; <%= new Date().getFullYear() %> <strong>ISHFAQ ALI & SONS</strong>. All rights reserved.
+    </footer>
+  </div><!-- admin-main -->
+</div><!-- admin-body -->
+<script src="/admin/js/admin.js"></script>
+<% if (typeof useEditor !== 'undefined' && useEditor) { %>
+<script>
+tinymce.init({
+  selector: '.rich-editor',
+  height: 500,
+  menubar: true,
+  plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen media table code help wordcount',
+  toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+  content_style: 'body { font-family:Montserrat,sans-serif; font-size:14px; }'
+});
+</script>
+<% } %>
+</body>
+</html>

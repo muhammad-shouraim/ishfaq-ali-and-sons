@@ -1,0 +1,65 @@
+<%- include('../partials/header') %>
+
+<div class="admin-card">
+  <div class="admin-card-header">
+    <h3>All Reviews</h3>
+  </div>
+  <div class="admin-search">
+    <input type="text" id="reviewSearch" placeholder="Search by product or customer..." value="<%= search || '' %>">
+    <button class="admin-btn admin-btn-primary" onclick="window.location.href='?search='+encodeURIComponent(document.getElementById('reviewSearch').value)"><i class="fas fa-search"></i> Search</button>
+  </div>
+  <div class="table-responsive">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Customer</th>
+          <th>Rating</th>
+          <th>Title</th>
+          <th>Comment</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th class="actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (reviews && reviews.length) { %>
+          <% reviews.forEach(function(review) { %>
+            <tr>
+              <td><%= review.productName || review.product_id %></td>
+              <td><%= review.customerName || review.customer_id %></td>
+              <td>
+                <% for(var s=1; s<=5; s++) { %><i class="fas fa-star" style="color:<%= s <= review.rating ? '#D4AF37' : '#ddd' %>"></i><% } %>
+              </td>
+              <td><%= review.title || '' %></td>
+              <td><%= review.comment ? review.comment.substring(0, 60) + (review.comment.length > 60 ? '...' : '') : '' %></td>
+              <td><%= review.createdAt ? new Date(review.createdAt).toLocaleDateString() : '' %></td>
+              <td>
+                <% if (review.isApproved) { %>
+                  <span class="admin-badge admin-badge-success">Approved</span>
+                <% } else { %>
+                  <span class="admin-badge admin-badge-warning">Pending</span>
+                <% } %>
+              </td>
+              <td>
+                <div class="actions">
+                  <% if (!review.isApproved) { %>
+                    <a href="/admin/reviews/<%= review._id %>/approve" class="admin-btn admin-btn-success admin-btn-sm"><i class="fas fa-check"></i> Approve</a>
+                  <% } else { %>
+                    <a href="/admin/reviews/<%= review._id %>/reject" class="admin-btn admin-btn-warning admin-btn-sm"><i class="fas fa-times"></i> Reject</a>
+                  <% } %>
+                  <a href="/admin/reviews/<%= review._id %>/reply" class="admin-btn admin-btn-info admin-btn-sm"><i class="fas fa-reply"></i> Reply</a>
+                  <a href="/admin/reviews/<%= review._id %>/delete" class="admin-btn admin-btn-danger admin-btn-sm" data-confirm="Delete this review?"><i class="fas fa-trash"></i> Delete</a>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="8" style="text-align:center;color:var(--admin-text-light);padding:40px;">No reviews found.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

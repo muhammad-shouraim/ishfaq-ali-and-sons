@@ -1,0 +1,57 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <h1 data-aos="fade-up"><%= category.name %></h1>
+      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
+        <a href="/">Home</a> <span>/</span> <a href="/categories">Categories</a> <span>/</span> <span><%= category.name %></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="category-hero" data-aos="fade-up">
+        <div class="category-hero-icon">
+          <i class="fas <%= category.name === 'Karit' ? 'fa-crown' : 'fa-gem' %>"></i>
+        </div>
+        <h2><%= category.name %></h2>
+        <p><%= category.description || 'Explore our exclusive collection of premium ' + category.name.toLowerCase() + '.' %></p>
+      </div>
+
+      <div class="shop-layout">
+        <aside class="shop-sidebar">
+          <div class="sidebar-content">
+            <div class="filter-section">
+              <h4>Sort By</h4>
+              <select class="sort-select" id="catSortSelect">
+                <option value="">Newest First</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+        </aside>
+        <div class="shop-main">
+          <div class="products-grid" id="catProductsGrid">
+            <div class="empty-collection">
+              <i class="fas fa-gem"></i>
+              <h3>No Products Yet</h3>
+              <p>Products in this category will be available soon.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script>
+const categorySlug = '<%= category.slug %>';
+</script>
+<script src="/js/shop.js"></script>

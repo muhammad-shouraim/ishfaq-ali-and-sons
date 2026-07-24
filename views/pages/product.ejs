@@ -1,0 +1,128 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <h1 data-aos="fade-up">Product Details</h1>
+      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
+        <a href="/">Home</a> <span>/</span> <a href="/shop">Shop</a> <span>/</span> <span><%= product ? product.name : 'Product' %></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section product-detail-section">
+    <div class="container">
+      <% if (product) { %>
+      <div class="product-detail" data-aos="fade-up">
+        <div class="product-gallery">
+          <div class="product-main-image">
+            <div class="product-image-placeholder">
+              <i class="fas fa-gem"></i>
+              <span><%= product.name %></span>
+            </div>
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-badges">
+            <% if (product.isNewArrival) { %><span class="badge badge-new">New</span><% } %>
+            <% if (product.comparePrice > product.price) { %><span class="badge badge-sale">Sale</span><% } %>
+          </div>
+          <h1 class="product-title"><%= product.name %></h1>
+          <div class="product-price">
+            <span class="current-price"><%= currencySymbol %> <%= Number(product.price).toLocaleString() %></span>
+            <% if (product.comparePrice > product.price) { %>
+            <span class="compare-price"><%= currencySymbol %> <%= Number(product.comparePrice).toLocaleString() %></span>
+            <% } %>
+          </div>
+          <p class="product-description"><%= product.shortDescription || product.description %></p>
+          <div class="product-actions">
+            <div class="quantity-selector">
+              <button class="qty-btn" id="qtyMinus">-</button>
+              <input type="number" id="qtyInput" value="1" min="1" readonly>
+              <button class="qty-btn" id="qtyPlus">+</button>
+            </div>
+            <button class="btn btn-gold add-to-cart-btn" data-product-id="<%= product._id %>">
+              <i class="fas fa-shopping-bag"></i> Add to Bag
+            </button>
+            <button class="action-btn wishlist-toggle" data-product-id="<%= product._id %>">
+              <i class="far fa-heart"></i>
+            </button>
+          </div>
+          <div class="product-meta">
+            <% if (product.category) { %>
+            <div class="meta-item"><strong>Category:</strong> <a href="/category/<%= product.category.slug %>"><%= product.category.name %></a></div>
+            <% } %>
+            <% if (product.sku) { %><div class="meta-item"><strong>SKU:</strong> <%= product.sku %></div><% } %>
+            <% if (product.material) { %><div class="meta-item"><strong>Material:</strong> <%= product.material %></div><% } %>
+            <% if (product.weight) { %><div class="meta-item"><strong>Weight:</strong> <%= product.weight %></div><% } %>
+            <div class="meta-item"><strong>Availability:</strong> <span class="in-stock"><%= product.stock > 0 ? 'In Stock' : 'Out of Stock' %></span></div>
+          </div>
+          <div class="product-share">
+            <span>Share:</span>
+            <a href="#" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.href),'_blank')"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" onclick="window.open('https://wa.me/?text='+encodeURIComponent(window.location.href),'_blank')"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" onclick="window.open('https://twitter.com/intent/tweet?url='+encodeURIComponent(window.location.href),'_blank')"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-tabs" data-aos="fade-up">
+        <div class="tabs-header">
+          <button class="tab-btn active" data-tab="description">Description</button>
+          <button class="tab-btn" data-tab="specifications">Specifications</button>
+          <button class="tab-btn" data-tab="reviews">Reviews</button>
+        </div>
+        <div class="tab-content active" id="tab-description">
+          <p><%= product.description || 'No description available.' %></p>
+        </div>
+        <div class="tab-content" id="tab-specifications">
+          <% if (product.specifications && product.specifications.length) { %>
+          <table class="specs-table">
+            <% product.specifications.forEach(function(spec) { %>
+            <tr><td><%= spec.label %></td><td><%= spec.value %></td></tr>
+            <% }) %>
+          </table>
+          <% } else { %>
+          <p>Specifications not yet added.</p>
+          <% } %>
+        </div>
+        <div class="tab-content" id="tab-reviews">
+          <p>Reviews will appear here once customers purchase this product.</p>
+        </div>
+      </div>
+
+      <% if (related && related.length) { %>
+      <section class="related-products" data-aos="fade-up">
+        <h2>Related Products</h2>
+        <div class="products-grid">
+          <% related.forEach(function(item) { %>
+          <div class="product-card">
+            <div class="product-card-image">
+              <div class="product-image-placeholder-sm"><i class="fas fa-gem"></i></div>
+              <button class="wishlist-toggle-sm" data-product-id="<%= item._id %>"><i class="far fa-heart"></i></button>
+            </div>
+            <div class="product-card-body">
+              <h3><a href="/product/<%= item.slug %>"><%= item.name %></a></h3>
+              <span class="price"><%= currencySymbol %> <%= Number(item.price).toLocaleString() %></span>
+              <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="<%= item._id %>">Add to Bag</button>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+      </section>
+      <% } %>
+      <% } else { %>
+      <div class="empty-collection">
+        <i class="fas fa-gem"></i>
+        <h3>Product Not Available</h3>
+        <p>This product has not been added yet. Check back soon.</p>
+        <a href="/shop" class="btn btn-gold">Browse Shop</a>
+      </div>
+      <% } %>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

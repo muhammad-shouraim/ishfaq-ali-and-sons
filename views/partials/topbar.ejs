@@ -1,0 +1,19 @@
+<div class="top-bar">
+  <div class="container">
+    <div class="top-bar-left">
+      <span><i class="fas fa-phone-alt"></i> <a href="tel:<%= contactPhone %>"><%= contactPhone %></a></span>
+      <span class="top-bar-divider">|</span>
+      <span><i class="fab fa-whatsapp"></i> <a href="https://wa.me/<%= whatsappNumber %>" target="_blank">WhatsApp</a></span>
+      <% if (contactEmail) { %>
+      <span class="top-bar-divider">|</span>
+      <span><i class="fas fa-envelope"></i> <a href="mailto:<%= contactEmail %>"><%= contactEmail %></a></span>
+      <% } %>
+    </div>
+    <div class="top-bar-right">
+      <a href="<%= socialLinks.facebook %>" target="_blank" class="top-bar-social" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="<%= socialLinks.tiktok %>" target="_blank" class="top-bar-social" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+      <span class="top-bar-divider">|</span>
+      <span class="tagline">Luxury Jewelry Since Generations</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+const errorHandler = (err, req, res, next) => {
+  console.error(err.stack);
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
+  if (req.xhr || req.headers.accept?.includes('json')) {
+    return res.status(statusCode).json({ message });
+  }
+  res.status(statusCode).render('pages/404', { message });
+};
+
+module.exports = errorHandler;

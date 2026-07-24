@@ -1,0 +1,74 @@
+<%- include('../partials/header') %>
+
+<div class="admin-card">
+  <div class="admin-card-header">
+    <h3><%= page && page._id ? 'Edit Page' : 'Create Page' %></h3>
+  </div>
+  <form class="admin-form" method="POST" action="<%= page && page._id ? '/admin/pages/' + page._id : '/admin/pages/create' %>" enctype="multipart/form-data">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="title">Page Title</label>
+        <input type="text" id="title" name="title" value="<%= page ? page.title : '' %>" required>
+      </div>
+      <div class="form-group">
+        <label for="slug">Slug</label>
+        <input type="text" id="slug" name="slug" value="<%= page ? page.slug : '' %>" placeholder="leave empty to auto-generate">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="content">Content</label>
+      <textarea id="content" name="content" class="rich-editor"><%= page ? page.content : '' %></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="metaTitle">Meta Title</label>
+        <input type="text" id="metaTitle" name="metaTitle" value="<%= page ? page.metaTitle : '' %>">
+      </div>
+      <div class="form-group">
+        <label for="metaDescription">Meta Description</label>
+        <textarea id="metaDescription" name="metaDescription" rows="3"><%= page ? page.metaDescription : '' %></textarea>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="metaKeywords">Meta Keywords</label>
+        <textarea id="metaKeywords" name="metaKeywords" rows="3" placeholder="comma separated"><%= page ? page.metaKeywords : '' %></textarea>
+      </div>
+      <div class="form-group">
+        <label for="featuredImage">Featured Image</label>
+        <input type="file" id="featuredImage" name="featuredImage" data-preview="featuredPreview" accept="image/*">
+        <% if (page && page.featuredImage) { %>
+          <img id="featuredPreview" src="<%= page.featuredImage %>" style="display:block;max-width:200px;margin-top:8px;border-radius:6px;">
+        <% } else { %>
+          <img id="featuredPreview" style="display:none;max-width:200px;margin-top:8px;border-radius:6px;">
+        <% } %>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          <option value="draft" <%= page && page.status === 'draft' ? 'selected' : '' %>>Draft</option>
+          <option value="published" <%= page && page.status === 'published' ? 'selected' : '' %>>Published</option>
+          <option value="scheduled" <%= page && page.status === 'scheduled' ? 'selected' : '' %>>Scheduled</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="scheduledAt">Schedule Date</label>
+        <input type="date" id="scheduledAt" name="scheduledAt" value="<%= page && page.scheduledAt ? new Date(page.scheduledAt).toISOString().split('T')[0] : '' %>">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="displayOrder">Display Order</label>
+        <input type="number" id="displayOrder" name="displayOrder" value="<%= page ? page.displayOrder || 0 : 0 %>" min="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <button type="submit" class="admin-btn admin-btn-primary"><i class="fas fa-save"></i> <%= page && page._id ? 'Update Page' : 'Create Page' %></button>
+      <a href="/admin/pages" class="admin-btn admin-btn-outline"><i class="fas fa-times"></i> Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/footer') %>

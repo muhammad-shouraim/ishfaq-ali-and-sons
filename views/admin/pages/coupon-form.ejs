@@ -1,0 +1,80 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1 class="page-title"><%= isEditing ? 'Edit Coupon' : 'Create Coupon' %></h1>
+  <a href="/admin/coupons" class="admin-btn">Back to Coupons</a>
+</div>
+
+<div class="admin-card">
+  <div class="admin-card-body">
+    <form action="/admin/coupons<%= isEditing ? '/' + coupon.id : '' %>" method="POST" class="admin-form">
+      <% if (isEditing) { %>
+        <input type="hidden" name="_method" value="PUT">
+      <% } %>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="code">Coupon Code *</label>
+          <input type="text" id="code" name="code" class="form-input" value="<%= isEditing ? coupon.code : '' %>" required style="text-transform:uppercase" oninput="this.value = this.value.toUpperCase()">
+          <span class="form-hint">Code will be auto-converted to uppercase</span>
+        </div>
+        <div class="form-group">
+          <label for="type">Discount Type *</label>
+          <select id="type" name="type" class="form-input" required>
+            <option value="">Select Type</option>
+            <option value="percentage" <%= isEditing && coupon.type == 'percentage' ? 'selected' : '' %>>Percentage</option>
+            <option value="fixed" <%= isEditing && coupon.type == 'fixed' ? 'selected' : '' %>>Fixed Amount</option>
+            <option value="free_shipping" <%= isEditing && coupon.type == 'free_shipping' ? 'selected' : '' %>>Free Shipping</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="value">Discount Value *</label>
+          <input type="number" id="value" name="value" class="form-input" step="0.01" min="0" value="<%= isEditing ? coupon.value : '' %>" required>
+          <span class="form-hint">Enter percentage (e.g. 10 for 10%) or fixed amount</span>
+        </div>
+        <div class="form-group">
+          <label for="minPurchase">Minimum Purchase</label>
+          <input type="number" id="minPurchase" name="minPurchase" class="form-input" step="0.01" min="0" value="<%= isEditing ? coupon.minPurchase : '' %>">
+          <span class="form-hint">Minimum order amount to apply coupon</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="maxDiscount">Maximum Discount</label>
+          <input type="number" id="maxDiscount" name="maxDiscount" class="form-input" step="0.01" min="0" value="<%= isEditing ? coupon.maxDiscount : '' %>">
+          <span class="form-hint">Maximum discount amount (for percentage type)</span>
+        </div>
+        <div class="form-group">
+          <label for="usageLimit">Usage Limit</label>
+          <input type="number" id="usageLimit" name="usageLimit" class="form-input" min="1" value="<%= isEditing ? coupon.usageLimit : '' %>">
+          <span class="form-hint">Leave empty for unlimited uses</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-check">
+            <input type="checkbox" name="isActive" value="1" <%= isEditing && coupon.isActive ? 'checked' : 'checked' %>>
+            <span>Active</span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label for="expiresAt">Expiry Date</label>
+          <input type="date" id="expiresAt" name="expiresAt" class="form-input" value="<%= isEditing && coupon.expiresAt ? new Date(coupon.expiresAt).toISOString().split('T')[0] : '' %>">
+          <span class="form-hint">Leave empty for no expiry</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="admin-btn admin-btn-primary"><%= isEditing ? 'Update Coupon' : 'Create Coupon' %></button>
+        <a href="/admin/coupons" class="admin-btn">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

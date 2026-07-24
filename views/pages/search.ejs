@@ -1,0 +1,34 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <h1 data-aos="fade-up"><%= query ? 'Search: "' + query + '"' : 'Search' %></h1>
+      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
+        <a href="/">Home</a> <span>/</span> <span>Search</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="search-page-content" data-aos="fade-up">
+        <form action="/search" method="GET" class="search-page-form">
+          <input type="text" name="q" value="<%= query %>" placeholder="Search luxury jewelry...">
+          <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
+        <div class="search-results" id="searchResults">
+          <div class="empty-collection">
+            <i class="fas fa-search"></i>
+            <h3><%= query ? 'No Products Found' : 'Search Our Collection' %></h3>
+            <p><%= query ? 'No products match "' + query + '". Try different keywords.' : 'Type above to search our luxury collection.' %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

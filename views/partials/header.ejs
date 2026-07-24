@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' | ' + siteName : siteName %></title>
+  <meta name="description" content="ISHFAQ ALI & SONS - Premium Luxury Jewelry. Exquisite Karit and Turkish Jewelry collections. Handcrafted elegance since generations.">
+  <meta name="keywords" content="jewelry, luxury jewelry, karit, turkish jewelry, gold jewelry, ishfaq ali & sons, premium jewelry">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="<%= siteUrl %><%= currentUrl %>">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="<%= typeof title !== 'undefined' ? title + ' | ' + siteName : siteName %>">
+  <meta property="og:description" content="ISHFAQ ALI & SONS - Premium Luxury Jewelry. Exquisite Karit and Turkish Jewelry collections.">
+  <meta property="og:image" content="/images/logo.jpeg">
+  <meta property="og:url" content="<%= siteUrl %>">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="<%= siteName %>">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title + ' | ' + siteName : siteName %>">
+  <meta name="twitter:description" content="ISHFAQ ALI & SONS - Premium Luxury Jewelry">
+  <meta name="twitter:image" content="/images/logo.jpeg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/jpeg" href="/images/logo.jpeg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- AOS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "JewelryStore",
+    "name": "ISHFAQ ALI & SONS",
+    "image": "/images/logo.jpeg",
+    "telephone": "<%= contactPhone %>",
+    "address": { "@type": "PostalAddress", "addressLocality": "Lahore", "addressCountry": "PK" },
+    "url": "<%= siteUrl %>"
+  }
+  </script>
+
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>

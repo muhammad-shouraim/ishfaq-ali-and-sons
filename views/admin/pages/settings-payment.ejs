@@ -1,0 +1,68 @@
+<%- include('../partials/header') %>
+
+<form class="admin-form" method="POST" action="/admin/settings/payment">
+  <div class="admin-card">
+    <div class="admin-card-header"><h3>Cash on Delivery</h3></div>
+    <div class="form-group">
+      <div class="form-check">
+        <input type="checkbox" id="cod_enabled" name="settings[cod_enabled]" value="1" <%= settings && settings.cod_enabled ? 'checked' : '' %>>
+        <label for="cod_enabled" style="margin:0;">Enable Cash on Delivery</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card-header"><h3>Bank Transfer</h3></div>
+    <div class="form-group">
+      <div class="form-check">
+        <input type="checkbox" id="bank_enabled" name="settings[bank_enabled]" value="1" <%= settings && settings.bank_enabled ? 'checked' : '' %>>
+        <label for="bank_enabled" style="margin:0;">Enable Bank Transfer</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="bank_name">Bank Name</label>
+        <input type="text" id="bank_name" name="settings[bank_name]" value="<%= settings ? settings.bank_name : '' %>">
+      </div>
+      <div class="form-group">
+        <label for="bank_account_title">Account Title</label>
+        <input type="text" id="bank_account_title" name="settings[bank_account_title]" value="<%= settings ? settings.bank_account_title : '' %>">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="bank_account_number">Account Number</label>
+        <input type="text" id="bank_account_number" name="settings[bank_account_number]" value="<%= settings ? settings.bank_account_number : '' %>">
+      </div>
+      <div class="form-group">
+        <label for="bank_iban">IBAN</label>
+        <input type="text" id="bank_iban" name="settings[bank_iban]" value="<%= settings ? settings.bank_iban : '' %>">
+      </div>
+    </div>
+  </div>
+
+  <!-- Future Gateways: ready for integration -->
+  <div class="admin-card">
+    <div class="admin-card-header"><h3>Future Gateways</h3></div>
+    <p style="color:var(--admin-text-light);font-size:0.85rem;">Additional payment gateways (Stripe, PayPal, JazzCash, etc.) will be available in a future update.</p>
+    <!--
+      Example integration pattern:
+      <div class="form-group">
+        <div class="form-check">
+          <input type="checkbox" id="stripe_enabled" name="settings[stripe_enabled]" value="1">
+          <label for="stripe_enabled" style="margin:0;">Enable Stripe</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Publishable Key</label><input name="settings[stripe_publishable_key]"></div>
+        <div class="form-group"><label>Secret Key</label><input name="settings[stripe_secret_key]"></div>
+      </div>
+    -->
+  </div>
+
+  <div class="form-group">
+    <button type="submit" class="admin-btn admin-btn-primary"><i class="fas fa-save"></i> Save Payment Settings</button>
+  </div>
+</form>
+
+<%- include('../partials/footer') %>

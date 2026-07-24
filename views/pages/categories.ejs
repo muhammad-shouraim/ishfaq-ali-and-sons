@@ -1,0 +1,48 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <h1 data-aos="fade-up">Categories</h1>
+      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
+        <a href="/">Home</a> <span>/</span> <span>Categories</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Collections</span>
+        <h2>Our <span class="gold-text">Categories</span></h2>
+        <p>Discover our exclusive jewelry collections</p>
+      </div>
+      <div class="categories-page-grid">
+        <a href="/category/karit" class="category-card-large" data-aos="fade-up" data-aos-delay="100">
+          <div class="category-card-image">
+            <i class="fas fa-crown"></i>
+          </div>
+          <div class="category-card-body">
+            <h3>Karit</h3>
+            <p>Exquisite Karit jewelry collection featuring traditional designs with a contemporary twist. Each piece is meticulously crafted to celebrate elegance.</p>
+            <span class="category-link">Explore Karit <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </a>
+        <a href="/category/turkish-jewelry" class="category-card-large" data-aos="fade-up" data-aos-delay="200">
+          <div class="category-card-image">
+            <i class="fas fa-gem"></i>
+          </div>
+          <div class="category-card-body">
+            <h3>Turkish Jewelry</h3>
+            <p>Inspired by Ottoman magnificence, our Turkish Jewelry collection blends heritage with modern luxury for a truly timeless appeal.</p>
+            <span class="category-link">Explore Turkish Jewelry <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

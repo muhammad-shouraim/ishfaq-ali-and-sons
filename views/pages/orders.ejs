@@ -1,0 +1,58 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <h1 data-aos="fade-up">My Orders</h1>
+      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
+        <a href="/">Home</a> <span>/</span> <span>Orders</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="orders-content" data-aos="fade-up">
+        <% if (orders && orders.length) { %>
+          <% orders.forEach(function(order) { %>
+          <div class="order-card">
+            <div class="order-header">
+              <div>
+                <strong>Order #<%= order.orderNumber %></strong>
+                <span class="order-date"><%= new Date(order.createdAt).toLocaleDateString('en-PK', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+              </div>
+              <span class="order-status status-<%= order.orderStatus %>"><%= order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1) %></span>
+            </div>
+            <div class="order-items">
+              <% order.items.forEach(function(item) { %>
+              <div class="order-item">
+                <div class="order-item-image"><i class="fas fa-gem"></i></div>
+                <div>
+                  <p><%= item.name %></p>
+                  <span>Qty: <%= item.quantity %> x <%= currencySymbol %> <%= Number(item.price).toLocaleString() %></span>
+                </div>
+              </div>
+              <% }) %>
+            </div>
+            <div class="order-footer">
+              <span>Total: <strong><%= currencySymbol %> <%= Number(order.total).toLocaleString() %></strong></span>
+              <span>Payment: <%= order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Bank Transfer' %></span>
+            </div>
+          </div>
+          <% }) %>
+        <% } else { %>
+        <div class="empty-collection">
+          <i class="fas fa-box-open"></i>
+          <h3>No Orders Yet</h3>
+          <p>You haven't placed any orders yet.</p>
+          <a href="/shop" class="btn btn-gold">Start Shopping</a>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

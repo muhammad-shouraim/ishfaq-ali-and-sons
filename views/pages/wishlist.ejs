@@ -1,0 +1,29 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <h1 data-aos="fade-up">My Wishlist</h1>
+      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
+        <a href="/">Home</a> <span>/</span> <span>Wishlist</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="wishlist-content" data-aos="fade-up" id="wishlistContent">
+        <div class="empty-collection">
+          <i class="far fa-heart"></i>
+          <h3>Your Wishlist is Empty</h3>
+          <p>Save your favorite pieces to your wishlist.</p>
+          <a href="/shop" class="btn btn-gold">Browse Collection</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

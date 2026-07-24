@@ -1,0 +1,191 @@
+<%- include('../partials/header') %>
+
+<div class="dashboard">
+  <div class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-subtitle">Welcome back, <%= user.name %></p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="admin-card stat-card">
+      <div class="stat-icon stat-icon-primary">
+        <i class="fas fa-box"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value"><%= totalProducts || 0 %></span>
+        <span class="stat-label">Total Products</span>
+      </div>
+    </div>
+    <div class="admin-card stat-card">
+      <div class="stat-icon stat-icon-info">
+        <i class="fas fa-tags"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value"><%= totalCategories || 0 %></span>
+        <span class="stat-label">Total Categories</span>
+      </div>
+    </div>
+    <div class="admin-card stat-card">
+      <div class="stat-icon stat-icon-warning">
+        <i class="fas fa-shopping-cart"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value"><%= totalOrders || 0 %></span>
+        <span class="stat-label">Total Orders</span>
+      </div>
+    </div>
+    <div class="admin-card stat-card">
+      <div class="stat-icon stat-icon-success">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value"><%= totalCustomers || 0 %></span>
+        <span class="stat-label">Total Customers</span>
+      </div>
+    </div>
+    <div class="admin-card stat-card">
+      <div class="stat-icon stat-icon-primary">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">$<%= (totalRevenue || 0).toLocaleString() %></span>
+        <span class="stat-label">Total Revenue</span>
+      </div>
+    </div>
+    <div class="admin-card stat-card">
+      <div class="stat-icon stat-icon-danger">
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value"><%= pendingOrders || 0 %></span>
+        <span class="stat-label">Pending Orders</span>
+      </div>
+    </div>
+  </div>
+
+  <% if (typeof lowStockProducts !== 'undefined' && lowStockProducts.length > 0) { %>
+  <div class="admin-card alert-card">
+    <div class="alert-card-header">
+      <i class="fas fa-exclamation-triangle text-warning"></i>
+      <h3>Low Stock Alert</h3>
+    </div>
+    <div class="alert-card-body">
+      <% lowStockProducts.forEach(function(product) { %>
+      <div class="alert-item">
+        <span class="alert-item-name"><%= product.name %></span>
+        <span class="admin-badge admin-badge-danger"><%= product.stock %> left</span>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+  <% } %>
+
+  <div class="grid-2">
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3>Sales Overview</h3>
+      </div>
+      <div class="admin-card-body">
+        <canvas id="salesChart" height="250"></canvas>
+      </div>
+    </div>
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3>Best Selling Products</h3>
+      </div>
+      <div class="admin-card-body">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Sold</th>
+              <th>Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (typeof bestSellingProducts !== 'undefined') { %>
+              <% bestSellingProducts.forEach(function(product) { %>
+              <tr>
+                <td><%= product.name %></td>
+                <td><%= product.sold %></td>
+                <td>$<%= (product.revenue || 0).toLocaleString() %></td>
+              </tr>
+              <% }) %>
+            <% } else { %>
+              <tr><td colspan="3" class="text-center">No data available</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h3>Recent Orders</h3>
+      <a href="/admin/orders" class="admin-btn admin-btn-sm">View All</a>
+    </div>
+    <div class="admin-card-body">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (typeof recentOrders !== 'undefined') { %>
+            <% recentOrders.forEach(function(order) { %>
+            <tr>
+              <td><a href="/admin/orders/<%= order.id %>">#<%= order.orderNumber %></a></td>
+              <td><%= order.customerName %></td>
+              <td><%= order.itemsCount %></td>
+              <td>$<%= (order.total || 0).toLocaleString() %></td>
+              <td>
+                <% var statusClass = { pending: 'admin-badge-warning', processing: 'admin-badge-info', shipped: 'admin-badge-primary', delivered: 'admin-badge-success', cancelled: 'admin-badge-danger' } %>
+                <span class="admin-badge <%= statusClass[order.status] || 'admin-badge-secondary' %>"><%= order.status %></span>
+              </td>
+              <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+            </tr>
+            <% }) %>
+          <% } else { %>
+            <tr><td colspan="6" class="text-center">No recent orders</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: <%= JSON.stringify(salesLabels || []) %>,
+        datasets: [{
+          label: 'Sales',
+          data: <%= JSON.stringify(salesData || []) %>,
+          borderColor: '#4f46e5',
+          backgroundColor: 'rgba(79, 70, 229, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  });
+</script>
+
+<%- include('../partials/footer') %>
