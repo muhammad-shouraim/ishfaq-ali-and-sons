@@ -19,8 +19,10 @@ process.on('uncaughtException', (err) => {
 connectDB().then(() => {
   require('./models');
   const db = require('./config/sequelize');
-  db.sync({ alter: false }).then(() => {
+  db.sync({ alter: false }).then(async () => {
     console.log('Database tables synced');
+    const seedDatabase = require('./scripts/auto-seed');
+    await seedDatabase();
   }).catch(err => console.error('Sync error:', err.message));
 });
 
