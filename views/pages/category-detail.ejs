@@ -7,7 +7,13 @@
     <div class="container">
       <h1 data-aos="fade-up"><%= category.name %></h1>
       <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
-        <a href="/">Home</a> <span>/</span> <a href="/categories">Categories</a> <span>/</span> <span><%= category.name %></span>
+        <a href="/">Home</a> <span>/</span>
+        <% if (typeof category.mainCategory !== 'undefined' && category.mainCategory) { %>
+        <a href="/collection/<%= category.mainCategory %>"><%= category.mainCategory === 'turkish-jewellery' ? 'Turkish Jewellery' : '1 Carat' %></a> <span>/</span>
+        <% } else { %>
+        <a href="/categories">Categories</a> <span>/</span>
+        <% } %>
+        <span><%= category.name %></span>
       </div>
     </div>
   </section>
@@ -16,7 +22,7 @@
     <div class="container">
       <div class="category-hero" data-aos="fade-up">
         <div class="category-hero-icon">
-          <i class="fas <%= category.name === 'Karit' ? 'fa-crown' : 'fa-gem' %>"></i>
+          <i class="fas <%= category.icon || (category.name === 'Karit' ? 'fa-crown' : 'fa-gem') %>"></i>
         </div>
         <h2><%= category.name %></h2>
         <p><%= category.description || 'Explore our exclusive collection of premium ' + category.name.toLowerCase() + '.' %></p>

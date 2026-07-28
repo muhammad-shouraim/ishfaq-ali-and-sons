@@ -1,0 +1,39 @@
+<%- include('../partials/header') %>
+<div class="page-header">
+  <h1 class="page-title">Promotions</h1>
+  <a href="<%= adminPath %>/promotions/create" class="admin-btn admin-btn-primary">+ New Promotion</a>
+</div>
+<div class="admin-card">
+  <div class="admin-card-body">
+    <table class="admin-table">
+      <thead>
+        <tr><th>Title</th><th>Discount</th><th>Start</th><th>End</th><th>Active</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        <% if (promotions.length) { %>
+          <% promotions.forEach(function(p) { %>
+          <tr>
+            <td><%= p.title %></td>
+            <td><%= p.discountPercent %>%</td>
+            <td><%= new Date(p.startDate).toLocaleDateString() %></td>
+            <td><%= new Date(p.endDate).toLocaleDateString() %></td>
+            <td><span class="admin-badge <%= p.isActive ? 'admin-badge-success' : 'admin-badge-danger' %>"><%= p.isActive ? 'Active' : 'Inactive' %></span></td>
+            <td>
+              <a href="<%= adminPath %>/promotions/edit/<%= p.id %>" class="admin-btn admin-btn-sm">Edit</a>
+              <form action="<%= adminPath %>/promotions/toggle/<%= p.id %>" method="POST" style="display:inline">
+                <button class="admin-btn admin-btn-sm"><%= p.isActive ? 'Deactivate' : 'Activate' %></button>
+              </form>
+              <form action="<%= adminPath %>/promotions/delete/<%= p.id %>" method="POST" style="display:inline" onsubmit="return confirm('Delete?')">
+                <button class="admin-btn admin-btn-sm admin-btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        <% } else { %>
+          <tr><td colspan="6" class="text-center">No promotions yet</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%- include('../partials/footer') %>

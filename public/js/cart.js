@@ -34,10 +34,10 @@ async function loadCartSidebar() {
           <h4>${item.product ? item.product.name : 'Product'}</h4>
           <span class="item-price">Rs. ${Number(item.product ? item.product.price : 0).toLocaleString()}</span>
           <div class="cart-item-qty">
-            <button class="qty-change" data-id="${item.product ? item.product._id : ''}" data-action="minus">-</button>
+            <button class="qty-change" data-id="${item.product ? item.product.id : ''}" data-action="minus">-</button>
             <span>${item.quantity}</span>
-            <button class="qty-change" data-id="${item.product ? item.product._id : ''}" data-action="plus">+</button>
-            <button class="cart-item-remove" data-id="${item.product ? item.product._id : ''}"><i class="fas fa-trash-alt"></i></button>
+            <button class="qty-change" data-id="${item.product ? item.product.id : ''}" data-action="plus">+</button>
+            <button class="cart-item-remove" data-id="${item.product ? item.product.id : ''}"><i class="fas fa-trash-alt"></i></button>
           </div>
         </div>
       </div>
@@ -136,10 +136,10 @@ async function loadCartPage() {
           <h4>${item.product ? item.product.name : 'Product'}</h4>
           <span class="item-price">Rs. ${Number(item.product ? item.product.price : 0).toLocaleString()}</span>
           <div class="cart-item-qty">
-            <button class="qty-change" data-id="${item.product ? item.product._id : ''}" data-action="minus">-</button>
+            <button class="qty-change" data-id="${item.product ? item.product.id : ''}" data-action="minus">-</button>
             <span>${item.quantity}</span>
-            <button class="qty-change" data-id="${item.product ? item.product._id : ''}" data-action="plus">+</button>
-            <button class="cart-item-remove" data-id="${item.product ? item.product._id : ''}"><i class="fas fa-trash-alt"></i></button>
+            <button class="qty-change" data-id="${item.product ? item.product.id : ''}" data-action="plus">+</button>
+            <button class="cart-item-remove" data-id="${item.product ? item.product.id : ''}"><i class="fas fa-trash-alt"></i></button>
           </div>
         </div>
         <div class="cart-item-total" style="font-weight:600;color:var(--gold);font-family:var(--font-heading);font-size:1.1rem">
@@ -161,7 +161,7 @@ async function loadCartPage() {
 
 // Coupon
 document.addEventListener('submit', async (e) => {
-  if (!e.target.id === 'couponForm') return;
+  if (e.target.id !== 'couponForm') return;
   e.preventDefault();
   const input = document.getElementById('couponInput');
   const msg = document.getElementById('couponMessage');

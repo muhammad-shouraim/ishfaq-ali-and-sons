@@ -1,0 +1,52 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1 class="page-title">Abandoned Carts</h1>
+</div>
+
+<div class="admin-card">
+  <div class="admin-card-body">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Email</th>
+          <th>Items</th>
+          <th>Cart Value</th>
+          <th>Last Active</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (typeof carts !== 'undefined' && carts.length > 0) { %>
+          <% carts.forEach(function(cart) { %>
+          <tr>
+            <td><%= cart.userName || 'Guest' %></td>
+            <td><%= cart.userEmail || '-' %></td>
+            <td><%= cart.itemsCount || 0 %></td>
+            <td>Rs. <%= (cart.total || 0).toLocaleString() %></td>
+            <td><%= new Date(cart.updatedAt).toLocaleString() %></td>
+            <td>
+              <form action="<%= adminPath %>/abandoned-carts/<%= cart.id %>/remind" method="POST" style="display:inline" data-confirm="Send reminder email to this customer?">
+                <button type="submit" class="admin-btn admin-btn-sm admin-btn-primary" title="Send Reminder"><i class="fas fa-bell"></i> Remind</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        <% } else { %>
+          <tr><td colspan="6" class="text-center">No abandoned carts found</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('[data-confirm]').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+      if (!confirm(this.getAttribute('data-confirm'))) e.preventDefault();
+    });
+  });
+</script>
+
+<%- include('../partials/footer') %>

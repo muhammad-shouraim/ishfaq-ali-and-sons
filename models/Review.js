@@ -1,17 +1,21 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
 
-const reviewSchema = new mongoose.Schema({
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  rating: { type: Number, required: true, min: 1, max: 5 },
-  title: String,
-  comment: { type: String, required: true },
-  isApproved: { type: Boolean, default: false },
-  adminReply: String,
-  repliedAt: Date,
-  repliedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
-}, { timestamps: true });
+const Review = sequelize.define('Review', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  product: { type: DataTypes.INTEGER, allowNull: false },
+  user: { type: DataTypes.INTEGER, allowNull: false },
+  rating: { type: DataTypes.INTEGER, allowNull: false },
+  title: { type: DataTypes.STRING },
+  comment: { type: DataTypes.TEXT, allowNull: false },
+  isApproved: { type: DataTypes.BOOLEAN, defaultValue: false },
+  adminReply: { type: DataTypes.TEXT },
+  repliedAt: { type: DataTypes.DATE },
+  repliedBy: { type: DataTypes.INTEGER }
+}, {
+  indexes: [
+    { unique: true, fields: ['product', 'user'] }
+  ]
+});
 
-reviewSchema.index({ product: 1, user: 1 }, { unique: true });
-
-module.exports = mongoose.model('Review', reviewSchema);
+module.exports = Review;

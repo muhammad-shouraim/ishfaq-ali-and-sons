@@ -1,35 +1,44 @@
+<% title = 'Privacy Policy'; %>
 <%- include('../partials/header') %>
 <%- include('../partials/topbar') %>
 <%- include('../partials/navbar') %>
 
 <main>
-  <section class="page-header">
+  <section class="page-header" style="padding:48px 0 32px;text-align:center">
     <div class="container">
-      <h1 data-aos="fade-up">Privacy Policy</h1>
-      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
-        <a href="/">Home</a> <span>/</span> <span>Privacy Policy</span>
-      </div>
+      <h1 data-aos="fade-up" style="font-size:2.2rem;margin-bottom:8px">Privacy Policy</h1>
     </div>
   </section>
 
-  <section class="section policy-section">
+  <section class="section policy-section" style="padding:60px 0">
     <div class="container">
-      <div class="policy-content" data-aos="fade-up">
-        <h2>Privacy Policy</h2>
-        <p>Last updated: <%= new Date().toLocaleDateString('en-PK', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
-        <p>At ISHFAQ ALI & SONS, we value your privacy. This policy outlines how we collect, use, and protect your personal information.</p>
+      <div class="policy-content" data-aos="fade-up" style="max-width:800px;margin:0 auto">
+        <h2 style="text-align:center;font-size:1.8rem;margin-bottom:8px;font-family:var(--font-heading)">Privacy Policy</h2>
+        <p style="text-align:center;color:var(--text-light);font-size:0.85rem;margin-bottom:40px">Last updated: <%= new Date().toLocaleDateString('en-PK', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
         
-        <h3>Information We Collect</h3>
-        <p>We collect information you provide when creating an account, placing an order, or contacting us, including your name, email, phone number, and shipping address.</p>
+        <p style="text-align:center;font-size:1rem;line-height:1.8;margin-bottom:40px;color:var(--text)">At ISHFAQ ALI & SONS, we value your privacy. This policy outlines how we collect, use, and protect your personal information.</p>
         
-        <h3>How We Use Your Information</h3>
-        <p>We use your information to process orders, provide customer support, and send updates about your purchases. We do not share your information with third parties except as necessary to fulfill your order.</p>
-        
-        <h3>Data Protection</h3>
-        <p>We implement industry-standard security measures to protect your personal information.</p>
-        
-        <h3>Contact</h3>
-        <p>For privacy-related inquiries, contact us at <a href="mailto:<%= contactEmail %>"><%= contactEmail %></a> or call <%= contactPhone %>.</p>
+        <div style="display:grid;gap:32px">
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">Information We Collect</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">We collect information you provide when creating an account, placing an order, or contacting us, including your name, email, phone number, and shipping address.</p>
+          </div>
+          
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">How We Use Your Information</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">We use your information to process orders, provide customer support, and send updates about your purchases. We do not share your information with third parties except as necessary to fulfill your order.</p>
+          </div>
+          
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">Data Protection</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">We implement industry-standard security measures to protect your personal information.</p>
+          </div>
+          
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">Contact</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">For privacy-related inquiries, contact us at <a href="mailto:<%= contactEmail %>" style="color:var(--gold);text-decoration:underline"><%= contactEmail %></a> or call <%= contactPhone %>.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>

@@ -6,7 +6,7 @@
 
 <div class="admin-card">
   <div class="admin-card-body">
-    <form action="/admin/orders" method="GET" class="filter-form">
+    <form action="<%= adminPath %>/orders" method="GET" class="filter-form">
       <div class="form-row">
         <div class="form-group">
           <label for="status">Status</label>
@@ -34,7 +34,7 @@
         </div>
         <div class="form-group" style="align-self:flex-end">
           <button type="submit" class="admin-btn admin-btn-primary">Filter</button>
-          <a href="/admin/orders" class="admin-btn">Reset</a>
+          <a href="<%= adminPath %>/orders" class="admin-btn">Reset</a>
         </div>
       </div>
     </form>
@@ -43,9 +43,28 @@
 
 <div class="admin-card">
   <div class="admin-card-body">
+    <form id="bulkOrderForm" action="<%= adminPath %>/orders/bulk-status" method="POST">
+      <div class="toolbar" style="margin-bottom:15px">
+        <div class="toolbar-left">
+          <span id="selectedCount" class="text-muted">0 selected</span>
+        </div>
+        <div class="toolbar-right">
+          <select name="status" class="form-input" style="width:auto;display:inline-block" required>
+            <option value="">Bulk Status</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="processing">Processing</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button type="submit" class="admin-btn admin-btn-sm" onclick="return confirm('Update selected orders?')">Apply</button>
+        </div>
+      </div>
+    </form>
     <table class="admin-table">
       <thead>
         <tr>
+          <th width="40"><input type="checkbox" id="selectAllOrders"></th>
           <th>Order #</th>
           <th>Customer</th>
           <th>Total</th>
@@ -60,9 +79,10 @@
         <% if (typeof orders !== 'undefined' && orders.length > 0) { %>
           <% orders.forEach(function(order) { %>
           <tr>
-            <td><a href="/admin/orders/<%= order.id %>">#<%= order.orderNumber %></a></td>
+            <td><input type="checkbox" name="ids" form="bulkOrderForm" value="<%= order.id %>" class="order-select"></td>
+            <td><a href="<%= adminPath %>/orders/<%= order.id %>">#<%= order.orderNumber %></a></td>
             <td><%= order.customerName %></td>
-            <td>$<%= (order.total || 0).toFixed(2) %></td>
+            <td>Rs. <%= (order.total || 0).toLocaleString() %></td>
             <td><%= order.paymentMethod || '-' %></td>
             <td>
               <% var pClass = { paid: 'admin-badge-success', pending: 'admin-badge-warning', failed: 'admin-badge-danger', refunded: 'admin-badge-info' } %>
@@ -70,35 +90,50 @@
             </td>
             <td>
               <% var sClass = { pending: 'admin-badge-warning', processing: 'admin-badge-info', shipped: 'admin-badge-primary', delivered: 'admin-badge-success', cancelled: 'admin-badge-danger', refunded: 'admin-badge-secondary' } %>
-              <span class="admin-badge <%= sClass[order.status] || 'admin-badge-secondary' %>"><%= order.status %></span>
+              <span class="admin-badge <%= sClass[order.orderStatus] || 'admin-badge-secondary' %>"><%= order.orderStatus %></span>
             </td>
             <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
             <td>
-              <a href="/admin/orders/<%= order.id %>" class="admin-btn admin-btn-sm" title="View"><i class="fas fa-eye"></i></a>
-              <a href="/admin/orders/<%= order.id %>/invoice" class="admin-btn admin-btn-sm" title="Invoice" target="_blank"><i class="fas fa-file-invoice"></i></a>
+              <a href="<%= adminPath %>/orders/<%= order.id %>" class="admin-btn admin-btn-sm" title="View"><i class="fas fa-eye"></i></a>
+              <a href="<%= adminPath %>/orders/<%= order.id %>/invoice" class="admin-btn admin-btn-sm" title="Invoice" target="_blank"><i class="fas fa-file-invoice"></i></a>
+              <a href="<%= adminPath %>/orders/<%= order.id %>/packing-slip" class="admin-btn admin-btn-sm" title="Packing Slip" target="_blank"><i class="fas fa-truck"></i></a>
             </td>
           </tr>
           <% }) %>
         <% } else { %>
-          <tr><td colspan="8" class="text-center">No orders found</td></tr>
+          <tr><td colspan="9" class="text-center">No orders found</td></tr>
         <% } %>
       </tbody>
     </table>
   </div>
 </div>
 
-<% if (typeof pagination !== 'undefined' && pagination.pages > 1) { %>
+<script>
+document.getElementById('selectAllOrders').addEventListener('change', function() {
+  document.querySelectorAll('.order-select').forEach(function(cb) { cb.checked = this.checked; }, this);
+  updateOrderCount();
+});
+document.querySelectorAll('.order-select').forEach(function(cb) {
+  cb.addEventListener('change', updateOrderCount);
+});
+function updateOrderCount() {
+  var n = document.querySelectorAll('.order-select:checked').length;
+  document.getElementById('selectedCount').textContent = n + ' selected';
+}
+</script>
+
+<% if (typeof pages !== 'undefined' && pages > 1) { %>
 <div class="admin-pagination">
-  <span>Showing <%= pagination.from %> to <%= pagination.to %> of <%= pagination.total %></span>
+  <span>Page <%= currentPage %> of <%= pages %></span>
   <div class="pagination-links">
-    <% if (pagination.current > 1) { %>
-      <a href="?page=<%= pagination.current - 1 %>&status=<%= filterStatus || '' %>&search=<%= search || '' %>&dateFrom=<%= filterDateFrom || '' %>&dateTo=<%= filterDateTo || '' %>" class="admin-btn admin-btn-sm">&laquo; Prev</a>
+    <% if (currentPage > 1) { %>
+      <a href="?page=<%= currentPage - 1 %>&status=<%= filterStatus || '' %>&search=<%= search || '' %>&dateFrom=<%= filterDateFrom || '' %>&dateTo=<%= filterDateTo || '' %>" class="admin-btn admin-btn-sm">&laquo; Prev</a>
     <% } %>
-    <% for (var i = 1; i <= pagination.pages; i++) { %>
-      <a href="?page=<%= i %>&status=<%= filterStatus || '' %>&search=<%= search || '' %>&dateFrom=<%= filterDateFrom || '' %>&dateTo=<%= filterDateTo || '' %>" class="admin-btn admin-btn-sm <%= pagination.current == i ? 'admin-btn-primary' : '' %>"><%= i %></a>
+    <% for (var i = 1; i <= pages; i++) { %>
+      <a href="?page=<%= i %>&status=<%= filterStatus || '' %>&search=<%= search || '' %>&dateFrom=<%= filterDateFrom || '' %>&dateTo=<%= filterDateTo || '' %>" class="admin-btn admin-btn-sm <%= currentPage == i ? 'admin-btn-primary' : '' %>"><%= i %></a>
     <% } %>
-    <% if (pagination.current < pagination.pages) { %>
-      <a href="?page=<%= pagination.current + 1 %>&status=<%= filterStatus || '' %>&search=<%= search || '' %>&dateFrom=<%= filterDateFrom || '' %>&dateTo=<%= filterDateTo || '' %>" class="admin-btn admin-btn-sm">Next &raquo;</a>
+    <% if (currentPage < pages) { %>
+      <a href="?page=<%= currentPage + 1 %>&status=<%= filterStatus || '' %>&search=<%= search || '' %>&dateFrom=<%= filterDateFrom || '' %>&dateTo=<%= filterDateTo || '' %>" class="admin-btn admin-btn-sm">Next &raquo;</a>
     <% } %>
   </div>
 </div>

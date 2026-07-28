@@ -1,9 +1,19 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
 
-const wishlistSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  sessionId: { type: String },
-  items: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }]
-}, { timestamps: true });
+const Wishlist = sequelize.define('Wishlist', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  user: { type: DataTypes.INTEGER },
+  sessionId: { type: DataTypes.STRING },
+  items: { type: DataTypes.TEXT, defaultValue: '[]' }
+});
 
-module.exports = mongoose.model('Wishlist', wishlistSchema);
+Wishlist.prototype.toJSON = function() {
+  const values = { ...this.get() };
+  if (values.items && typeof values.items === 'string') {
+    try { values.items = JSON.parse(values.items); } catch { values.items = []; }
+  }
+  return values;
+};
+
+module.exports = Wishlist;

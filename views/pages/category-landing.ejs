@@ -1,0 +1,41 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <h1 data-aos="fade-up"><%= category.name %></h1>
+      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
+        <a href="/">Home</a> <span>/</span> <span><%= category.name %></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="category-hero" data-aos="fade-up">
+        <div class="category-hero-icon">
+          <i class="fas <%= category.icon %>"></i>
+        </div>
+        <h2><%= category.name %></h2>
+        <p><%= category.description %></p>
+      </div>
+
+      <div class="subcategories-grid" data-aos="fade-up" data-aos-delay="100">
+        <% subcategories.forEach(function(sub) { %>
+        <a href="/collection/<%= sub.slug %>" class="subcategory-card">
+          <div class="subcategory-icon">
+            <i class="fas fa-gem"></i>
+          </div>
+          <h3><%= sub.name %></h3>
+          <p><%= sub.description %></p>
+          <span class="subcategory-link">Shop Now <i class="fas fa-arrow-right"></i></span>
+        </a>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

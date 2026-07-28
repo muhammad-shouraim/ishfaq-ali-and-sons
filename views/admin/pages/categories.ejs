@@ -2,7 +2,7 @@
 
 <div class="page-header">
   <h1 class="page-title">Categories</h1>
-  <a href="/admin/categories/create" class="admin-btn admin-btn-primary">Add Category</a>
+  <a href="<%= adminPath %>/categories/create" class="admin-btn admin-btn-primary">Add Category</a>
 </div>
 
 <div class="admin-card">
@@ -42,8 +42,8 @@
             </td>
             <td><%= cat.productsCount || 0 %></td>
             <td>
-              <a href="/admin/categories/<%= cat.id %>/edit" class="admin-btn admin-btn-sm" title="Edit"><i class="fas fa-edit"></i></a>
-              <form action="/admin/categories/<%= cat.id %>?_method=DELETE" method="POST" style="display:inline" data-confirm="Are you sure you want to delete this category?">
+              <a href="<%= adminPath %>/categories/edit/<%= cat.id %>" class="admin-btn admin-btn-sm" title="Edit"><i class="fas fa-edit"></i></a>
+              <form action="<%= adminPath %>/categories/delete/<%= cat.id %>" method="POST" style="display:inline" data-confirm="Are you sure you want to delete this category?">
                 <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm" title="Delete"><i class="fas fa-trash"></i></button>
               </form>
             </td>

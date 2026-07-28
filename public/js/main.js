@@ -2,6 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavToggle();
+  initNavDropdowns();
   initUserDropdown();
   initSearchToggle();
   initCartToggle();
@@ -10,17 +11,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Nav Toggle (Mobile)
 function initNavToggle() {
-  const toggle = document.getElementById('navToggle');
-  const links = document.getElementById('navLinks');
+  const toggle = document.getElementById('mobileToggle');
+  const links = document.getElementById('headerNav');
+  const overlay = document.createElement('div');
+  overlay.className = 'nav-overlay';
+  overlay.addEventListener('click', () => { toggle.classList.remove('active'); links.classList.remove('active'); overlay.classList.remove('active'); });
+  document.body.appendChild(overlay);
   if (!toggle || !links) return;
   toggle.addEventListener('click', () => {
     toggle.classList.toggle('active');
     links.classList.toggle('active');
+    overlay.classList.toggle('active');
   });
-  document.querySelectorAll('#navLinks a').forEach(link => {
+  document.querySelectorAll('#headerNav a').forEach(link => {
     link.addEventListener('click', () => {
+      if (link.classList.contains('nav-dropdown-toggle') && window.innerWidth <= 1024) {
+        return;
+      }
       toggle.classList.remove('active');
       links.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+  });
+}
+
+// Mobile Dropdown Toggle
+function initNavDropdowns() {
+  const toggles = document.querySelectorAll('.nav-dropdown-toggle');
+  toggles.forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+      if (window.innerWidth <= 1024) {
+        e.preventDefault();
+        toggle.parentElement.classList.toggle('active');
+      }
     });
   });
 }
@@ -94,6 +117,23 @@ document.addEventListener('click', (e) => {
       input.value = val + 1;
     }
   }
+});
+
+// ===== FLASH SALE COUNTDOWN =====
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.querySelector('.flash-countdown');
+  if (!el) return;
+  const end = new Date(el.dataset.end).getTime();
+  function tick() {
+    const now = new Date().getTime();
+    const diff = end - now;
+    if (diff <= 0) { el.innerHTML = '<span style="color:var(--gold);font-size:1.1rem">Sale Ended</span>'; return; }
+    document.getElementById('flashDays').textContent = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+    document.getElementById('flashHours').textContent = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+    document.getElementById('flashMins').textContent = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+    document.getElementById('flashSecs').textContent = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+  }
+  tick(); setInterval(tick, 1000);
 });
 
 // ===== SIDEBAR TOGGLE =====

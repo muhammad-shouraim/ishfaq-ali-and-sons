@@ -1,0 +1,127 @@
+<%- include('../partials/header') %>
+<%- include('../partials/topbar') %>
+<%- include('../partials/navbar') %>
+
+<main>
+  <section class="page-header" style="padding:48px 0 32px;text-align:center">
+    <div class="container">
+      <h1 data-aos="fade-up" style="font-size:2.2rem;font-weight:700;margin:0">Track Order</h1>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="track-order-layout" data-aos="fade-up">
+        <div class="track-form-wrapper">
+          <h2>Enter your order number</h2>
+          <p style="color:var(--text-light);margin-bottom:20px">You can find your order number in your order confirmation email.</p>
+          <form action="/track-order" method="POST" class="track-form">
+            <div class="form-group">
+              <input type="text" name="orderNumber" placeholder="e.g. IAS-XXXXXXXX" required style="text-transform:uppercase">
+            </div>
+            <button type="submit" class="btn btn-gold" style="width:100%"><i class="fas fa-search"></i> Track Order</button>
+          </form>
+        </div>
+
+        <% if (error) { %>
+        <div class="track-error">
+          <i class="fas fa-exclamation-circle"></i>
+          <p><%= error %></p>
+        </div>
+        <% } %>
+
+        <% if (order) { %>
+        <div class="track-result">
+          <div class="track-result-header">
+            <div>
+              <h3>Order #<%= order.orderNumber %></h3>
+              <p class="order-date">Placed on <%= new Date(order.createdAt).toLocaleDateString('en-PK', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
+            </div>
+            <span class="order-status status-<%= order.orderStatus %>"><%= order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1) %></span>
+          </div>
+
+          <div class="track-timeline">
+            <% var steps = ['pending','confirmed','processing','shipped','delivered']; var currentIndex = steps.indexOf(order.orderStatus); %>
+            <% steps.forEach(function(step, i) { %>
+            <div class="timeline-step <%= i <= currentIndex ? 'active' : '' %> <%= i < currentIndex ? 'completed' : '' %>">
+              <div class="timeline-icon">
+                <% if (step === 'pending') { %><i class="fas fa-receipt"></i><% } else if (step === 'confirmed') { %><i class="fas fa-check-circle"></i><% } else if (step === 'processing') { %><i class="fas fa-cogs"></i><% } else if (step === 'shipped') { %><i class="fas fa-shipping-fast"></i><% } else if (step === 'delivered') { %><i class="fas fa-home"></i><% } %>
+              </div>
+              <div class="timeline-content">
+                <h4><%= step.charAt(0).toUpperCase() + step.slice(1) %></h4>
+                <% if (i === currentIndex) { %><span class="timeline-date">Current</span><% } %>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+
+          <div class="track-details">
+            <div class="track-detail-card">
+              <h4><i class="fas fa-box"></i> Items</h4>
+              <% order.items.forEach(function(item) { %>
+              <div class="track-item">
+                <span><%= item.name %> × <%= item.quantity %></span>
+                <span><%= currencySymbol %> <%= Number(item.price).toLocaleString() %></span>
+              </div>
+              <% }) %>
+            </div>
+            <div class="track-detail-card">
+              <h4><i class="fas fa-credit-card"></i> Payment</h4>
+              <div class="track-info-row"><span>Method</span><span><% var pm = order.paymentMethod; if (pm === 'cod') { %>Cash on Delivery<% } else if (pm === 'easypaisa') { %>Easypaisa<% } else if (pm === 'jazzcash') { %>JazzCash<% } else { %>Bank Transfer<% } %></span></div>
+              <div class="track-info-row"><span>Status</span><span><%= order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1) %></span></div>
+            </div>
+            <div class="track-detail-card">
+              <h4><i class="fas fa-map-marker-alt"></i> Shipping</h4>
+              <% var si = order.shippingInfo; %>
+              <p><%= si.name %><br><%= si.address %><br><%= si.city %>, <%= si.province %><br>Phone: <%= si.phone %></p>
+            </div>
+            <div class="track-detail-card">
+              <h4><i class="fas fa-receipt"></i> Totals</h4>
+              <div class="track-info-row"><span>Subtotal</span><span><%= currencySymbol %> <%= Number(order.subtotal).toLocaleString() %></span></div>
+              <% if (Number(order.discount) > 0) { %>
+              <div class="track-info-row"><span>Discount</span><span>-<%= currencySymbol %> <%= Number(order.discount).toLocaleString() %></span></div>
+              <% } %>
+              <div class="track-info-row"><span>Shipping</span><span><%= Number(order.shippingCost) === 0 ? 'Free' : currencySymbol + ' ' + Number(order.shippingCost).toLocaleString() %></span></div>
+              <div class="track-info-row track-total"><span>Total</span><span><%= currencySymbol %> <%= Number(order.total).toLocaleString() %></span></div>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+</main>
+
+<style>
+.track-order-layout { max-width:800px;margin:0 auto }
+.track-form-wrapper { background:var(--cream);border-radius:8px;padding:32px;text-align:center }
+.track-form { max-width:400px;margin:0 auto }
+.track-form .form-group input { text-align:center;font-size:1rem;letter-spacing:1px }
+.track-error { background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:20px;margin-top:20px;display:flex;align-items:center;gap:12px;color:#dc2626 }
+.track-result { margin-top:32px }
+.track-result-header { display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border) }
+.track-result-header h3 { margin:0 }
+.order-date { color:var(--text-light);font-size:0.85rem;margin:4px 0 0 }
+.track-timeline { display:flex;justify-content:space-between;position:relative;margin-bottom:32px;padding:16px 0 }
+.track-timeline::before { content:'';position:absolute;top:44px;left:10%;right:10%;height:3px;background:var(--border);z-index:0 }
+.track-timeline .timeline-step { position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;opacity:0.4 }
+.track-timeline .timeline-step.active,.track-timeline .timeline-step.completed { opacity:1 }
+.track-timeline .timeline-step.completed .timeline-icon { background:var(--gold);color:#fff }
+.track-timeline .timeline-step.active .timeline-icon { background:var(--gold-dark);color:#fff;transform:scale(1.1);box-shadow:0 0 0 4px rgba(200,169,110,0.3) }
+.timeline-icon { width:40px;height:40px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--text-light);transition:all 0.3s }
+.timeline-content { text-align:center }
+.timeline-content h4 { font-family:var(--font-body);font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin:0 }
+.timeline-date { font-size:0.7rem;color:var(--gold-dark) }
+.track-details { display:grid;grid-template-columns:1fr 1fr;gap:16px }
+@media(max-width:600px){.track-details{grid-template-columns:1fr}}
+.track-detail-card { background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px }
+.track-detail-card h4 { font-family:var(--font-body);font-size:0.85rem;margin-bottom:12px;color:var(--gold-dark) }
+.track-detail-card h4 i { margin-right:6px }
+.track-item { display:flex;justify-content:space-between;font-size:0.85rem;padding:4px 0;border-bottom:1px solid #f0f0f0 }
+.track-item:last-child { border-bottom:none }
+.track-info-row { display:flex;justify-content:space-between;font-size:0.85rem;padding:4px 0 }
+.track-total { font-weight:700;font-size:1rem;border-top:1px solid var(--border);padding-top:8px;margin-top:4px }
+.track-detail-card p { font-size:0.85rem;margin:0;line-height:1.6 }
+</style>
+
+<%- include('../partials/footer') %>

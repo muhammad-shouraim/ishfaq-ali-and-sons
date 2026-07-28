@@ -4,10 +4,10 @@ const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     if (req.xhr || req.headers.accept?.includes('json')) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ success: false, message: errors.array().map(e => e.msg).join(', '), errors: errors.array() });
     }
     const messages = errors.array().map(e => e.msg);
-    return res.status(400).render('pages/404', { message: messages.join(', ') });
+    return res.redirect('/');
   }
   next();
 };

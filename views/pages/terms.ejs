@@ -1,36 +1,48 @@
+<% title = 'Terms & Conditions'; %>
 <%- include('../partials/header') %>
 <%- include('../partials/topbar') %>
 <%- include('../partials/navbar') %>
 
 <main>
-  <section class="page-header">
+  <section class="page-header" style="padding:48px 0 32px;text-align:center">
     <div class="container">
-      <h1 data-aos="fade-up">Terms & Conditions</h1>
-      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
-        <a href="/">Home</a> <span>/</span> <span>Terms & Conditions</span>
-      </div>
+      <h1 data-aos="fade-up" style="font-size:2.2rem;margin-bottom:8px">Terms &amp; Conditions</h1>
     </div>
   </section>
 
-  <section class="section policy-section">
+  <section class="section policy-section" style="padding:60px 0">
     <div class="container">
-      <div class="policy-content" data-aos="fade-up">
-        <h2>Terms & Conditions</h2>
-        <p>Please read these terms carefully before using our website.</p>
+      <div class="policy-content" data-aos="fade-up" style="max-width:800px;margin:0 auto">
+        <h2 style="text-align:center;font-size:1.8rem;margin-bottom:40px;font-family:var(--font-heading)">Terms &amp; Conditions</h2>
         
-        <h3>General</h3>
-        <p>By accessing and using this website, you accept these terms and conditions. ISHFAQ ALI & SONS reserves the right to update these terms at any time.</p>
+        <p style="text-align:center;font-size:1rem;line-height:1.8;margin-bottom:40px;color:var(--text)">Please read these terms carefully before using our website.</p>
         
-        <h3>Products</h3>
-        <p>All products are subject to availability. We reserve the right to discontinue any product at any time. Product images are for illustration purposes; actual products may vary slightly.</p>
-        
-        <h3>Pricing</h3>
-        <p>All prices are in Pakistani Rupees (PKR) and include applicable taxes unless stated otherwise. Prices are subject to change without prior notice.</p>
-        
-        <h3>Orders</h3>
-        <p>We reserve the right to refuse or cancel any order. In case of cancellation, full refund will be processed.</p>
-        <h3>Contact</h3>
-        <p>For questions, contact <a href="mailto:<%= contactEmail %>"><%= contactEmail %></a> or <%= contactPhone %>.</p>
+        <div style="display:grid;gap:32px">
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">General</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">By accessing and using this website, you accept these terms and conditions. ISHFAQ ALI &amp; SONS reserves the right to update these terms at any time.</p>
+          </div>
+          
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">Products</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">All products are subject to availability. We reserve the right to discontinue any product at any time. Product images are for illustration purposes; actual products may vary slightly.</p>
+          </div>
+          
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">Pricing</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">All prices are in Pakistani Rupees (PKR) and include applicable taxes unless stated otherwise. Prices are subject to change without prior notice.</p>
+          </div>
+          
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">Orders</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">We reserve the right to refuse or cancel any order. In case of cancellation, full refund will be processed.</p>
+          </div>
+          
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">Contact</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">For questions, contact <a href="mailto:<%= contactEmail %>" style="color:var(--gold);text-decoration:underline"><%= contactEmail %></a> or <%= contactPhone %>.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>

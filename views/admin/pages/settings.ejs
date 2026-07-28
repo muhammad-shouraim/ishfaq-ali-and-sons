@@ -1,31 +1,31 @@
 <%- include('../partials/header') %>
 
-<form class="admin-form" method="POST" action="/admin/settings">
+<form class="admin-form" method="POST" action="<%= adminPath %>/settings">
   <div class="admin-card">
     <div class="admin-card-header"><h3>General</h3></div>
     <div class="form-row">
       <div class="form-group">
         <label for="site_name">Site Name</label>
-        <input type="text" id="site_name" name="settings[site_name]" value="<%= settingValue %>">
+        <input type="text" id="site_name" name="settings[site_name]" value="<%= settings['site_name'] || '' %>">
       </div>
       <div class="form-group">
         <label for="contact_phone">Contact Phone</label>
-        <input type="text" id="contact_phone" name="settings[contact_phone]" value="<%= settingValue %>">
+        <input type="text" id="contact_phone" name="settings[contact_phone]" value="<%= settings['contact_phone'] || '' %>">
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label for="contact_email">Contact Email</label>
-        <input type="email" id="contact_email" name="settings[contact_email]" value="<%= settingValue %>">
+        <input type="email" id="contact_email" name="settings[contact_email]" value="<%= settings['contact_email'] || '' %>">
       </div>
       <div class="form-group">
         <label for="google_maps_url">Google Maps URL</label>
-        <input type="url" id="google_maps_url" name="settings[google_maps_url]" value="<%= settingValue %>">
+        <input type="url" id="google_maps_url" name="settings[google_maps_url]" value="<%= settings['google_maps_url'] || '' %>">
       </div>
     </div>
     <div class="form-group">
       <label for="address">Address</label>
-      <textarea id="address" name="settings[address]" rows="3"><%= settingValue %></textarea>
+      <textarea id="address" name="settings[address]" rows="3"><%= settings['address'] || '' %></textarea>
     </div>
   </div>
 
@@ -34,21 +34,21 @@
     <div class="form-row">
       <div class="form-group">
         <label for="facebook_url">Facebook URL</label>
-        <input type="url" id="facebook_url" name="settings[facebook_url]" value="<%= settingValue %>">
+        <input type="url" id="facebook_url" name="settings[facebook_url]" value="<%= settings['facebook_url'] || '' %>">
       </div>
       <div class="form-group">
         <label for="tiktok_url">TikTok URL</label>
-        <input type="url" id="tiktok_url" name="settings[tiktok_url]" value="<%= settingValue %>">
+        <input type="url" id="tiktok_url" name="settings[tiktok_url]" value="<%= settings['tiktok_url'] || '' %>">
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label for="instagram_url">Instagram URL</label>
-        <input type="url" id="instagram_url" name="settings[instagram_url]" value="<%= settingValue %>">
+        <input type="url" id="instagram_url" name="settings[instagram_url]" value="<%= settings['instagram_url'] || '' %>">
       </div>
       <div class="form-group">
         <label for="whatsapp_number">WhatsApp Number</label>
-        <input type="text" id="whatsapp_number" name="settings[whatsapp_number]" value="<%= settingValue %>">
+        <input type="text" id="whatsapp_number" name="settings[whatsapp_number]" value="<%= settings['whatsapp_number'] || '' %>">
       </div>
     </div>
   </div>
@@ -58,27 +58,27 @@
     <div class="form-row">
       <div class="form-group">
         <label for="tax_rate">Tax Rate (%)</label>
-        <input type="number" id="tax_rate" name="settings[tax_rate]" step="0.01" value="<%= settingValue %>">
+        <input type="number" id="tax_rate" name="settings[tax_rate]" step="0.01" value="<%= settings['tax_rate'] || '' %>">
       </div>
       <div class="form-group">
         <label for="shipping_cost">Shipping Cost</label>
-        <input type="number" id="shipping_cost" name="settings[shipping_cost]" step="0.01" value="<%= settingValue %>">
+        <input type="number" id="shipping_cost" name="settings[shipping_cost]" step="0.01" value="<%= settings['shipping_cost'] || '' %>">
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label for="free_shipping_threshold">Free Shipping Threshold</label>
-        <input type="number" id="free_shipping_threshold" name="settings[free_shipping_threshold]" step="0.01" value="<%= settingValue %>">
+        <input type="number" id="free_shipping_threshold" name="settings[free_shipping_threshold]" step="0.01" value="<%= settings['free_shipping_threshold'] || '' %>">
       </div>
       <div class="form-group">
         <label for="currency">Currency Code</label>
-        <input type="text" id="currency" name="settings[currency]" placeholder="e.g. PKR" value="<%= settingValue %>">
+        <input type="text" id="currency" name="settings[currency]" placeholder="e.g. PKR" value="<%= settings['currency'] || '' %>">
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label for="currency_symbol">Currency Symbol</label>
-        <input type="text" id="currency_symbol" name="settings[currency_symbol]" placeholder="e.g. Rs" value="<%= settingValue %>">
+        <input type="text" id="currency_symbol" name="settings[currency_symbol]" placeholder="e.g. Rs" value="<%= settings['currency_symbol'] || '' %>">
       </div>
     </div>
   </div>
@@ -87,15 +87,15 @@
     <div class="admin-card-header"><h3>SEO</h3></div>
     <div class="form-group">
       <label for="seo_title">SEO Title</label>
-      <input type="text" id="seo_title" name="settings[seo_title]" value="<%= settingValue %>">
+      <input type="text" id="seo_title" name="settings[seo_title]" value="<%= settings['seo_title'] || '' %>">
     </div>
     <div class="form-group">
       <label for="seo_description">SEO Description</label>
-      <textarea id="seo_description" name="settings[seo_description]" rows="3"><%= settingValue %></textarea>
+      <textarea id="seo_description" name="settings[seo_description]" rows="3"><%= settings['seo_description'] || '' %></textarea>
     </div>
     <div class="form-group">
       <label for="analytics_code">Analytics Code</label>
-      <textarea id="analytics_code" name="settings[analytics_code]" rows="4" placeholder="Paste Google Analytics or other tracking code"><%= settingValue %></textarea>
+      <textarea id="analytics_code" name="settings[analytics_code]" rows="4" placeholder="Paste Google Analytics or other tracking code"><%= settings['analytics_code'] || '' %></textarea>
     </div>
   </div>
 
@@ -104,26 +104,26 @@
     <div class="form-row">
       <div class="form-group">
         <label for="smtp_host">SMTP Host</label>
-        <input type="text" id="smtp_host" name="settings[smtp_host]" value="<%= settingValue %>">
+        <input type="text" id="smtp_host" name="settings[smtp_host]" value="<%= settings['smtp_host'] || '' %>">
       </div>
       <div class="form-group">
         <label for="smtp_port">SMTP Port</label>
-        <input type="number" id="smtp_port" name="settings[smtp_port]" value="<%= settingValue %>">
+        <input type="number" id="smtp_port" name="settings[smtp_port]" value="<%= settings['smtp_port'] || '' %>">
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label for="smtp_user">SMTP Username</label>
-        <input type="text" id="smtp_user" name="settings[smtp_user]" value="<%= settingValue %>">
+        <input type="text" id="smtp_user" name="settings[smtp_user]" value="<%= settings['smtp_user'] || '' %>">
       </div>
       <div class="form-group">
         <label for="smtp_pass">SMTP Password</label>
-        <input type="password" id="smtp_pass" name="settings[smtp_pass]" value="<%= settingValue %>">
+        <input type="password" id="smtp_pass" name="settings[smtp_pass]" value="<%= settings['smtp_pass'] || '' %>">
       </div>
     </div>
     <div class="form-group">
       <label for="smtp_from">SMTP From Email</label>
-      <input type="email" id="smtp_from" name="settings[smtp_from]" value="<%= settingValue %>">
+      <input type="email" id="smtp_from" name="settings[smtp_from]" value="<%= settings['smtp_from'] || '' %>">
     </div>
   </div>
 

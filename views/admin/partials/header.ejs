@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= typeof title !== 'undefined' ? title + ' | Admin | ' + siteName : 'Admin | ' + siteName %></title>
-  <link rel="icon" type="image/jpeg" href="/images/logo.jpeg">
+  <link rel="icon" type="image/png" href="/images/newlogo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="/admin/css/admin.css">
   <% if (typeof useChart !== 'undefined' && useChart) { %>
@@ -27,37 +27,39 @@
   <!-- Sidebar -->
   <aside class="admin-sidebar">
     <div class="admin-sidebar-logo">
-      <a href="/admin"><img src="/images/logo.jpeg" alt="ISHFAQ ALI & SONS"></a>
+      <a href="<%= adminPath %>"><img src="/images/newlogo.png" alt="ISHFAQ ALI & SONS"></a>
       <span>Admin Panel</span>
     </div>
     <nav class="admin-sidebar-nav">
       <div class="nav-label">Main</div>
-      <a href="/admin"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="<%= adminPath %>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
       <div class="nav-label">Management</div>
-      <a href="/admin/products"><i class="fas fa-gem"></i> Products</a>
-      <a href="/admin/categories"><i class="fas fa-tags"></i> Categories</a>
-      <a href="/admin/orders"><i class="fas fa-shopping-cart"></i> Orders</a>
-      <a href="/admin/customers"><i class="fas fa-users"></i> Customers</a>
-      <a href="/admin/coupons"><i class="fas fa-percent"></i> Coupons</a>
-      <a href="/admin/reviews"><i class="fas fa-star"></i> Reviews</a>
+      <a href="<%= adminPath %>/products"><i class="fas fa-gem"></i> Products</a>
+      <a href="<%= adminPath %>/categories"><i class="fas fa-tags"></i> Categories</a>
+      <a href="<%= adminPath %>/orders"><i class="fas fa-shopping-cart"></i> Orders</a>
+      <a href="<%= adminPath %>/customers"><i class="fas fa-users"></i> Customers</a>
+      <a href="<%= adminPath %>/coupons"><i class="fas fa-percent"></i> Coupons</a>
+      <a href="<%= adminPath %>/reviews"><i class="fas fa-star"></i> Reviews</a>
+      <a href="<%= adminPath %>/abandoned-carts"><i class="fas fa-cart-plus"></i> Abandoned Carts</a>
       <div class="nav-label">Content</div>
-      <a href="/admin/pages"><i class="fas fa-file-alt"></i> Pages</a>
-      <a href="/admin/media"><i class="fas fa-images"></i> Media</a>
+      <a href="<%= adminPath %>/promotions"><i class="fas fa-bolt"></i> Promotions</a>
       <div class="nav-label">Settings</div>
-      <a href="/admin/settings"><i class="fas fa-cog"></i> Settings</a>
-      <a href="/admin/settings/payment"><i class="fas fa-credit-card"></i> Payments</a>
+      <a href="<%= adminPath %>/settings"><i class="fas fa-cog"></i> Settings</a>
+      <a href="<%= adminPath %>/settings/payment"><i class="fas fa-credit-card"></i> Payments</a>
       <div class="nav-label">System</div>
-      <a href="/admin/reports/sales"><i class="fas fa-chart-bar"></i> Reports</a>
+      <a href="<%= adminPath %>/reports/sales"><i class="fas fa-chart-bar"></i> Reports</a>
       <a href="/" target="_blank"><i class="fas fa-external-link-alt"></i> View Site</a>
       <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </nav>
   </aside>
 
+  <div class="admin-sidebar-overlay" onclick="document.querySelector('.admin-sidebar').classList.remove('open')"></div>
+
   <!-- Main -->
   <div class="admin-main">
     <header class="admin-header">
       <div class="admin-header-left">
-        <button id="adminSidebarToggle" style="background:none;border:none;font-size:1.3rem;cursor:pointer;padding:4px;"><i class="fas fa-bars"></i></button>
+        <button id="adminSidebarToggle"><i class="fas fa-bars"></i></button>
         <h2><%= typeof title !== 'undefined' ? title : 'Dashboard' %></h2>
       </div>
       <div class="admin-header-right">

@@ -3,15 +3,15 @@
 <div class="page-header">
   <h1 class="page-title">Order #<%= order.orderNumber %></h1>
   <div>
-    <a href="/admin/orders" class="admin-btn">Back to Orders</a>
-    <a href="/admin/orders/<%= order.id %>/invoice" class="admin-btn admin-btn-primary" target="_blank">Invoice</a>
+    <a href="<%= adminPath %>/orders" class="admin-btn">Back to Orders</a>
+    <a href="<%= adminPath %>/orders/<%= order.id %>/invoice" class="admin-btn admin-btn-primary" target="_blank">Invoice</a>
   </div>
 </div>
 
 <div class="grid-3">
   <div class="admin-card">
     <div class="admin-card-header">
-      <h3>Order Info</h3>
+      <h3><i class="fas fa-info-circle"></i> Order Info</h3>
     </div>
     <div class="admin-card-body">
       <table class="info-table">
@@ -19,7 +19,7 @@
         <tr><td>Date</td><td><%= new Date(order.createdAt).toLocaleString() %></td></tr>
         <tr><td>Status</td><td>
           <% var sClass = { pending: 'admin-badge-warning', processing: 'admin-badge-info', shipped: 'admin-badge-primary', delivered: 'admin-badge-success', cancelled: 'admin-badge-danger', refunded: 'admin-badge-secondary' } %>
-          <span class="admin-badge <%= sClass[order.status] || 'admin-badge-secondary' %>"><%= order.status %></span>
+          <span class="admin-badge <%= sClass[order.orderStatus] || 'admin-badge-secondary' %>"><%= order.orderStatus %></span>
         </td></tr>
         <tr><td>Payment</td><td><%= order.paymentMethod || '-' %></td></tr>
         <tr><td>Payment Status</td><td>
@@ -32,7 +32,7 @@
 
   <div class="admin-card">
     <div class="admin-card-header">
-      <h3>Customer Info</h3>
+      <h3><i class="fas fa-user"></i> Customer</h3>
     </div>
     <div class="admin-card-body">
       <table class="info-table">
@@ -45,7 +45,7 @@
 
   <div class="admin-card">
     <div class="admin-card-header">
-      <h3>Shipping Info</h3>
+      <h3><i class="fas fa-truck"></i> Shipping</h3>
     </div>
     <div class="admin-card-body">
       <table class="info-table">
@@ -78,9 +78,9 @@
           <% order.items.forEach(function(item) { %>
           <tr>
             <td><%= item.productName %></td>
-            <td>$<%= (item.price || 0).toFixed(2) %></td>
+            <td>Rs. <%= (item.price || 0).toLocaleString() %></td>
             <td><%= item.quantity %></td>
-            <td>$<%= ((item.price || 0) * item.quantity).toFixed(2) %></td>
+            <td>Rs. <%= ((item.price || 0) * item.quantity).toLocaleString() %></td>
           </tr>
           <% }) %>
         <% } else { %>
@@ -90,25 +90,15 @@
       <tfoot>
         <tr>
           <td colspan="3" class="text-right"><strong>Subtotal</strong></td>
-          <td>$<%= (order.subtotal || 0).toFixed(2) %></td>
+          <td>Rs. <%= (order.subtotal || 0).toLocaleString() %></td>
         </tr>
         <tr>
           <td colspan="3" class="text-right">Shipping</td>
-          <td>$<%= (order.shippingCost || 0).toFixed(2) %></td>
+          <td>Rs. <%= (order.shippingCost || 0).toLocaleString() %></td>
         </tr>
-        <tr>
-          <td colspan="3" class="text-right">Tax</td>
-          <td>$<%= (order.tax || 0).toFixed(2) %></td>
-        </tr>
-        <% if (order.discount > 0) { %>
-        <tr>
-          <td colspan="3" class="text-right">Discount</td>
-          <td>-$<%= (order.discount || 0).toFixed(2) %></td>
-        </tr>
-        <% } %>
         <tr>
           <td colspan="3" class="text-right"><strong>Total</strong></td>
-          <td><strong>$<%= (order.total || 0).toFixed(2) %></strong></td>
+          <td><strong>Rs. <%= (order.total || 0).toLocaleString() %></strong></td>
         </tr>
       </tfoot>
     </table>
@@ -140,22 +130,20 @@
     </div>
   </div>
 
-  <div>
+  <div class="grid-2">
     <div class="admin-card">
       <div class="admin-card-header">
-        <h3>Update Status</h3>
+        <h3><i class="fas fa-edit"></i> Update Status</h3>
       </div>
       <div class="admin-card-body">
-        <form action="/admin/orders/<%= order.id %>/status" method="POST" class="admin-form">
+        <form action="<%= adminPath %>/orders/<%= order.id %>/status" method="POST" class="admin-form">
           <div class="form-group">
             <select name="status" class="form-input" required>
               <option value="">Select Status</option>
-              <option value="pending" <%= order.status == 'pending' ? 'disabled' : '' %>>Pending</option>
-              <option value="processing" <%= order.status == 'processing' ? 'disabled' : '' %>>Processing</option>
-              <option value="shipped" <%= order.status == 'shipped' ? 'disabled' : '' %>>Shipped</option>
-              <option value="delivered" <%= order.status == 'delivered' ? 'disabled' : '' %>>Delivered</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="refunded">Refunded</option>
+              <% var allStatuses = ['pending','confirmed','processing','shipped','delivered','cancelled']; %>
+              <% allStatuses.forEach(function(s) { %>
+                <option value="<%= s %>" <%= s === order.orderStatus || !allowedTransitions.includes(s) ? 'disabled' : '' %>><%= s.charAt(0).toUpperCase() + s.slice(1) %></option>
+              <% }) %>
             </select>
           </div>
           <div class="form-group">
@@ -163,15 +151,18 @@
           </div>
           <button type="submit" class="admin-btn admin-btn-primary">Update Status</button>
         </form>
+        <hr style="margin:15px 0">
+        <p><strong>Current:</strong> <span class="admin-badge <%= sClass[order.orderStatus] || '' %>"><%= order.orderStatus %></span></p>
+        <p><strong>Allowed transitions:</strong> <%= allowedTransitions.length ? allowedTransitions.join(', ') : 'None (final state)' %></p>
       </div>
     </div>
 
     <div class="admin-card">
       <div class="admin-card-header">
-        <h3>Tracking Info</h3>
+        <h3><i class="fas fa-map-marker-alt"></i> Tracking</h3>
       </div>
       <div class="admin-card-body">
-        <form action="/admin/orders/<%= order.id %>/tracking" method="POST" class="admin-form">
+        <form action="<%= adminPath %>/orders/<%= order.id %>/tracking" method="POST" class="admin-form">
           <div class="form-group">
             <label for="trackingNumber">Tracking Number</label>
             <input type="text" id="trackingNumber" name="trackingNumber" class="form-input" value="<%= order.trackingNumber || '' %>">
@@ -192,5 +183,53 @@
     </div>
   </div>
 </div>
+
+<div class="grid-2">
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h3><i class="fas fa-sticky-note"></i> Internal Notes (Staff Only)</h3>
+    </div>
+    <div class="admin-card-body">
+      <form id="internalNotesForm" class="admin-form">
+        <div class="form-group">
+          <textarea name="notes" class="form-input" rows="4" placeholder="Add internal notes..."><%= order.internalNotes || '' %></textarea>
+        </div>
+        <button type="submit" class="admin-btn admin-btn-primary">Save Notes</button>
+        <span id="notesStatus" class="text-muted" style="margin-left:10px"></span>
+      </form>
+    </div>
+  </div>
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h3><i class="fas fa-print"></i> Packing Slip</h3>
+    </div>
+    <div class="admin-card-body" style="text-align:center">
+      <p>Generate a printable packing slip for this order.</p>
+      <a href="<%= adminPath %>/orders/<%= order.id %>/packing-slip" class="admin-btn admin-btn-primary" target="_blank">
+        <i class="fas fa-print"></i> Print Packing Slip
+      </a>
+      <% if (order.packingSlipPrinted) { %>
+        <p class="text-muted" style="margin-top:10px"><i class="fas fa-check-circle text-success"></i> Packing slip was previously printed</p>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('internalNotesForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var notes = this.querySelector('[name="notes"]').value;
+  var status = document.getElementById('notesStatus');
+  status.textContent = 'Saving...';
+  fetch('<%= adminPath %>/orders/<%= order.id %>/notes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ notes: notes })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    status.textContent = data.success ? 'Saved!' : 'Error saving';
+    if (data.success) setTimeout(function() { status.textContent = ''; }, 2000);
+  }).catch(function() { status.textContent = 'Error saving'; });
+});
+</script>
 
 <%- include('../partials/footer') %>

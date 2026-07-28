@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | ISHFAQ ALI & SONS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #0a0a0a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .admin-login-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .admin-login-card h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      color: #d4a853;
+      margin-bottom: 4px;
+    }
+    .admin-login-card p {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 32px;
+    }
+    .form-group { margin-bottom: 18px; text-align: left; }
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px 14px;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .form-group input:focus { border-color: #d4a853; }
+    .btn-gold {
+      width: 100%;
+      padding: 12px;
+      background: #d4a853;
+      color: #0a0a0a;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-gold:hover { background: #c49a3f; }
+    .btn-gold:disabled { opacity: 0.6; cursor: not-allowed; }
+    .error-msg { color: #e74c3c; font-size: 0.8rem; margin-top: 12px; display: none; }
+    .error-msg.show { display: block; }
+    .admin-logo {
+      width: 60px; height: 60px; border-radius: 50%; object-fit: cover;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-login-card">
+    <img src="/images/newlogo.png" alt="IAS" class="admin-logo">
+    <h1>Admin Panel</h1>
+    <p>Authorized access only</p>
+    <% if (typeof error !== 'undefined' && error) { %>
+    <div class="error-msg show"><%= error %></div>
+    <% } %>
+    <form id="adminLoginForm">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="admin@email.com" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required>
+      </div>
+      <input type="hidden" name="redirect" value="<%= redirect %>">
+      <button type="submit" class="btn-gold" id="loginBtn">Sign In</button>
+      <div class="error-msg" id="errorMsg"></div>
+    </form>
+  </div>
+  <script>
+  document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var btn = document.getElementById('loginBtn');
+    var err = document.getElementById('errorMsg');
+    btn.disabled = true; btn.textContent = 'Signing In...'; err.classList.remove('show');
+    try {
+      var res = await fetch('/admin-auth-x9k2', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: this.email.value, password: this.password.value, redirect: this.redirect.value })
+      });
+      var data = await res.json();
+      if (data.success) {
+        window.location.href = data.redirect;
+      } else {
+        err.textContent = data.message || 'Invalid credentials';
+        err.classList.add('show');
+        btn.disabled = false; btn.textContent = 'Sign In';
+      }
+    } catch(e) {
+      err.textContent = 'Connection error';
+      err.classList.add('show');
+      btn.disabled = false; btn.textContent = 'Sign In';
+    }
+  });
+  </script>
+</body>
+</html>

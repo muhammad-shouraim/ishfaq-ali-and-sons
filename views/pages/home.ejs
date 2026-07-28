@@ -3,237 +3,249 @@
 <%- include('../partials/navbar') %>
 
 <main>
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-slider">
-      <div class="hero-slide active">
-        <div class="hero-bg"></div>
-        <div class="container">
-          <div class="hero-content" data-aos="fade-up">
-            <span class="hero-subtitle">ISHFAQ ALI & SONS</span>
-            <h1>Exquisite <span class="gold-text">Luxury</span> Jewelry</h1>
-            <p>Discover timeless elegance in every piece. Handcrafted Karit and Turkish Jewelry that defines sophistication.</p>
-            <div class="hero-buttons">
-              <a href="/shop" class="btn btn-gold">Explore Collection</a>
-              <a href="/categories" class="btn btn-outline-light">View Categories</a>
-            </div>
+  <a href="/shop" class="hero">
+    <img src="/images/main-hero.jpeg" alt="Explore Collection" style="width:100%;display:block;">
+  </a>
+
+  <% if (typeof activePromotion !== 'undefined' && activePromotion) { %>
+  <section class="flash-sale-banner">
+    <div class="container">
+      <div class="flash-sale-content">
+        <div class="flash-sale-text">
+          <span class="flash-tag"><i class="fas fa-bolt"></i> FLASH SALE</span>
+          <h2><%= activePromotion.title %></h2>
+          <p><%= activePromotion.description %></p>
+          <% if (activePromotion.discountPercent > 0) { %>
+          <div class="flash-discount"><span class="discount-badge"><%= activePromotion.discountPercent %>% OFF</span></div>
+          <% } %>
+          <div class="flash-countdown" data-end="<%= new Date(activePromotion.endDate).toISOString() %>">
+            <div class="countdown-item"><span class="countdown-num" id="flashDays">00</span><span class="countdown-label">Days</span></div>
+            <div class="countdown-item"><span class="countdown-num" id="flashHours">00</span><span class="countdown-label">Hours</span></div>
+            <div class="countdown-item"><span class="countdown-num" id="flashMins">00</span><span class="countdown-label">Mins</span></div>
+            <div class="countdown-item"><span class="countdown-num" id="flashSecs">00</span><span class="countdown-label">Secs</span></div>
           </div>
+          <a href="<%= activePromotion.linkUrl || '/shop' %>" class="btn btn-gold">Shop Now</a>
         </div>
       </div>
     </div>
-    <div class="hero-scroll">
-      <span>Scroll</span>
-      <i class="fas fa-chevron-down"></i>
+  </section>
+  <% } %>
+
+  <!-- Category Slider -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Categories</span>
+        <h2>Shop by <span class="gold-text">Category</span></h2>
+        <p>Browse our exquisite collections</p>
+      </div>
+      <div class="category-carousel">
+        <button class="carousel-btn carousel-prev"><i class="fas fa-chevron-left"></i></button>
+        <div class="category-track">
+          <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+            <% categories.forEach(function(cat) { %>
+            <a href="/collection/<%= cat.slug %>" class="category-card">
+              <% if (cat.image) { %>
+                <img src="<%= cat.image %>" alt="<%= cat.name %>">
+              <% } else { %>
+                <div class="placeholder-box"><i class="fas fa-gem"></i><br><span style="font-size:0.75rem;margin-top:8px;display:block"><%= cat.name %></span></div>
+              <% } %>
+              <div class="category-card-overlay"><h3><%= cat.name %></h3></div>
+            </a>
+            <% }) %>
+          <% } else { %>
+            <a href="/shop" class="category-card">
+              <div class="placeholder-box"><i class="fas fa-gem"></i><br><span style="font-size:0.75rem;margin-top:8px;display:block">All Jewelry</span></div>
+              <div class="category-card-overlay"><h3>All Jewelry</h3></div>
+            </a>
+          <% } %>
+        </div>
+        <button class="carousel-btn carousel-next"><i class="fas fa-chevron-right"></i></button>
+      </div>
     </div>
   </section>
 
-  <!-- Featured Categories -->
-  <section class="section categories-section">
+  <!-- Best Sellers -->
+  <section class="section bg-cream">
     <div class="container">
-      <div class="section-header" data-aos="fade-up">
-        <span class="section-tag">Collections</span>
-        <h2>Our <span class="gold-text">Categories</span></h2>
-        <p>Explore our curated collections of premium jewelry</p>
+      <div class="section-header">
+        <span class="section-tag">Top Picks</span>
+        <h2>Best <span class="gold-text">Sellers</span></h2>
+        <p>Our most loved pieces</p>
       </div>
-      <div class="categories-grid">
-        <a href="/category/karit" class="category-card" data-aos="fade-up" data-aos-delay="100">
-          <div class="category-icon">
-            <i class="fas fa-crown"></i>
+      <div class="products-slider">
+        <% if (typeof bestSellers !== 'undefined' && bestSellers.length > 0) { %>
+          <% bestSellers.forEach(function(product) { %>
+            <div class="product-card" data-images='<%= JSON.stringify(product.images || []) %>'>
+              <div class="product-card-image">
+                <a href="/product/<%= product.slug %>">
+                  <img class="main-img" src="<%= product.thumbnail || '/images/newlogo.png' %>" alt="<%= product.name %>">
+                  <img class="hover-img" src="<%= (product.images && product.images[0]) ? product.images[0] : (product.thumbnail || '/images/newlogo.png') %>" alt="<%= product.name %>">
+                </a>
+                <% if (product.comparePrice > 0) { %>
+                  <span class="badge badge-sale">Sale</span>
+                <% } %>
+              </div>
+              <div class="product-card-body">
+                <h3><a href="/product/<%= product.slug %>"><%= product.name %></a></h3>
+                <% if (product.comparePrice > 0) { %>
+                  <span class="price old-price">Rs. <%= Number(product.price).toLocaleString() %></span>
+                  <span class="price sale-price">Rs. <%= Number(product.comparePrice).toLocaleString() %></span>
+                <% } else { %>
+                  <span class="price">Rs. <%= Number(product.price).toLocaleString() %></span>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="product-card">
+            <div class="product-card-image"><div class="placeholder-box" style="height:100%;min-height:200px"><i class="fas fa-gem"></i></div></div>
+            <div class="product-card-body"><h3><a href="/shop">Coming Soon</a></h3><span class="price">Rs. 0</span></div>
           </div>
-          <h3>Karit</h3>
-          <p>Traditional elegance with a modern touch. Discover our exquisite Karit collection.</p>
-          <span class="category-link">Explore <i class="fas fa-arrow-right"></i></span>
-        </a>
-        <a href="/category/turkish-jewelry" class="category-card" data-aos="fade-up" data-aos-delay="200">
-          <div class="category-icon">
-            <i class="fas fa-gem"></i>
-          </div>
-          <h3>Turkish Jewelry</h3>
-          <p>Inspired by Ottoman grandeur. Premium Turkish craftsmanship meets luxury.</p>
-          <span class="category-link">Explore <i class="fas fa-arrow-right"></i></span>
-        </a>
+        <% } %>
       </div>
     </div>
   </section>
 
-  <!-- Premium Collection -->
-  <section class="section premium-section bg-cream">
-    <div class="container">
-      <div class="section-header" data-aos="fade-up">
-        <span class="section-tag">Premium</span>
-        <h2>Premium <span class="gold-text">Collection</span></h2>
-        <p>Curated pieces for the discerning collector</p>
-      </div>
-      <div class="empty-collection" data-aos="fade-up">
-        <i class="fas fa-gem"></i>
-        <h3>Coming Soon</h3>
-        <p>Our premium collection is being curated with the finest pieces. Stay tuned.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Trending Section -->
-  <section class="section trending-section">
-    <div class="container">
-      <div class="section-header" data-aos="fade-up">
-        <span class="section-tag">Trending</span>
-        <h2>Trending <span class="gold-text">Now</span></h2>
-        <p>Most sought-after pieces this season</p>
-      </div>
-      <div class="empty-collection" data-aos="fade-up">
-        <i class="fas fa-fire"></i>
-        <h3>Coming Soon</h3>
-        <p>Trending pieces will appear here soon.</p>
-      </div>
-    </div>
-  </section>
+  <a href="/shop" class="section" style="display:block;line-height:0">
+    <img src="/images/center-hero.jpeg" alt="Shop Now" style="width:100%;display:block;">
+  </a>
 
   <!-- New Arrivals -->
-  <section class="section new-arrivals-section bg-cream">
+  <section class="section">
     <div class="container">
-      <div class="section-header" data-aos="fade-up">
-        <span class="section-tag">New</span>
+      <div class="section-header">
+        <span class="section-tag">Latest</span>
         <h2>New <span class="gold-text">Arrivals</span></h2>
-        <p>The latest additions to our collection</p>
+        <p>Fresh from our workshop</p>
       </div>
-      <div class="empty-collection" data-aos="fade-up">
-        <i class="fas fa-star"></i>
-        <h3>Coming Soon</h3>
-        <p>New arrivals will be showcased here.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Luxury Banner -->
-  <section class="luxury-banner">
-    <div class="container">
-      <div class="banner-content" data-aos="fade-up">
-        <span class="banner-tag">Since Generations</span>
-        <h2>Crafted for <span class="gold-text">Eternity</span></h2>
-        <p>Each piece tells a story of heritage, passion, and unparalleled craftsmanship.</p>
-        <a href="/about" class="btn btn-gold">Our Story</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Why Choose Us -->
-  <section class="section why-section">
-    <div class="container">
-      <div class="section-header" data-aos="fade-up">
-        <span class="section-tag">Why Us</span>
-        <h2>Why Choose <span class="gold-text">Us</span></h2>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
-          <div class="feature-icon"><i class="fas fa-award"></i></div>
-          <h3>Premium Quality</h3>
-          <p>Finest materials and exceptional craftsmanship in every piece.</p>
-        </div>
-        <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
-          <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
-          <h3>Authenticity Guaranteed</h3>
-          <p>100% genuine products with authenticity certification.</p>
-        </div>
-        <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
-          <div class="feature-icon"><i class="fas fa-truck"></i></div>
-          <h3>Free Delivery</h3>
-          <p>Free shipping on orders above Rs. 5,000.</p>
-        </div>
-        <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
-          <div class="feature-icon"><i class="fas fa-exchange-alt"></i></div>
-          <h3>Easy Returns</h3>
-          <p>Hassle-free return policy for your peace of mind.</p>
-        </div>
-        <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
-          <div class="feature-icon"><i class="fas fa-headset"></i></div>
-          <h3>24/7 Support</h3>
-          <p>Dedicated customer support via WhatsApp and phone.</p>
-        </div>
-        <div class="feature-card" data-aos="fade-up" data-aos-delay="600">
-          <div class="feature-icon"><i class="fas fa-lock"></i></div>
-          <h3>Secure Shopping</h3>
-          <p>Safe and secure checkout with data protection.</p>
-        </div>
+      <div class="products-slider">
+        <% if (typeof newArrivals !== 'undefined' && newArrivals.length > 0) { %>
+          <% newArrivals.forEach(function(product) { %>
+            <div class="product-card" data-images='<%= JSON.stringify(product.images || []) %>'>
+              <div class="product-card-image">
+                <a href="/product/<%= product.slug %>">
+                  <img class="main-img" src="<%= product.thumbnail || '/images/newlogo.png' %>" alt="<%= product.name %>">
+                  <img class="hover-img" src="<%= (product.images && product.images[0]) ? product.images[0] : (product.thumbnail || '/images/newlogo.png') %>" alt="<%= product.name %>">
+                </a>
+                <span class="badge badge-new">New</span>
+              </div>
+              <div class="product-card-body">
+                <h3><a href="/product/<%= product.slug %>"><%= product.name %></a></h3>
+                <% if (product.comparePrice > 0) { %>
+                  <span class="price old-price">Rs. <%= Number(product.price).toLocaleString() %></span>
+                  <span class="price sale-price">Rs. <%= Number(product.comparePrice).toLocaleString() %></span>
+                <% } else { %>
+                  <span class="price">Rs. <%= Number(product.price).toLocaleString() %></span>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="product-card">
+            <div class="product-card-image"><div class="placeholder-box" style="height:100%;min-height:200px"><i class="fas fa-gem"></i></div></div>
+            <div class="product-card-body"><h3><a href="/shop">Coming Soon</a></h3><span class="price">Rs. 0</span></div>
+          </div>
+        <% } %>
       </div>
     </div>
   </section>
 
-  <!-- Customer Reviews -->
-  <section class="section reviews-section bg-cream">
+  <!-- Sale Products -->
+  <% if (typeof saleProducts !== 'undefined' && saleProducts.length > 0) { %>
+  <section class="section bg-cream">
     <div class="container">
-      <div class="section-header" data-aos="fade-up">
-        <span class="section-tag">Testimonials</span>
-        <h2>What Our <span class="gold-text">Clients Say</span></h2>
+      <div class="section-header">
+        <span class="section-tag">Offers</span>
+        <h2>On <span class="gold-text">Sale</span></h2>
+        <p>Best deals on premium jewelry</p>
       </div>
-      <div class="reviews-grid">
-        <div class="review-card" data-aos="fade-up" data-aos-delay="100">
-          <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-          <p>"Absolutely stunning pieces! The craftsmanship is exceptional. Highly recommended."</p>
-          <div class="review-author">
-            <div class="review-avatar"><i class="fas fa-user-circle"></i></div>
-            <div>
-              <strong>Ayesha K.</strong>
-              <span>Verified Buyer</span>
+      <div class="products-slider">
+        <% saleProducts.forEach(function(product) { %>
+          <div class="product-card" data-images='<%= JSON.stringify(product.images || []) %>'>
+            <div class="product-card-image">
+              <a href="/product/<%= product.slug %>">
+                <img class="main-img" src="<%= product.thumbnail || '/images/newlogo.png' %>" alt="<%= product.name %>">
+                <img class="hover-img" src="<%= (product.images && product.images[0]) ? product.images[0] : (product.thumbnail || '/images/newlogo.png') %>" alt="<%= product.name %>">
+              </a>
+              <span class="badge badge-sale">Sale</span>
+            </div>
+            <div class="product-card-body">
+              <h3><a href="/product/<%= product.slug %>"><%= product.name %></a></h3>
+              <span class="price old-price">Rs. <%= Number(product.price).toLocaleString() %></span>
+              <span class="price sale-price">Rs. <%= Number(product.comparePrice).toLocaleString() %></span>
             </div>
           </div>
-        </div>
-        <div class="review-card" data-aos="fade-up" data-aos-delay="200">
-          <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-          <p>"Beautiful Turkish jewelry. The design and quality exceeded my expectations."</p>
-          <div class="review-author">
-            <div class="review-avatar"><i class="fas fa-user-circle"></i></div>
-            <div>
-              <strong>Fatima Z.</strong>
-              <span>Verified Buyer</span>
-            </div>
-          </div>
-        </div>
-        <div class="review-card" data-aos="fade-up" data-aos-delay="300">
-          <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-          <p>"Perfect customer service and fast delivery. My Karit set is absolutely gorgeous."</p>
-          <div class="review-author">
-            <div class="review-avatar"><i class="fas fa-user-circle"></i></div>
-            <div>
-              <strong>Zara M.</strong>
-              <span>Verified Buyer</span>
-            </div>
-          </div>
-        </div>
+        <% }) %>
       </div>
     </div>
   </section>
+  <% } %>
 
-  <!-- Instagram Gallery -->
-  <section class="section gallery-section">
+  <!-- All Products -->
+  <section class="section">
     <div class="container">
-      <div class="section-header" data-aos="fade-up">
-        <span class="section-tag">Follow Us</span>
-        <h2><span class="gold-text">@ishfaqaliandsons</span></h2>
-        <p>Follow us on Instagram for daily inspiration</p>
+      <div class="section-header">
+        <h2 style="text-align:center">Shop <span class="gold-text">All</span></h2>
+        <p style="text-align:center">Complete collection of premium jewelry</p>
       </div>
-      <div class="gallery-grid">
-        <div class="gallery-item" data-aos="fade-up"><div class="gallery-placeholder"><i class="fab fa-instagram"></i></div></div>
-        <div class="gallery-item" data-aos="fade-up" data-aos-delay="100"><div class="gallery-placeholder"><i class="fab fa-instagram"></i></div></div>
-        <div class="gallery-item" data-aos="fade-up" data-aos-delay="200"><div class="gallery-placeholder"><i class="fab fa-instagram"></i></div></div>
-        <div class="gallery-item" data-aos="fade-up" data-aos-delay="300"><div class="gallery-placeholder"><i class="fab fa-instagram"></i></div></div>
-        <div class="gallery-item" data-aos="fade-up" data-aos-delay="400"><div class="gallery-placeholder"><i class="fab fa-instagram"></i></div></div>
-        <div class="gallery-item" data-aos="fade-up" data-aos-delay="500"><div class="gallery-placeholder"><i class="fab fa-instagram"></i></div></div>
+      <div class="products-grid">
+        <% if (typeof allProducts !== 'undefined' && allProducts.length > 0) { %>
+          <% allProducts.forEach(function(product) { %>
+            <div class="product-card" data-images='<%= JSON.stringify(product.images || []) %>'>
+              <div class="product-card-image">
+                <a href="/product/<%= product.slug %>">
+                  <img class="main-img" src="<%= product.thumbnail || '/images/newlogo.png' %>" alt="<%= product.name %>">
+                  <img class="hover-img" src="<%= (product.images && product.images[0]) ? product.images[0] : (product.thumbnail || '/images/newlogo.png') %>" alt="<%= product.name %>">
+                </a>
+                <% if (product.comparePrice > 0) { %>
+                  <span class="badge badge-sale">Sale</span>
+                <% } %>
+              </div>
+              <div class="product-card-body">
+                <h3><a href="/product/<%= product.slug %>"><%= product.name %></a></h3>
+                <% if (product.comparePrice > 0) { %>
+                  <span class="price old-price">Rs. <%= Number(product.price).toLocaleString() %></span>
+                  <span class="price sale-price">Rs. <%= Number(product.comparePrice).toLocaleString() %></span>
+                <% } else { %>
+                  <span class="price">Rs. <%= Number(product.price).toLocaleString() %></span>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="product-card">
+            <div class="product-card-image"><div class="placeholder-box" style="height:100%;min-height:200px"><i class="fas fa-gem"></i></div></div>
+            <div class="product-card-body"><h3><a href="/shop">Coming Soon</a></h3><span class="price">Rs. 0</span></div>
+          </div>
+        <% } %>
       </div>
-    </div>
-  </section>
-
-  <!-- Brand Story -->
-  <section class="brand-story bg-cream">
-    <div class="container">
-      <div class="story-content" data-aos="fade-up">
-        <span class="section-tag">Our Heritage</span>
-        <h2>The <span class="gold-text">ISHFAQ ALI & SONS</span> Legacy</h2>
-        <p>For generations, ISHFAQ ALI & SONS has been synonymous with luxury and elegance. Our journey began with a passion for creating jewelry that transcends time — pieces that tell stories, celebrate traditions, and embody the finest craftsmanship.</p>
-        <p>Today, we continue this legacy by curating the most exquisite Karit and Turkish Jewelry collections, bringing together traditional artistry and contemporary design.</p>
-        <a href="/about" class="btn btn-outline">Read Our Story</a>
+      <div class="pagination" style="margin-top:40px">
+        <a href="/shop" class="btn btn-gold">View All Products</a>
       </div>
     </div>
   </section>
 </main>
+
+<script>
+// Category carousel
+document.querySelectorAll('.category-carousel').forEach(function(carousel) {
+  var track = carousel.querySelector('.category-track');
+  var prev = carousel.querySelector('.carousel-prev');
+  var next = carousel.querySelector('.carousel-next');
+  var scrollAmt = 300;
+  if (prev) prev.addEventListener('click', function() { track.scrollBy({ left: -scrollAmt, behavior: 'smooth' }); });
+  if (next) next.addEventListener('click', function() { track.scrollBy({ left: scrollAmt, behavior: 'smooth' }); });
+});
+
+// Product card image hover
+document.querySelectorAll('.product-card').forEach(function(card) {
+  var mainImg = card.querySelector('.main-img');
+  var hoverImg = card.querySelector('.hover-img');
+  if (!mainImg || !hoverImg) return;
+  card.addEventListener('mouseenter', function() { mainImg.style.opacity = '0'; hoverImg.style.opacity = '1'; });
+  card.addEventListener('mouseleave', function() { mainImg.style.opacity = '1'; hoverImg.style.opacity = '0'; });
+});
+</script>
 
 <%- include('../partials/footer') %>

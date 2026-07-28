@@ -1,39 +1,53 @@
 const Wishlist = require('../models/Wishlist');
+const Product = require('../models/Product');
 
 const getWishlist = async (userId, sessionId) => {
-  let query = {};
-  if (userId) query = { user: userId };
-  else if (sessionId) query = { sessionId };
+  let where = {};
+  if (userId) where = { user: userId };
+  else if (sessionId) where = { sessionId };
   else return null;
-  return Wishlist.findOne(query).populate('items');
+  const wishlist = await Wishlist.findOne({ where });
+  if (!wishlist) return null;
+  const data = wishlist.toJSON();
+  const productIds = data.items.filter(Boolean);
+  if (productIds.length > 0) {
+    const products = await Product.findAll({ where: { id: productIds } });
+    data.items = productIds.map(id => products.find(p => p.id === id) || id);
+  }
+  return data;
 };
 
 exports.getWishlistPage = async (req, res) => {
-  const wishlist = await getWishlist(req.user?._id, req.sessionID);
+  const wishlist = await getWishlist(req.user?.id, req.sessionID);
   res.render('pages/wishlist', { title: 'My Wishlist', wishlist });
 };
 
 exports.getWishlistData = async (req, res) => {
-  const wishlist = await getWishlist(req.user?._id, req.sessionID);
+  const wishlist = await getWishlist(req.user?.id, req.sessionID);
   res.json({ items: wishlist?.items || [] });
 };
 
 exports.toggleWishlist = async (req, res) => {
   try {
     const { productId } = req.body;
-    let wishlist = await getWishlist(req.user?._id, req.sessionID);
-    if (!wishlist) {
-      wishlist = new Wishlist({ items: [] });
-      if (req.user) wishlist.user = req.user._id;
+    let wishlist = await Wishlist.findOne({ where: req.user ? { user: req.user.id } : { sessionId: req.sessionID } });
+    let items = [];
+    if (wishlist) {
+      try { items = JSON.parse(wishlist.items); } catch { items = []; }
+    } else {
+      wishlist = Wishlist.build({ items: '[]' });
+      if (req.user) wishlist.user = req.user.id;
       else wishlist.sessionId = req.sessionID;
     }
-    const exists = wishlist.items.some(i => i?.toString() === productId);
+    const exists = items.some(i => Number(i) === Number(productId));
     if (exists) {
-      wishlist.items.pull(productId);
+      items = items.filter(i => Number(i) !== Number(productId));
+      wishlist.items = JSON.stringify(items);
       await wishlist.save();
       return res.json({ success: true, inWishlist: false, message: 'Removed from wishlist' });
     }
-    wishlist.items.push(productId);
+    items.push(productId);
+    wishlist.items = JSON.stringify(items);
     await wishlist.save();
     res.json({ success: true, inWishlist: true, message: 'Added to wishlist' });
   } catch (err) {
@@ -43,9 +57,12 @@ exports.toggleWishlist = async (req, res) => {
 
 exports.removeFromWishlist = async (req, res) => {
   try {
-    const wishlist = await getWishlist(req.user?._id, req.sessionID);
+    let wishlist = await Wishlist.findOne({ where: req.user ? { user: req.user.id } : { sessionId: req.sessionID } });
     if (!wishlist) return res.status(404).json({ message: 'Wishlist not found' });
-    wishlist.items.pull(req.params.productId);
+    let items = [];
+    try { items = JSON.parse(wishlist.items); } catch { items = []; }
+    items = items.filter(i => Number(i) !== Number(req.params.productId));
+    wishlist.items = JSON.stringify(items);
     await wishlist.save();
     res.json({ success: true, message: 'Removed from wishlist' });
   } catch (err) {

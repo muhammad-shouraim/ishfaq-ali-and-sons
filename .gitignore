@@ -6,4 +6,17 @@ node_modules/
 .DS_Store
 Thumbs.db
 *.log
+logs/
 uploads/
+.vercel
+mysql-data/
+shouraimportifoilio ias/
+deploy_temp/
+check_zip/
+*.zip
+*.txt
+server_err.txt
+server_out.txt
+server_test.txt
+server_test_err.txt
+error.log

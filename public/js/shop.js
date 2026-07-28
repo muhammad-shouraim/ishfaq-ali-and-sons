@@ -41,12 +41,12 @@ function initShop() {
           <div class="product-card">
             <div class="product-card-image">
               <div class="product-image-placeholder-sm"><i class="fas fa-gem"></i></div>
-              <button class="wishlist-toggle-sm" data-product-id="${p._id}"><i class="far fa-heart"></i></button>
+              <button class="wishlist-toggle-sm" data-product-id="${p.id}"><i class="far fa-heart"></i></button>
             </div>
             <div class="product-card-body">
               <h3><a href="/product/${p.slug}">${p.name}</a></h3>
               <span class="price">Rs. ${Number(p.price).toLocaleString()}</span>
-              <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${p._id}">Add to Bag</button>
+              <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${p.id}">Add to Bag</button>
             </div>
           </div>
         `).join('');
@@ -98,12 +98,12 @@ function initCategoryShop() {
           <div class="product-card">
             <div class="product-card-image">
               <div class="product-image-placeholder-sm"><i class="fas fa-gem"></i></div>
-              <button class="wishlist-toggle-sm" data-product-id="${p._id}"><i class="far fa-heart"></i></button>
+              <button class="wishlist-toggle-sm" data-product-id="${p.id}"><i class="far fa-heart"></i></button>
             </div>
             <div class="product-card-body">
               <h3><a href="/product/${p.slug}">${p.name}</a></h3>
               <span class="price">Rs. ${Number(p.price).toLocaleString()}</span>
-              <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${p._id}">Add to Bag</button>
+              <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${p.id}">Add to Bag</button>
             </div>
           </div>
         `).join('');

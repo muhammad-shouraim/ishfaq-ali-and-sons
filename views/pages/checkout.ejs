@@ -17,6 +17,15 @@
       <div class="checkout-layout" data-aos="fade-up">
         <div class="checkout-form-container">
           <h2>Shipping Information</h2>
+          <% if (!user) { %>
+          <div id="loginPrompt" style="background:var(--cream);padding:20px;border-radius:var(--radius);margin-bottom:24px;border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+            <div>
+              <strong style="font-size:0.9rem;color:var(--black)">Already have an account?</strong>
+              <p style="font-size:0.82rem;color:var(--text-light);margin:4px 0 0">Sign in for faster checkout and order tracking.</p>
+            </div>
+            <a href="/login" class="btn btn-gold btn-sm" style="padding:8px 20px;font-size:0.72rem">Sign In</a>
+          </div>
+          <% } %>
           <form id="checkoutForm" class="checkout-form">
             <div class="form-group">
               <label for="name">Full Name *</label>
@@ -25,6 +34,10 @@
             <div class="form-group">
               <label for="phone">Phone Number *</label>
               <input type="tel" id="phone" name="phone" value="<%= user ? user.phone : '' %>" required>
+            </div>
+            <div class="form-group">
+              <label for="checkoutEmail">Email Address <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
+              <input type="email" id="checkoutEmail" name="email" placeholder="your@email.com">
             </div>
             <div class="form-group">
               <label for="address">Shipping Address *</label>
@@ -67,12 +80,62 @@
                   </div>
                 </div>
               </label>
+              <div id="bankDetails" style="display:none;background:var(--cream);padding:20px;border-radius:var(--radius);margin-top:8px;border:1px solid var(--border)">
+                <h4 style="font-size:0.9rem;margin-bottom:12px;color:var(--gold)">Bank Account Details</h4>
+                <div style="font-size:0.85rem;line-height:2;color:var(--text-light)">
+                  <p><strong style="color:var(--text)">Bank:</strong> HBL (Habib Bank Limited)</p>
+                  <p><strong style="color:var(--text)">Account Title:</strong> ISHFAQ ALI & SONS</p>
+                  <p><strong style="color:var(--text)">Account Number:</strong> 1234-567890-01</p>
+                  <p><strong style="color:var(--text)">IBAN:</strong> PK36HABB0012345678901</p>
+                </div>
+                <div class="form-group" style="margin-top:12px;margin-bottom:0">
+                  <label for="transactionId" style="font-size:0.82rem">Transaction ID / Reference</label>
+                  <input type="text" id="transactionId" name="transactionId" placeholder="Enter bank transaction ID" style="width:100%;padding:10px 14px;border:1px solid var(--border);font-family:var(--font-body);font-size:0.85rem;border-radius:6px">
+                </div>
+              </div>
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="easypaisa">
+                <div class="payment-option-content">
+                  <i class="fas fa-mobile-alt"></i>
+                  <div>
+                    <strong>Easypaisa</strong>
+                    <p>Pay via Easypaisa mobile wallet</p>
+                  </div>
+                </div>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="jazzcash">
+                <div class="payment-option-content">
+                  <i class="fas fa-mobile-alt"></i>
+                  <div>
+                    <strong>JazzCash</strong>
+                    <p>Pay via JazzCash mobile wallet</p>
+                  </div>
+                </div>
+              </label>
             </div>
 
-            <button type="submit" class="btn btn-gold btn-block" id="placeOrderBtn">
+            <label class="terms-checkbox" style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;cursor:pointer;font-size:0.85rem;color:var(--text-light)">
+              <input type="checkbox" id="termsCheck" required style="margin-top:3px;width:16px;height:16px;accent-color:var(--gold)">
+              <span>I agree to the <a href="/terms" target="_blank" style="color:var(--gold);text-decoration:underline">Terms & Conditions</a> and <a href="/privacy-policy" target="_blank" style="color:var(--gold);text-decoration:underline">Privacy Policy</a></span>
+            </label>
+            <button type="submit" class="btn btn-gold btn-block" id="placeOrderBtn" disabled>
               Place Order
             </button>
           </form>
+          <script>
+            document.getElementById('termsCheck').addEventListener('change', function() {
+              document.getElementById('placeOrderBtn').disabled = !this.checked;
+            });
+          </script>
+          <script>
+            document.querySelectorAll('input[name="paymentMethod"]').forEach(function(el) {
+              el.addEventListener('change', function() {
+                var details = document.getElementById('bankDetails');
+                if (details) details.style.display = this.value === 'bank_transfer' ? 'block' : 'none';
+              });
+            });
+          </script>
         </div>
         <aside class="checkout-summary">
           <h3>Order Summary</h3>

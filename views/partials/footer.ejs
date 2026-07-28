@@ -1,83 +1,81 @@
-<footer class="footer">
-  <div class="footer-newsletter">
-    <div class="container">
-      <div class="newsletter-content" data-aos="fade-up">
-        <h3>Join the <span class="gold-text">World of Luxury</span></h3>
-        <p>Subscribe for exclusive collections, special offers, and jewelry care tips.</p>
-        <form class="newsletter-form" id="newsletterForm">
-          <input type="email" placeholder="Your email address" required>
-          <button type="submit">Subscribe</button>
-        </form>
-      </div>
+<section class="features-strip" style="background:var(--cream);padding:36px 0;border-top:1px solid var(--border)">
+  <div class="container" style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px">
+    <div class="feature-item" style="display:flex;align-items:center;gap:14px">
+      <i class="fas fa-truck" style="font-size:1.5rem;color:var(--gold);width:40px;text-align:center;flex-shrink:0"></i>
+      <div><h4 style="font-family:var(--font-body);font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--black);margin-bottom:2px">Free Shipping</h4><p style="font-size:0.78rem;color:var(--text-light);margin:0">Free delivery across Pakistan</p></div>
+    </div>
+    <div class="feature-item" style="display:flex;align-items:center;gap:14px">
+      <i class="fas fa-exchange-alt" style="font-size:1.5rem;color:var(--gold);width:40px;text-align:center;flex-shrink:0"></i>
+      <div><h4 style="font-family:var(--font-body);font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--black);margin-bottom:2px">Easy Returns</h4><p style="font-size:0.78rem;color:var(--text-light);margin:0">Hassle-free return policy</p></div>
+    </div>
+    <div class="feature-item" style="display:flex;align-items:center;gap:14px">
+      <i class="fas fa-headset" style="font-size:1.5rem;color:var(--gold);width:40px;text-align:center;flex-shrink:0"></i>
+      <div><h4 style="font-family:var(--font-body);font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--black);margin-bottom:2px">24/7 Support</h4><p style="font-size:0.78rem;color:var(--text-light);margin:0">Dedicated customer support</p></div>
+    </div>
+    <div class="feature-item" style="display:flex;align-items:center;gap:14px">
+      <i class="fas fa-shield-alt" style="font-size:1.5rem;color:var(--gold);width:40px;text-align:center;flex-shrink:0"></i>
+      <div><h4 style="font-family:var(--font-body);font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--black);margin-bottom:2px">Secure Payment</h4><p style="font-size:0.78rem;color:var(--text-light);margin:0">100% secure checkout</p></div>
     </div>
   </div>
+</section>
 
+<footer class="footer">
   <div class="footer-main">
     <div class="container">
       <div class="footer-grid">
-        <div class="footer-col brand-col">
-          <img src="/images/logo.jpeg" alt="ISHFAQ ALI & SONS" class="footer-logo">
-          <p class="footer-desc">ISHFAQ ALI & SONS is a premier luxury jewelry brand specializing in exquisite Karit and Turkish Jewelry. Each piece is a testament to timeless elegance and masterful craftsmanship.</p>
-          <div class="footer-social">
-            <a href="<%= socialLinks.facebook %>" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="<%= socialLinks.tiktok %>" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-            <a href="<%= socialLinks.whatsapp %>" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-            <a href="<%= socialLinks.instagram %>" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          </div>
-        </div>
-
         <div class="footer-col">
-          <h4>Quick Links</h4>
+          <h4>About IAS</h4>
+          <p class="footer-desc">ISHFAQ ALI & SONS is a premier luxury jewelry brand specializing in exquisite Karit and Turkish Jewelry. Each piece is a testament to timeless elegance and masterful craftsmanship.</p>
+          <a href="mailto:ishfaqaliandsons123@gmail.com" class="footer-email"><i class="fas fa-envelope"></i> ishfaqaliandsons123@gmail.com</a>
+        </div>
+        <div class="footer-col quick-links">
+          <h4 onclick="this.parentElement.classList.toggle('active')">Quick Links <i class="fas fa-chevron-down footer-arrow"></i></h4>
           <ul>
             <li><a href="/">Home</a></li>
             <li><a href="/shop">Shop</a></li>
-            <li><a href="/categories">Categories</a></li>
             <li><a href="/about">About Us</a></li>
-            <li><a href="/contact">Contact</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+            <li><a href="/track-order">Track Order</a></li>
           </ul>
         </div>
-
-        <div class="footer-col">
-          <h4>Categories</h4>
+        <div class="footer-col quick-links">
+          <h4 onclick="this.parentElement.classList.toggle('active')">Categories <i class="fas fa-chevron-down footer-arrow"></i></h4>
           <ul>
-            <li><a href="/category/karit">Karit</a></li>
-            <li><a href="/category/turkish-jewelry">Turkish Jewelry</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>Policies</h4>
-          <ul>
-            <li><a href="/privacy-policy">Privacy Policy</a></li>
-            <li><a href="/terms-conditions">Terms & Conditions</a></li>
-            <li><a href="/refund-policy">Refund Policy</a></li>
-            <li><a href="/shipping-policy">Shipping Policy</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>Contact</h4>
-          <ul class="contact-list">
-            <li><i class="fas fa-phone-alt"></i> <a href="tel:<%= contactPhone %>"><%= contactPhone %></a></li>
-            <li><i class="fab fa-whatsapp"></i> <a href="https://wa.me/<%= whatsappNumber %>" target="_blank">WhatsApp</a></li>
-            <% if (contactEmail) { %>
-            <li><i class="fas fa-envelope"></i> <a href="mailto:<%= contactEmail %>"><%= contactEmail %></a></li>
+            <% if (typeof navCategories !== 'undefined' && navCategories.length > 0) { %>
+              <% navCategories.forEach(function(cat) { %>
+                <li><a href="/collection/<%= cat.slug %>"><%= cat.name %></a></li>
+              <% }); %>
             <% } %>
-            <li><i class="fas fa-map-marker-alt"></i> <a href="<%= googleMapsUrl %>" target="_blank">View on Map</a></li>
           </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Newsletter</h4>
+          <p style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:12px">Subscribe for exclusive offers & updates</p>
+          <form class="newsletter-form" id="newsletterForm">
+            <input type="email" placeholder="Your email address">
+            <button type="submit">Subscribe</button>
+          </form>
+          <div class="footer-social" style="margin-top:16px">
+            <a href="<%= socialLinks.facebook %>" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="<%= socialLinks.tiktok %>" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+          </div>
         </div>
       </div>
     </div>
   </div>
-
-  <div class="footer-bottom">
-    <div class="container">
-      <p>&copy; <%= new Date().getFullYear() %> <strong>ISHFAQ ALI & SONS</strong>. All rights reserved. Crafted with passion.</p>
+  <div class="footer-policies-bar">
+    <a href="/privacy-policy">Privacy Policy</a>
+    <a href="/terms-conditions">Terms & Conditions</a>
+    <a href="/refund-policy">Refund Policy</a>
+    <a href="/shipping-policy">Shipping Policy</a>
+  </div>
+  <div class="container">
+    <div class="footer-bottom" style="justify-content:center">
+      <span style="text-align:center;width:100%">&copy; <%= new Date().getFullYear() %> ISHFAQ ALI & SONS. All rights reserved.</span>
     </div>
   </div>
 </footer>
 
-<!-- Cart Sidebar -->
 <div class="cart-sidebar-overlay" id="cartOverlay"></div>
 <div class="cart-sidebar" id="cartSidebar">
   <div class="cart-sidebar-header">
@@ -96,21 +94,34 @@
       <span>Subtotal</span>
       <span class="cart-subtotal" id="cartSubtotal">Rs. 0</span>
     </div>
-    <a href="/cart" class="btn btn-outline">View Bag</a>
-    <a href="/checkout" class="btn btn-gold">Checkout</a>
+    <a href="/cart" class="btn btn-outline btn-block">View Bag</a>
+    <a href="/checkout" class="btn btn-gold btn-block">Checkout</a>
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- Scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<a href="https://wa.me/923329940666?text=Hi%20ISHFAQ%20ALI%20%26%20SONS!%20I%20have%20a%20question%20about%20your%20jewelry." target="_blank" class="whatsapp-float" aria-label="Chat on WhatsApp">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+<div class="mobile-bottom-nav">
+  <a href="/"><i class="fas fa-home"></i> Home</a>
+  <a href="/shop"><i class="fas fa-store"></i> Shop</a>
+  <a href="/wishlist"><i class="far fa-heart"></i> Wishlist <span class="wishlist-count-mobile" id="wishlistCountMobile">0</span></a>
+  <% if (user) { %>
+  <a href="/profile"><i class="far fa-user"></i> Profile</a>
+  <% } else { %>
+  <a href="#" onclick="openAuthModal('login');return false"><i class="far fa-user"></i> Login</a>
+  <% } %>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init({ duration: 600, easing: 'ease-out', once: true, offset: 40 });</script>
 <script src="/js/main.js"></script>
 <script src="/js/cart.js"></script>
 <script src="/js/wishlist.js"></script>
 <script src="/js/search.js"></script>
 <script src="/js/auth.js"></script>
-<script>AOS.init({ duration: 800, once: true, offset: 100 });</script>
 </body>
 </html>

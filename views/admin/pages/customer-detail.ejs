@@ -2,7 +2,7 @@
 
 <div class="page-header">
   <h1 class="page-title">Customer: <%= customer.name %></h1>
-  <a href="/admin/customers" class="admin-btn">Back to Customers</a>
+  <a href="<%= adminPath %>/customers" class="admin-btn">Back to Customers</a>
 </div>
 
 <div class="admin-card">
@@ -25,17 +25,20 @@
             <% } %>
           </td></tr>
           <tr><td>Registered</td><td><%= new Date(customer.createdAt).toLocaleDateString() %></td></tr>
+          <tr><td>Total Spent</td><td>Rs. <%= (typeof totalSpent !== 'undefined' ? totalSpent : 0).toLocaleString() %></td></tr>
+          <tr><td>Orders</td><td><%= typeof totalOrders !== 'undefined' ? totalOrders : 0 %></td></tr>
+          <tr><td>Tags</td><td><%= customer.tags || '-' %></td></tr>
         </table>
       </div>
       <div class="customer-actions">
-        <form action="/admin/customers/<%= customer.id %>/block" method="POST" style="display:inline" data-confirm="Are you sure you want to <%= customer.isBlocked ? 'unblock' : 'block' %> this customer?">
+        <form action="<%= adminPath %>/customers/<%= customer.id %>/block" method="POST" style="display:inline" data-confirm="Are you sure you want to <%= customer.isBlocked ? 'unblock' : 'block' %> this customer?">
           <button type="submit" class="admin-btn <%= customer.isBlocked ? 'admin-btn-primary' : 'admin-btn-danger' %>">
             <i class="fas fa-<%= customer.isBlocked ? 'check-circle' : 'ban' %>"></i>
             <%= customer.isBlocked ? 'Unblock' : 'Block' %> Customer
           </button>
         </form>
         <% if (user.role === 'super_admin') { %>
-        <form action="/admin/customers/<%= customer.id %>?_method=DELETE" method="POST" style="display:inline" data-confirm="Are you sure you want to delete this customer? This action cannot be undone.">
+        <form action="<%= adminPath %>/customers/<%= customer.id %>/delete" method="POST" style="display:inline" data-confirm="Are you sure you want to delete this customer? This action cannot be undone.">
           <button type="submit" class="admin-btn admin-btn-danger">
             <i class="fas fa-trash"></i> Delete Customer
           </button>
@@ -45,6 +48,68 @@
     </div>
   </div>
 </div>
+
+<div class="grid-2">
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h3>Internal Notes (Staff Only)</h3>
+    </div>
+    <div class="admin-card-body">
+      <form id="customerNotesForm" class="admin-form">
+        <div class="form-group">
+          <textarea name="notes" class="form-input" rows="4" placeholder="Internal notes about this customer..."><%= customer.internalNotes || '' %></textarea>
+        </div>
+        <button type="submit" class="admin-btn admin-btn-primary">Save Notes</button>
+        <span id="notesStatus" class="text-muted" style="margin-left:10px"></span>
+      </form>
+    </div>
+  </div>
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h3>Tags</h3>
+    </div>
+    <div class="admin-card-body">
+      <form id="customerTagsForm" class="admin-form">
+        <div class="form-group">
+          <input type="text" name="tags" class="form-input" placeholder="VIP, Wholesale, etc. (comma separated)" value="<%= customer.tags || '' %>">
+        </div>
+        <button type="submit" class="admin-btn admin-btn-primary">Save Tags</button>
+        <span id="tagsStatus" class="text-muted" style="margin-left:10px"></span>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('customerNotesForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var notes = this.querySelector('[name="notes"]').value;
+  var status = document.getElementById('notesStatus');
+  status.textContent = 'Saving...';
+  fetch('<%= adminPath %>/customers/<%= customer.id %>/notes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ notes: notes })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    status.textContent = data.success ? 'Saved!' : 'Error';
+    if (data.success) setTimeout(function() { status.textContent = ''; }, 2000);
+  }).catch(function() { status.textContent = 'Error'; });
+});
+document.getElementById('customerTagsForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var tags = this.querySelector('[name="tags"]').value;
+  var status = document.getElementById('tagsStatus');
+  status.textContent = 'Saving...';
+  fetch('<%= adminPath %>/customers/<%= customer.id %>/tags', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tags: tags })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    status.textContent = data.success ? 'Saved!' : 'Error';
+    if (data.success) setTimeout(function() { status.textContent = ''; }, 2000);
+  }).catch(function() { status.textContent = 'Error'; });
+});
+</script>
 
 <div class="grid-2">
   <div class="admin-card">
@@ -65,11 +130,11 @@
           <% if (customer.orders && customer.orders.length > 0) { %>
             <% customer.orders.forEach(function(order) { %>
             <tr>
-              <td><a href="/admin/orders/<%= order.id %>">#<%= order.orderNumber %></a></td>
-              <td>$<%= (order.total || 0).toFixed(2) %></td>
+              <td><a href="<%= adminPath %>/orders/<%= order.id %>">#<%= order.orderNumber %></a></td>
+              <td>Rs. <%= (order.total || 0).toLocaleString() %></td>
               <td>
                 <% var sClass = { pending: 'admin-badge-warning', processing: 'admin-badge-info', shipped: 'admin-badge-primary', delivered: 'admin-badge-success', cancelled: 'admin-badge-danger' } %>
-                <span class="admin-badge <%= sClass[order.status] || 'admin-badge-secondary' %>"><%= order.status %></span>
+                <span class="admin-badge <%= sClass[order.orderStatus] || 'admin-badge-secondary' %>"><%= order.orderStatus || order.status %></span>
               </td>
               <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
             </tr>
@@ -154,8 +219,8 @@
     </div>
     <div class="admin-card-body">
       <div class="activity-log">
-        <% if (customer.activityLog && customer.activityLog.length > 0) { %>
-          <% customer.activityLog.forEach(function(log) { %>
+        <% if (typeof activityLogs !== 'undefined' && activityLogs.length > 0) { %>
+          <% activityLogs.forEach(function(log) { %>
           <div class="activity-item">
             <i class="fas fa-circle activity-dot"></i>
             <div class="activity-content">

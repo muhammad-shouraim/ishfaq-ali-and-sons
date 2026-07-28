@@ -1,259 +1,248 @@
+const { Op } = require('sequelize');
+const sequelize = require('../config/sequelize');
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const ActivityLog = require('../models/ActivityLog');
-const fs = require('fs');
-const path = require('path');
+const cloudinary = require('../config/cloudinary');
+const ADMIN_PATH = require('../config/adminPath');
+const { logAdminAction } = require('../utils/adminLogger');
 
 exports.listProducts = async (req, res) => {
   try {
     const { search, category, isActive, isFeatured, sort, page = 1, limit = 20 } = req.query;
-    const query = {};
-    if (search) query.name = { $regex: search, $options: 'i' };
-    if (category) query.category = category;
-    if (isActive !== undefined) query.isActive = isActive === 'true' || isActive === '1';
-    if (isFeatured !== undefined) query.isFeatured = isFeatured === 'true' || isFeatured === '1';
+    const where = {};
+    if (search) where.name = { [Op.like]: `%${search}%` };
+    if (category) where.category = category;
+    if (isActive !== undefined) where.isActive = isActive === 'true' || isActive === '1';
+    if (isFeatured !== undefined) where.isFeatured = isFeatured === 'true' || isFeatured === '1';
 
-    let sortOption = { createdAt: -1 };
-    if (sort === 'name') sortOption = { name: 1 };
-    else if (sort === 'price_asc') sortOption = { price: 1 };
-    else if (sort === 'price_desc') sortOption = { price: -1 };
-    else if (sort === 'stock') sortOption = { stock: 1 };
+    let order = [['createdAt', 'DESC']];
+    if (sort === 'name') order = [['name', 'ASC']];
+    else if (sort === 'price_asc') order = [['price', 'ASC']];
+    else if (sort === 'price_desc') order = [['price', 'DESC']];
+    else if (sort === 'stock') order = [['stock', 'ASC']];
 
     const skip = (Number(page) - 1) * Number(limit);
-    const [products, total, categories] = await Promise.all([
-      Product.find(query).populate('category', 'name slug').sort(sortOption).skip(skip).limit(Number(limit)),
-      Product.countDocuments(query),
-      Category.find().sort('name')
-    ]);
-
+    const { count: total, rows: products } = await Product.findAndCountAll({
+      where,
+      include: [{ model: Category, attributes: ['name', 'slug'], as: 'categoryData' }],
+      order,
+      offset: skip,
+      limit: Number(limit)
+    });
+    const categories = await Category.findAll({ order: [['name', 'ASC']] });
+    const Setting = require('../models/Setting');
+    const thresholdSetting = await Setting.findOne({ where: { key: 'low_stock_threshold' } });
+    const lowStockThreshold = Number(thresholdSetting?.value) || 5;
     res.render('admin/pages/products', {
-      title: 'Products',
-      products,
-      categories,
-      total,
-      pages: Math.ceil(total / Number(limit)),
-      currentPage: Number(page),
-      query: req.query
+      title: 'Products', products, categories, total,
+      pages: Math.ceil(total / Number(limit)), currentPage: Number(page), query: req.query,
+      lowStockThreshold,
+      search: req.query.search || '',
+      filterCategory: req.query.category || ''
     });
   } catch (err) {
-    res.redirect('/admin?message=' + encodeURIComponent(err.message) + '&messageType=danger');
+    res.redirect(ADMIN_PATH + '?message=' + encodeURIComponent(err.message) + '&messageType=danger');
   }
 };
 
 exports.getCreateProduct = async (req, res) => {
   try {
-    const categories = await Category.find().sort('name');
-    res.render('admin/pages/product-form', { title: 'Create Product', categories, product: {} });
+    const categories = await Category.findAll({ order: [['name', 'ASC']] });
+    const parentCategories = categories.filter(c => !c.parentId);
+    res.render('admin/pages/product-form', {
+      title: 'Create Product', categories, parentCategories, product: {}, isEditing: false
+    });
   } catch (err) {
-    res.redirect('/admin?message=' + encodeURIComponent(err.message) + '&messageType=danger');
+    res.redirect(ADMIN_PATH + '?message=' + encodeURIComponent(err.message) + '&messageType=danger');
   }
 };
 
 exports.createProduct = async (req, res) => {
   try {
     const data = req.body;
-    const images = req.files ? req.files.map(f => f.path.replace(/\\/g, '/').replace('public/', '')) : [];
-    const thumbnail = images.length > 0 ? images[0] : (data.thumbnail || '');
-
-    const productData = {
+    let newImages = req.files?.images ? req.files.images.map(f => f.secure_url || f.path) : [];
+    let submittedImages = data.images ? (Array.isArray(data.images) ? data.images : [data.images]) : [];
+    let allImages = [...newImages, ...submittedImages];
+    const thumbnail = req.files?.thumbnail?.[0]?.secure_url || req.files?.thumbnail?.[0]?.path || data.thumbnail || '';
+    const categoryId = data.subSubcategoryId || data.subcategoryId || data.categoryId;
+    const product = await Product.create({
       name: data.name,
-      sku: data.sku,
+      sku: data.sku || '',
       description: data.description || '',
       shortDescription: data.shortDescription || '',
-      specifications: data.specifications ? (Array.isArray(data.specifications) ? data.specifications : JSON.parse(data.specifications)) : [],
-      category: data.category,
-      images,
-      thumbnail,
+      category: categoryId,
       price: Number(data.price) || 0,
       comparePrice: Number(data.comparePrice) || 0,
-      costPrice: Number(data.costPrice) || 0,
       stock: Number(data.stock) || 0,
       lowStockThreshold: Number(data.lowStockThreshold) || 5,
-      isActive: data.isActive === 'true' || data.isActive === 'on' || data.isActive === true,
-      isFeatured: data.isFeatured === 'true' || data.isFeatured === 'on' || data.isFeatured === true,
-      isTrending: data.isTrending === 'true' || data.isTrending === 'on' || data.isTrending === true,
-      isNewArrival: data.isNewArrival === 'true' || data.isNewArrival === 'on' || data.isNewArrival === true,
-      tags: data.tags ? (Array.isArray(data.tags) ? data.tags : data.tags.split(',').map(t => t.trim())) : [],
-      material: data.material || '',
-      weight: data.weight || '',
-      dimensions: data.dimensions || '',
       minOrderQty: Number(data.minOrderQty) || 1,
       maxOrderQty: Number(data.maxOrderQty) || 0,
-      taxClass: data.taxClass || '',
-      shippingClass: data.shippingClass || '',
+      weight: data.weight || '',
+      dimensions: data.dimensions || '',
+      shippingClass: data.shippingClass || 'standard',
       returnPolicy: data.returnPolicy || '',
       warranty: data.warranty || '',
-      brand: data.brand || '',
-      videoUrl: data.videoUrl || '',
+      isActive: true,
       metaTitle: data.metaTitle || '',
       metaDescription: data.metaDescription || '',
-      seoKeywords: data.seoKeywords ? (Array.isArray(data.seoKeywords) ? data.seoKeywords : data.seoKeywords.split(',').map(k => k.trim())) : [],
-      barcode: data.barcode || '',
-      barcodeSymbol: data.barcodeSymbol || '',
-      variants: data.variants ? (typeof data.variants === 'string' ? JSON.parse(data.variants) : data.variants) : []
-    };
-
-    const product = await Product.create(productData);
-
-    await ActivityLog.create({ user: req.user._id, action: 'create_product', resource: 'Product', resourceId: product._id, details: { name: product.name }, ip: req.ip });
-
-    if (req.xhr || req.headers.accept.includes('json')) {
+      images: JSON.stringify(allImages),
+      thumbnail,
+      specifications: data.specifications ? JSON.stringify(Array.isArray(data.specifications) ? data.specifications : []) : '[]',
+      seoKeywords: data.seoKeywords ? JSON.stringify(Array.isArray(data.seoKeywords) ? data.seoKeywords : data.seoKeywords.split(',').map(k => k.trim())) : '[]',
+      variants: data.variants ? JSON.stringify(typeof data.variants === 'string' ? JSON.parse(data.variants) : data.variants) : '[]'
+    });
+    await ActivityLog.create({ user: req.user.id, action: 'create_product', resource: 'Product', resourceId: product.id, details: JSON.stringify({ name: product.name }), ip: req.ip });
+    await logAdminAction(req, 'create_product', 'Product', product.id, product.name, `Created product "${product.name}"`);
+    if (req.xhr || req.headers.accept?.includes('json')) {
       res.json({ success: true, product });
     } else {
-      // msg: 'success', 'Product created successfully');
-      res.redirect('/admin/products');
+      res.redirect(ADMIN_PATH + '/products');
     }
   } catch (err) {
     if (req.xhr || req.headers.accept?.includes('json')) {
       res.status(500).json({ message: err.message });
     } else {
-      res.status(500).render('admin/pages/product-form', { title: 'Create Product', categories: await Category.find().sort('name'), product: req.body, error: err.message });
+      const categories = await Category.findAll({ order: [['name', 'ASC']] });
+      const parentCategories = categories.filter(c => !c.parentId);
+      res.status(500).render('admin/pages/product-form', {
+        title: 'Create Product', categories, parentCategories, product: req.body, error: err.message, isEditing: false
+      });
     }
   }
 };
 
 exports.getEditProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id).populate('category', 'name slug');
-    if (!product) return res.redirect('/admin?message=&messageType=danger');
-    const categories = await Category.find().sort('name');
-    res.render('admin/pages/product-form', { title: 'Edit Product', product, categories });
+    const product = await Product.findByPk(req.params.id, {
+      include: [{ model: Category, attributes: ['name', 'slug'], as: 'categoryData' }]
+    });
+    if (!product) return res.redirect(ADMIN_PATH + '?message=&messageType=danger');
+    const categories = await Category.findAll({ order: [['name', 'ASC']] });
+    const parentCategories = categories.filter(c => !c.parentId);
+    res.render('admin/pages/product-form', {
+      title: 'Edit Product', product, categories, parentCategories, isEditing: true
+    });
   } catch (err) {
-    res.redirect('/admin?message=' + encodeURIComponent(err.message) + '&messageType=danger');
+    res.redirect(ADMIN_PATH + '?message=' + encodeURIComponent(err.message) + '&messageType=danger');
   }
 };
 
 exports.updateProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findByPk(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
-
     const data = req.body;
-    const newImages = req.files && req.files.length > 0
-      ? req.files.map(f => f.path.replace(/\\/g, '/').replace('public/', ''))
-      : [];
-
-    const existingImages = data.existingImages
-      ? (Array.isArray(data.existingImages) ? data.existingImages : [data.existingImages])
-      : product.images || [];
-
-    const images = [...existingImages, ...newImages];
-    const thumbnail = data.thumbnail || images[0] || product.thumbnail || '';
-
-    const updateData = {
+    let existingImages = [];
+    try { existingImages = JSON.parse(product.images || '[]'); } catch (e) { existingImages = []; }
+    let newImages = req.files?.images ? req.files.images.map(f => f.secure_url || f.path) : [];
+    let submittedImages = data.images ? (Array.isArray(data.images) ? data.images : [data.images]) : [];
+    let allImages = [...newImages, ...submittedImages];
+    if (allImages.length === 0) allImages = existingImages;
+    const thumbnail = req.files?.thumbnail?.[0]?.secure_url || req.files?.thumbnail?.[0]?.path || (data.removeThumbnail ? '' : (data.thumbnail || product.thumbnail));
+    const categoryId = data.subSubcategoryId || data.subcategoryId || data.categoryId;
+    await product.update({
       name: data.name,
-      sku: data.sku,
+      sku: data.sku || product.sku,
       description: data.description || '',
       shortDescription: data.shortDescription || '',
-      specifications: data.specifications ? (Array.isArray(data.specifications) ? data.specifications : JSON.parse(data.specifications)) : [],
-      category: data.category,
-      images,
-      thumbnail,
+      category: categoryId,
       price: Number(data.price) || 0,
       comparePrice: Number(data.comparePrice) || 0,
-      costPrice: Number(data.costPrice) || 0,
       stock: Number(data.stock) || 0,
       lowStockThreshold: Number(data.lowStockThreshold) || 5,
-      isActive: data.isActive === 'true' || data.isActive === 'on' || data.isActive === true,
-      isFeatured: data.isFeatured === 'true' || data.isFeatured === 'on' || data.isFeatured === true,
-      isTrending: data.isTrending === 'true' || data.isTrending === 'on' || data.isTrending === true,
-      isNewArrival: data.isNewArrival === 'true' || data.isNewArrival === 'on' || data.isNewArrival === true,
-      tags: data.tags ? (Array.isArray(data.tags) ? data.tags : data.tags.split(',').map(t => t.trim())) : [],
-      material: data.material || '',
-      weight: data.weight || '',
-      dimensions: data.dimensions || '',
       minOrderQty: Number(data.minOrderQty) || 1,
       maxOrderQty: Number(data.maxOrderQty) || 0,
-      taxClass: data.taxClass || '',
-      shippingClass: data.shippingClass || '',
+      weight: data.weight || '',
+      dimensions: data.dimensions || '',
+      shippingClass: data.shippingClass || 'standard',
       returnPolicy: data.returnPolicy || '',
       warranty: data.warranty || '',
-      brand: data.brand || '',
-      videoUrl: data.videoUrl || '',
       metaTitle: data.metaTitle || '',
       metaDescription: data.metaDescription || '',
-      seoKeywords: data.seoKeywords ? (Array.isArray(data.seoKeywords) ? data.seoKeywords : data.seoKeywords.split(',').map(k => k.trim())) : [],
-      barcode: data.barcode || '',
-      barcodeSymbol: data.barcodeSymbol || '',
-      variants: data.variants ? (typeof data.variants === 'string' ? JSON.parse(data.variants) : data.variants) : []
-    };
-
-    Object.assign(product, updateData);
-    await product.save();
-
-    await ActivityLog.create({ user: req.user._id, action: 'update_product', resource: 'Product', resourceId: product._id, details: { name: product.name }, ip: req.ip });
-
+      images: JSON.stringify(allImages),
+      thumbnail,
+      specifications: data.specifications ? JSON.stringify(Array.isArray(data.specifications) ? data.specifications : []) : product.specifications,
+      seoKeywords: data.seoKeywords ? JSON.stringify(Array.isArray(data.seoKeywords) ? data.seoKeywords : data.seoKeywords.split(',').map(k => k.trim())) : product.seoKeywords,
+      variants: data.variants ? JSON.stringify(typeof data.variants === 'string' ? JSON.parse(data.variants) : data.variants) : product.variants
+    });
+    await ActivityLog.create({ user: req.user.id, action: 'update_product', resource: 'Product', resourceId: product.id, details: JSON.stringify({ name: product.name }), ip: req.ip });
+    await logAdminAction(req, 'update_product', 'Product', product.id, product.name, `Updated product "${product.name}"`);
     if (req.xhr || req.headers.accept?.includes('json')) {
       res.json({ success: true, product });
     } else {
-      // msg: 'success', 'Product updated successfully');
-      res.redirect('/admin/products');
+      res.redirect(ADMIN_PATH + '/products');
     }
   } catch (err) {
     if (req.xhr || req.headers.accept?.includes('json')) {
       res.status(500).json({ message: err.message });
     } else {
-      const categories = await Category.find().sort('name');
-      res.status(500).render('admin/pages/product-form', { title: 'Edit Product', product: { ...req.body, _id: req.params.id }, categories, error: err.message });
+      const categories = await Category.findAll({ order: [['name', 'ASC']] });
+      const parentCategories = categories.filter(c => !c.parentId);
+      res.status(500).render('admin/pages/product-form', {
+        title: 'Edit Product', product: { ...req.body, id: req.params.id }, categories, parentCategories, error: err.message, isEditing: true
+      });
     }
   }
 };
 
 exports.deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-
-    product.images.forEach(img => {
-      const imgPath = path.join(__dirname, '..', 'public', img);
-      if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
-    });
-
-    await ActivityLog.create({ user: req.user._id, action: 'delete_product', resource: 'Product', resourceId: product._id, details: { name: product.name }, ip: req.ip });
-
-    res.json({ success: true, message: 'Product deleted' });
+    const product = await Product.findByPk(req.params.id);
+    if (!product) return res.redirect(ADMIN_PATH + '/products?message=Product not found&messageType=danger');
+    await Product.destroy({ where: { id: req.params.id } });
+    await ActivityLog.create({ user: req.user.id, action: 'delete_product', resource: 'Product', resourceId: product.id, details: JSON.stringify({ name: product.name }), ip: req.ip });
+    await logAdminAction(req, 'delete_product', 'Product', product.id, product.name, `Deleted product "${product.name}"`);
+    res.redirect(ADMIN_PATH + '/products?message=Product deleted successfully&messageType=success');
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.redirect(ADMIN_PATH + '/products?message=Error: ' + err.message + '&messageType=danger');
   }
 };
 
 exports.bulkAction = async (req, res) => {
   try {
-    const { action, ids } = req.body;
+    const { action, ids, value } = req.body;
     if (!Array.isArray(ids) || ids.length === 0) return res.status(400).json({ message: 'No products selected' });
 
     let result;
     switch (action) {
       case 'delete':
-        const products = await Product.find({ _id: { $in: ids } });
-        products.forEach(p => {
-          p.images.forEach(img => {
-            const imgPath = path.join(__dirname, '..', 'public', img);
-            if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
-          });
-        });
-        result = await Product.deleteMany({ _id: { $in: ids } });
-        await ActivityLog.create({ user: req.user._id, action: 'bulk_delete_products', resource: 'Product', details: { count: result.deletedCount, ids }, ip: req.ip });
+        result = await Product.destroy({ where: { id: ids } });
+        await logAdminAction(req, 'bulk_delete', 'Product', 0, '', `Bulk deleted ${result} products`);
         break;
       case 'activate':
-        result = await Product.updateMany({ _id: { $in: ids } }, { isActive: true });
-        await ActivityLog.create({ user: req.user._id, action: 'bulk_activate_products', resource: 'Product', details: { count: result.modifiedCount, ids }, ip: req.ip });
+        result = await Product.update({ isActive: true }, { where: { id: ids } });
+        await logAdminAction(req, 'bulk_activate', 'Product', 0, '', `Bulk activated ${result[0]} products`);
         break;
       case 'deactivate':
-        result = await Product.updateMany({ _id: { $in: ids } }, { isActive: false });
-        await ActivityLog.create({ user: req.user._id, action: 'bulk_deactivate_products', resource: 'Product', details: { count: result.modifiedCount, ids }, ip: req.ip });
+        result = await Product.update({ isActive: false }, { where: { id: ids } });
+        await logAdminAction(req, 'bulk_deactivate', 'Product', 0, '', `Bulk deactivated ${result[0]} products`);
         break;
       case 'feature':
-        result = await Product.updateMany({ _id: { $in: ids } }, { isFeatured: true });
+        result = await Product.update({ isFeatured: true }, { where: { id: ids } });
         break;
       case 'unfeature':
-        result = await Product.updateMany({ _id: { $in: ids } }, { isFeatured: false });
+        result = await Product.update({ isFeatured: false }, { where: { id: ids } });
+        break;
+      case 'change_category':
+        if (!value) return res.status(400).json({ message: 'No category specified' });
+        result = await Product.update({ category: value }, { where: { id: ids } });
+        await logAdminAction(req, 'bulk_change_category', 'Product', 0, '', `Bulk changed category for ${result[0]} products`);
+        break;
+      case 'price_adjust':
+        if (!value || isNaN(value)) return res.status(400).json({ message: 'Invalid percentage' });
+        const pct = Number(value);
+        if (pct >= 0) {
+          result = await Product.update({ price: sequelize.literal(`ROUND(price * ${1 + pct / 100}, 2)`) }, { where: { id: ids } });
+        } else {
+          result = await Product.update({ price: sequelize.literal(`ROUND(price * ${1 + pct / 100}, 2)`) }, { where: { id: ids } });
+        }
+        await logAdminAction(req, 'bulk_price_adjust', 'Product', 0, '', `Bulk price adjusted by ${pct}% for ${result[0]} products`);
         break;
       default:
         return res.status(400).json({ message: 'Invalid action' });
     }
-
-    res.json({ success: true, modifiedCount: result.modifiedCount || result.deletedCount });
+    res.json({ success: true, modifiedCount: result[0] || result });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -261,15 +250,12 @@ exports.bulkAction = async (req, res) => {
 
 exports.manageVariants = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findByPk(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
-
-    product.variants = req.body.variants || [];
+    product.variants = JSON.stringify(req.body.variants || []);
     await product.save();
-
-    await ActivityLog.create({ user: req.user._id, action: 'update_variants', resource: 'Product', resourceId: product._id, details: { variantCount: product.variants.length }, ip: req.ip });
-
-    res.json({ success: true, variants: product.variants });
+    await ActivityLog.create({ user: req.user.id, action: 'update_variants', resource: 'Product', resourceId: product.id, details: JSON.stringify({ variantCount: req.body.variants?.length || 0 }), ip: req.ip });
+    res.json({ success: true, variants: req.body.variants || [] });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -277,21 +263,15 @@ exports.manageVariants = async (req, res) => {
 
 exports.duplicateProduct = async (req, res) => {
   try {
-    const original = await Product.findById(req.params.id);
+    const original = await Product.findByPk(req.params.id);
     if (!original) return res.status(404).json({ message: 'Product not found' });
-
-    const dup = original.toObject();
-    delete dup._id;
-    delete dup.slug;
-    delete dup.createdAt;
-    delete dup.updatedAt;
-    dup.name = `${original.name} (Copy)`;
-    dup.sku = original.sku ? `${original.sku}-COPY-${Date.now()}` : undefined;
-
-    const product = await Product.create(dup);
-
-    await ActivityLog.create({ user: req.user._id, action: 'duplicate_product', resource: 'Product', resourceId: product._id, details: { originalId: original._id, name: product.name }, ip: req.ip });
-
+    const dupData = { ...original.toJSON() };
+    delete dupData.id; delete dupData.createdAt; delete dupData.updatedAt;
+    dupData.name = `${original.name} (Copy)`;
+    dupData.sku = original.sku ? `${original.sku}-COPY-${Date.now()}` : undefined;
+    const product = await Product.create(dupData);
+    await ActivityLog.create({ user: req.user.id, action: 'duplicate_product', resource: 'Product', resourceId: product.id, details: JSON.stringify({ originalId: original.id, name: product.name }), ip: req.ip });
+    await logAdminAction(req, 'duplicate_product', 'Product', product.id, product.name, `Duplicated "${original.name}" as "${product.name}"`);
     res.json({ success: true, product });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -300,14 +280,11 @@ exports.duplicateProduct = async (req, res) => {
 
 exports.toggleStatus = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findByPk(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
-
     product.isActive = !product.isActive;
     await product.save();
-
-    await ActivityLog.create({ user: req.user._id, action: product.isActive ? 'activate_product' : 'deactivate_product', resource: 'Product', resourceId: product._id, details: { name: product.name }, ip: req.ip });
-
+    await ActivityLog.create({ user: req.user.id, action: product.isActive ? 'activate_product' : 'deactivate_product', resource: 'Product', resourceId: product.id, details: JSON.stringify({ name: product.name }), ip: req.ip });
     res.json({ success: true, isActive: product.isActive });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -317,21 +294,19 @@ exports.toggleStatus = async (req, res) => {
 exports.apiListProducts = async (req, res) => {
   try {
     const { search, category, page = 1, limit = 20 } = req.query;
-    const query = {};
-    if (search) query.name = { $regex: search, $options: 'i' };
-    if (category) query.category = category;
-
+    const where = {};
+    if (search) where.name = { [Op.like]: `%${search}%` };
+    if (category) where.category = category;
     const skip = (Number(page) - 1) * Number(limit);
-    const [products, total] = await Promise.all([
-      Product.find(query).populate('category', 'name slug').sort({ createdAt: -1 }).skip(skip).limit(Number(limit)).lean(),
-      Product.countDocuments(query)
-    ]);
-
+    const { count: total, rows: products } = await Product.findAndCountAll({
+      where,
+      include: [{ model: Category, attributes: ['name', 'slug'], as: 'categoryData' }],
+      order: [['createdAt', 'DESC']],
+      offset: skip,
+      limit: Number(limit)
+    });
     res.json({ success: true, products, total, pages: Math.ceil(total / Number(limit)), currentPage: Number(page) });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-
-
-

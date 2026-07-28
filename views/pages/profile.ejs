@@ -21,6 +21,7 @@
           </div>
           <h3><%= user.name %></h3>
           <p><%= user.email %></p>
+          <div class="points-badge"><i class="fas fa-star"></i> <%= user.points || 0 %> Points</div>
           <ul class="profile-nav">
             <li><a href="/profile" class="active">Profile</a></li>
             <li><a href="/orders">Orders</a></li>

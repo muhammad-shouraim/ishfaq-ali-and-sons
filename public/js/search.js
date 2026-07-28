@@ -58,7 +58,7 @@ async function initSearchPage() {
           <div class="product-card-body">
             <h3><a href="/product/${p.slug}">${p.name}</a></h3>
             <span class="price">Rs. ${Number(p.price).toLocaleString()}</span>
-            <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${p._id}">Add to Bag</button>
+            <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${p.id}">Add to Bag</button>
           </div>
         </div>
       `).join('')}</div>`;

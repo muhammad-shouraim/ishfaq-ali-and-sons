@@ -1,37 +1,48 @@
+<% title = 'Refund Policy'; %>
 <%- include('../partials/header') %>
 <%- include('../partials/topbar') %>
 <%- include('../partials/navbar') %>
 
 <main>
-  <section class="page-header">
+  <section class="page-header" style="padding:48px 0 32px;text-align:center">
     <div class="container">
-      <h1 data-aos="fade-up">Refund Policy</h1>
-      <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
-        <a href="/">Home</a> <span>/</span> <span>Refund Policy</span>
-      </div>
+      <h1 data-aos="fade-up" style="font-size:2.2rem;margin-bottom:8px">Refund Policy</h1>
     </div>
   </section>
 
-  <section class="section policy-section">
+  <section class="section policy-section" style="padding:60px 0">
     <div class="container">
-      <div class="policy-content" data-aos="fade-up">
-        <h2>Refund & Return Policy</h2>
-        <p>We want you to love your purchase. If you're not satisfied, we're here to help.</p>
+      <div class="policy-content" data-aos="fade-up" style="max-width:800px;margin:0 auto">
+        <h2 style="text-align:center;font-size:1.8rem;margin-bottom:40px;font-family:var(--font-heading)">Refund &amp; Return Policy</h2>
         
-        <h3>Returns</h3>
-        <p>You have 7 days from delivery to request a return. Items must be unused, in original packaging, and in the same condition as received.</p>
+        <p style="text-align:center;font-size:1rem;line-height:1.8;margin-bottom:40px;color:var(--text)">We want you to love your purchase. If you're not satisfied, we're here to help.</p>
         
-        <h3>Refunds</h3>
-        <p>Once we receive your return, we will inspect it and notify you of the approval status. Approved refunds will be processed within 5-7 business days.</p>
-        
-        <h3>Exchange</h3>
-        <p>Exchanges are subject to availability. Contact us within 7 days of delivery for exchange requests.</p>
-        
-        <h3>Non-Returnable Items</h3>
-        <p>Custom or personalized jewelry items are non-returnable unless defective.</p>
-        
-        <h3>Contact</h3>
-        <p>For return inquiries, contact <%= contactPhone %>.</p>
+        <div style="display:grid;gap:32px">
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">Returns</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">You have 7 days from delivery to request a return. Items must be unused, in original packaging, and in the same condition as received.</p>
+          </div>
+          
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">Refunds</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">Once we receive your return, we will inspect it and notify you of the approval status. Approved refunds will be processed within 5-7 business days.</p>
+          </div>
+          
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">Exchange</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">Exchanges are subject to availability. Contact us within 7 days of delivery for exchange requests.</p>
+          </div>
+          
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">Non-Returnable Items</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">Custom or personalized jewelry items are non-returnable unless defective.</p>
+          </div>
+          
+          <div style="background:var(--cream);padding:28px;border-radius:var(--radius);border:1px solid var(--border)">
+            <h3 style="font-size:1.2rem;margin-bottom:10px;color:var(--gold)">Contact</h3>
+            <p style="line-height:1.8;font-size:0.92rem;color:var(--text-light)">For return inquiries, contact <%= contactPhone %>.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>

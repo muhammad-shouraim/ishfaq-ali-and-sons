@@ -2,12 +2,12 @@
 
 <div class="page-header">
   <h1 class="page-title"><%= isEditing ? 'Edit Category' : 'Create Category' %></h1>
-  <a href="/admin/categories" class="admin-btn">Back to Categories</a>
+  <a href="<%= adminPath %>/categories" class="admin-btn">Back to Categories</a>
 </div>
 
 <div class="admin-card">
   <div class="admin-card-body">
-    <form action="/admin/categories<%= isEditing ? '/' + category.id : '' %>" method="POST" enctype="multipart/form-data" class="admin-form">
+    <form action="<%= adminPath %>/categories<%= isEditing ? '/edit/' + category.id : '/create' %>" method="POST" enctype="multipart/form-data" class="admin-form">
       <% if (isEditing) { %>
         <input type="hidden" name="_method" value="PUT">
       <% } %>
@@ -95,7 +95,7 @@
 
       <div class="form-actions">
         <button type="submit" class="admin-btn admin-btn-primary"><%= isEditing ? 'Update Category' : 'Create Category' %></button>
-        <a href="/admin/categories" class="admin-btn">Cancel</a>
+        <a href="<%= adminPath %>/categories" class="admin-btn">Cancel</a>
       </div>
     </form>
   </div>

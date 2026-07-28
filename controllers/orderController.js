@@ -1,33 +1,55 @@
+const { Op } = require('sequelize');
+const sequelize = require('../config/sequelize');
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
+const Product = require('../models/Product');
+const User = require('../models/User');
 
 exports.getCheckout = async (req, res) => {
-  const cart = await Cart.findOne({ user: req.user._id }).populate('items.product');
-  if (!cart || cart.items.length === 0) return res.redirect('/cart');
+  const cartRow = await Cart.findOne({ where: { user: req.user.id } });
+  if (!cartRow) return res.redirect('/cart');
+  const cart = cartRow.toJSON();
+  const items = cart.items || [];
+  if (items.length === 0) return res.redirect('/cart');
+  const productIds = items.map(i => i.product);
+  const products = productIds.length > 0 ? await Product.findAll({ where: { id: productIds } }) : [];
+  items.forEach(item => {
+    item.product = products.find(p => p.id === Number(item.product));
+  });
+  cart.items = items;
   res.render('pages/checkout', { title: 'Checkout', cart });
 };
 
 exports.placeOrder = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ user: req.user._id }).populate('items.product');
-    if (!cart || cart.items.length === 0) return res.status(400).json({ message: 'Cart is empty' });
+    const cartRow = await Cart.findOne({ where: { user: req.user.id } });
+    if (!cartRow) return res.status(400).json({ message: 'Cart is empty' });
+    const cart = cartRow.toJSON();
+    const items = cart.items || [];
+    if (items.length === 0) return res.status(400).json({ message: 'Cart is empty' });
+
+    const productIds = items.map(i => i.product);
+    const products = productIds.length > 0 ? await Product.findAll({ where: { id: productIds } }) : [];
 
     const { name, phone, address, city, postalCode, paymentMethod, notes } = req.body;
-    const items = cart.items.map(item => ({
-      product: item.product._id,
-      name: item.product.name,
-      image: item.product.images?.[0] || '',
-      price: item.product.price,
-      quantity: item.quantity
-    }));
-    const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const orderItems = items.map(item => {
+      const p = products.find(pr => pr.id === Number(item.product));
+      return {
+        product: Number(item.product),
+        name: p?.name || '',
+        image: p?.images ? (typeof p.images === 'string' ? JSON.parse(p.images)[0] || '' : p.images[0] || '') : '',
+        price: Number(p?.price || 0),
+        quantity: item.quantity
+      };
+    });
+    const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const shippingCost = subtotal >= 5000 ? 0 : 200;
-    const total = subtotal + shippingCost - (cart.discount || 0);
+    const total = subtotal + shippingCost - Number(cart.discount || 0);
 
     const order = await Order.create({
-      user: req.user._id,
-      items,
-      shippingInfo: { name, phone, address, city, postalCode },
+      user: req.user.id,
+      items: JSON.stringify(orderItems),
+      shippingInfo: JSON.stringify({ name, phone, address, city, postalCode }),
       paymentMethod,
       subtotal,
       shippingCost,
@@ -36,15 +58,24 @@ exports.placeOrder = async (req, res) => {
       total,
       notes
     });
-    await Cart.findByIdAndDelete(cart._id);
-    res.json({ success: true, orderId: order._id, orderNumber: order.orderNumber });
+    await Cart.destroy({ where: { id: cartRow.id } });
+
+    const pointsEarned = Math.floor(total / 100);
+    await User.update({ points: sequelize.literal(`points + ${pointsEarned}`) }, { where: { id: req.user.id } });
+
+    res.json({ success: true, orderId: order.id, orderNumber: order.orderNumber });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
 exports.getOrderSuccess = async (req, res) => {
-  const order = await Order.findById(req.params.id);
+  const order = await Order.findByPk(req.params.id);
   if (!order) return res.redirect('/');
   res.render('pages/order-success', { title: 'Order Placed', order });
+};
+
+exports.getOrders = async (req, res) => {
+  const orders = await Order.findAll({ where: { user: req.user.id }, order: [['createdAt', 'DESC']] });
+  res.render('pages/orders', { title: 'My Orders', orders });
 };

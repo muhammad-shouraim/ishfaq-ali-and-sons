@@ -2,12 +2,12 @@
 
 <div class="page-header">
   <h1 class="page-title"><%= isEditing ? 'Edit Coupon' : 'Create Coupon' %></h1>
-  <a href="/admin/coupons" class="admin-btn">Back to Coupons</a>
+  <a href="<%= adminPath %>/coupons" class="admin-btn">Back to Coupons</a>
 </div>
 
 <div class="admin-card">
   <div class="admin-card-body">
-    <form action="/admin/coupons<%= isEditing ? '/' + coupon.id : '' %>" method="POST" class="admin-form">
+    <form action="<%= adminPath %>/coupons<%= isEditing ? '/edit/' + coupon.id : '/create' %>" method="POST" class="admin-form">
       <% if (isEditing) { %>
         <input type="hidden" name="_method" value="PUT">
       <% } %>
@@ -71,7 +71,7 @@
 
       <div class="form-actions">
         <button type="submit" class="admin-btn admin-btn-primary"><%= isEditing ? 'Update Coupon' : 'Create Coupon' %></button>
-        <a href="/admin/coupons" class="admin-btn">Cancel</a>
+        <a href="<%= adminPath %>/coupons" class="admin-btn">Cancel</a>
       </div>
     </form>
   </div>

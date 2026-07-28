@@ -1,8 +1,57 @@
 const Category = require('../models/Category');
+const Product = require('../models/Product');
+const Order = require('../models/Order');
+const { Op } = require('sequelize');
 
 exports.getHome = async (req, res) => {
-  const categories = await Category.find({ isActive: true }).sort('sortOrder');
-  res.render('pages/home', { title: 'Home', categories });
+  try {
+    const categories = await Category.findAll({ where: { isActive: true }, order: [['sortOrder', 'ASC']] });
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    const newArrivals = await Product.findAll({
+      where: { isActive: true, createdAt: { [Op.gte]: sevenDaysAgo } },
+      order: [['createdAt', 'DESC']],
+      limit: 8
+    });
+
+    const saleProducts = await Product.findAll({
+      where: { isActive: true, comparePrice: { [Op.gt]: 0 } },
+      order: [['createdAt', 'DESC']],
+      limit: 8
+    });
+
+    const orders = await Order.findAll({ where: { orderStatus: { [Op.notIn]: ['cancelled'] } } });
+    const salesCount = {};
+    orders.forEach(order => {
+      const items = typeof order.items === 'string' ? JSON.parse(order.items || '[]') : (order.items || []);
+      items.forEach(item => {
+        const pid = item.product || item.id || item.productId;
+        if (pid) salesCount[pid] = (salesCount[pid] || 0) + Number(item.quantity || 1);
+      });
+    });
+    const bestSellerIds = Object.entries(salesCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(e => e[0]);
+    const bestSellers = bestSellerIds.length > 0
+      ? await Product.findAll({ where: { id: bestSellerIds, isActive: true } })
+      : [];
+
+    const allProducts = await Product.findAll({
+      where: { isActive: true },
+      order: [['createdAt', 'DESC']],
+      limit: 12
+    });
+
+    res.render('pages/home', {
+      title: 'Home', categories, newArrivals, saleProducts, bestSellers, allProducts
+    });
+  } catch (err) {
+    console.error('Home page error:', err);
+    res.render('pages/home', {
+      title: 'Home', categories: [], newArrivals: [], saleProducts: [], bestSellers: [], allProducts: []
+    });
+  }
 };
 
 exports.getAbout = (req, res) => {
@@ -25,6 +74,22 @@ exports.getShipping = (req, res) => {
   res.render('pages/shipping', { title: 'Shipping Policy' });
 };
 
+exports.getTrackOrder = (req, res) => {
+  res.render('pages/track-order', { title: 'Track Order', order: null, error: null });
+};
+
+exports.postTrackOrder = async (req, res) => {
+  const { orderNumber } = req.body;
+  if (!orderNumber) {
+    return res.render('pages/track-order', { title: 'Track Order', order: null, error: 'Please enter an order number.' });
+  }
+  const order = await Order.findOne({ where: { orderNumber: orderNumber.trim().toUpperCase() } });
+  if (!order) {
+    return res.render('pages/track-order', { title: 'Track Order', order: null, error: 'No order found with that number.' });
+  }
+  res.render('pages/track-order', { title: 'Track Order', order, error: null });
+};
+
 exports.get404 = (req, res) => {
-  res.status(404).render('pages/404', { title: 'Page Not Found' });
+  res.redirect('/');
 };

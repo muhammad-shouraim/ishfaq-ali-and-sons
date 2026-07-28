@@ -1,73 +1,218 @@
-<nav class="navbar" id="navbar">
+<header class="header" id="header">
   <div class="container">
-    <div class="nav-toggle" id="navToggle">
+    <div class="mobile-toggle" id="mobileToggle" aria-label="Menu">
       <span></span><span></span><span></span>
     </div>
 
-    <a href="/" class="nav-logo">
-      <img src="/images/logo.jpeg" alt="ISHFAQ ALI & SONS">
+    <a href="/" class="header-logo">
+      <img src="/images/newlogo.png" alt="ISHFAQ ALI & SONS">
     </a>
 
-    <ul class="nav-links" id="navLinks">
-      <li><a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>">Home</a></li>
-      <li><a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>">Shop</a></li>
-      <li><a href="/categories" class="<%= currentUrl.includes('/categories') ? 'active' : '' %>">Categories</a></li>
-      <li><a href="/about" class="<%= currentUrl === '/about' ? 'active' : '' %>">About</a></li>
-      <li><a href="/contact" class="<%= currentUrl === '/contact' ? 'active' : '' %>">Contact</a></li>
-    </ul>
+    <nav class="header-nav" id="headerNav">
+      <a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>">Home</a>
+      <a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>">Shop</a>
 
-    <div class="nav-actions">
-      <a href="<%= socialLinks.facebook %>" target="_blank" class="action-btn social-nav" aria-label="Facebook">
-        <i class="fab fa-facebook-f"></i>
-      </a>
-      <a href="<%= socialLinks.tiktok %>" target="_blank" class="action-btn social-nav" aria-label="TikTok">
-        <i class="fab fa-tiktok"></i>
-      </a>
-      <button class="action-btn search-toggle" id="searchToggle" aria-label="Search">
+      <% if (typeof navCategories !== 'undefined' && navCategories.length > 0) { %>
+        <% navCategories.forEach(function(cat) { %>
+          <% var catPrefix = cat.slug.replace(/[^a-z0-9]+/g, '-') + '-'; %>
+          <div class="nav-item nav-dropdown">
+            <a href="/collection/<%= cat.slug %>" class="nav-dropdown-toggle <%= currentUrl.startsWith('/collection/' + cat.slug) ? 'active' : '' %>">
+              <%= cat.name %> <i class="fas fa-chevron-down"></i>
+            </a>
+            <div class="nav-dropdown-menu">
+              <% (cat.children || []).forEach(function(child) { %>
+                <% var childSuffix = child.slug.startsWith(catPrefix) ? child.slug.slice(catPrefix.length) : child.slug; %>
+                <% if (child.children && child.children.length > 0) { %>
+                  <div class="nav-item-sub">
+                    <a href="/collection/<%= cat.slug %>/<%= childSuffix %>" class="nav-sub-toggle"><%= child.name %> <i class="fas fa-chevron-right"></i></a>
+                    <div class="nav-sub-menu">
+                      <% child.children.forEach(function(gc) { %>
+                        <% var gcSuffix = gc.slug.startsWith(child.slug + '-') ? gc.slug.slice(child.slug.length + 1) : gc.slug; %>
+                        <a href="/collection/<%= cat.slug %>/<%= childSuffix %>/<%= gcSuffix %>"><%= gc.name %></a>
+                      <% }); %>
+                    </div>
+                  </div>
+                <% } else { %>
+                  <a href="/collection/<%= cat.slug %>/<%= childSuffix %>"><%= child.name %></a>
+                <% } %>
+              <% }); %>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+
+      <div class="nav-mobile-extra"></div>
+    </nav>
+
+    <div class="header-actions">
+      <button class="header-action search-toggle" id="searchToggle" aria-label="Search">
         <i class="fas fa-search"></i>
       </button>
-      <a href="/wishlist" class="action-btn" aria-label="Wishlist">
+      <a href="/wishlist" class="header-action mobile-wishlist-hide" aria-label="Wishlist">
         <i class="far fa-heart"></i>
         <span class="badge wishlist-count" id="wishlistCount">0</span>
       </a>
-      <button class="action-btn cart-toggle" id="cartToggle" aria-label="Cart">
+      <button class="header-action cart-toggle" id="cartToggle" aria-label="Cart">
         <i class="fas fa-shopping-bag"></i>
         <span class="badge cart-count" id="cartCount">0</span>
       </button>
+      
+      <a href="/track-order" class="header-action" aria-label="Track Order"><i class="fas fa-truck"></i></a>
+
       <% if (user) { %>
-      <div class="user-dropdown">
-        <button class="action-btn" id="userToggle">
+      <div class="user-dropdown mobile-user-hide">
+        <button class="header-action" aria-label="Account">
           <i class="far fa-user"></i>
         </button>
-        <div class="dropdown-menu" id="dropdownMenu">
-          <a href="/profile">My Profile</a>
-          <a href="/orders">My Orders</a>
-          <a href="/wishlist">Wishlist</a>
-          <% if (user.role === 'super_admin' || user.role === 'admin' || user.role === 'staff') { %>
+        <div class="dropdown-menu dropdown-menu-right">
+          <a href="/profile"><i class="fas fa-user"></i> My Profile</a>
+          <a href="/orders"><i class="fas fa-box"></i> My Orders</a>
+          <a href="/wishlist"><i class="far fa-heart"></i> Wishlist</a>
           <div class="dropdown-divider"></div>
-          <a href="/admin"><i class="fas fa-shield-alt"></i> Admin Panel</a>
-          <% } %>
-          <div class="dropdown-divider"></div>
-          <a href="/logout">Logout</a>
+          <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
       </div>
       <% } else { %>
-      <a href="/login" class="action-btn" aria-label="Login">
+      <button class="header-action mobile-user-hide" id="authModalBtn" aria-label="Login" onclick="openAuthModal('login')">
         <i class="far fa-user"></i>
-      </a>
+      </button>
       <% } %>
+      
     </div>
   </div>
-</nav>
+</header>
 
-<!-- Search Overlay -->
 <div class="search-overlay" id="searchOverlay">
+  <button class="search-close" id="searchClose"><i class="fas fa-times"></i></button>
   <div class="search-overlay-content">
-    <button class="search-close" id="searchClose"><i class="fas fa-times"></i></button>
-    <form action="/search" method="GET" class="search-form" id="searchForm">
-      <input type="text" name="q" id="searchInput" placeholder="Search luxury jewelry..." autocomplete="off">
+    <form action="/search" method="GET" class="search-overlay-form">
+      <input type="text" name="q" placeholder="Search products..." autocomplete="off" id="searchInput">
       <button type="submit"><i class="fas fa-search"></i></button>
     </form>
-    <div class="search-suggestions" id="searchSuggestions"></div>
   </div>
 </div>
+
+<!-- Auth Modal -->
+<div class="auth-modal-overlay" id="authModalOverlay" onclick="if(event.target===this)closeAuthModal()">
+  <div class="auth-modal">
+    <button class="auth-modal-close" onclick="closeAuthModal()"><i class="fas fa-times"></i></button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">Create Account</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="auth-modal-form active" autocomplete="off">
+      <input type="hidden" name="redirect" value="">
+      <div class="form-group">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" name="email" placeholder="your@email.com" required>
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" name="password" placeholder="Enter password" required>
+      </div>
+      <div class="form-options">
+        <a href="/forgot-password" class="forgot-link">Forgot Password?</a>
+      </div>
+      <button type="submit" class="btn btn-gold btn-block">Sign In</button>
+      <p class="auth-switch-text">Don't have an account? <a href="#" onclick="switchAuthTab('signup');return false">Create one</a></p>
+    </form>
+
+    <!-- Signup Form -->
+    <form id="signupForm" class="auth-modal-form" autocomplete="off">
+      <div class="form-group">
+        <label for="signupName">Full Name</label>
+        <input type="text" id="signupName" name="name" placeholder="Your full name" required>
+      </div>
+      <div class="form-group">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" name="email" placeholder="your@email.com" required>
+      </div>
+      <div class="form-group">
+        <label for="signupPassword">Password</label>
+        <input type="password" id="signupPassword" name="password" placeholder="Min. 6 characters" required minlength="6">
+      </div>
+      <button type="submit" class="btn btn-gold btn-block">Create Account</button>
+      <p class="auth-switch-text">Already have an account? <a href="#" onclick="switchAuthTab('login');return false">Sign in</a></p>
+    </form>
+  </div>
+</div>
+
+<script>
+function openAuthModal(tab) {
+  document.getElementById('authModalOverlay').classList.add('active');
+  switchAuthTab(tab || 'login');
+}
+function closeAuthModal() {
+  document.getElementById('authModalOverlay').classList.remove('active');
+}
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.auth-modal-form').forEach(f => f.classList.toggle('active', f.id === tab + 'Form'));
+}
+
+/* Modal form handlers */
+document.addEventListener('DOMContentLoaded', function() {
+  var loginForm = document.getElementById('loginForm');
+  if (loginForm) loginForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+    try {
+      var res = await fetch('/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: this.email.value, password: this.password.value, redirect: this.redirect.value || '' })
+      });
+      var data = await res.json();
+      if (data.success) {
+        closeAuthModal();
+        showToast('Welcome back!', 'success');
+        setTimeout(function() { window.location.href = data.redirect || '/'; }, 300);
+      } else {
+        showToast(data.message || 'Invalid credentials', 'error');
+        btn.disabled = false; btn.textContent = 'Sign In';
+      }
+    } catch(err) {
+      showToast('Connection error', 'error');
+      btn.disabled = false; btn.textContent = 'Sign In';
+    }
+  });
+
+  var signupForm = document.getElementById('signupForm');
+  if (signupForm) signupForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+    try {
+      var res = await fetch('/signup', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: this.name.value, email: this.email.value, password: this.password.value })
+      });
+      var data = await res.json();
+      if (data.success) {
+        closeAuthModal();
+        showToast('Account created! Welcome!', 'success');
+        setTimeout(function() { window.location.href = '/'; }, 300);
+      } else {
+        showToast(data.message || 'Registration failed', 'error');
+        btn.disabled = false; btn.textContent = 'Create Account';
+      }
+    } catch(err) {
+      showToast('Connection error', 'error');
+      btn.disabled = false; btn.textContent = 'Create Account';
+    }
+  });
+
+  /* Auto-open modal if redirected with ?login=1 */
+  (function(){
+    var p = new URLSearchParams(window.location.search);
+    if (p.get('login') === '1') {
+      openAuthModal('login');
+      var redirect = p.get('redirect');
+      var f = document.getElementById('loginForm');
+      if (f && redirect && f.redirect) f.redirect.value = redirect;
+    }
+  })();
+});
+</script>

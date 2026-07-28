@@ -14,11 +14,12 @@
 
   <section class="section">
     <div class="container">
-      <div class="search-page-content" data-aos="fade-up">
-        <form action="/search" method="GET" class="search-page-form">
-          <input type="text" name="q" value="<%= query %>" placeholder="Search luxury jewelry...">
-          <button type="submit"><i class="fas fa-search"></i></button>
+      <div class="search-page-content" data-aos="fade-up" style="max-width:80%;margin:0 auto">
+        <form action="/search" method="GET" class="search-page-form" style="display:flex;border-bottom:2px solid var(--gold);margin-bottom:32px">
+          <input type="text" name="q" value="<%= query %>" placeholder="Search luxury jewelry..." style="flex:1;padding:16px 0;border:none;outline:none;font-size:1.2rem;font-family:var(--font-heading);background:transparent" id="searchInput">
+          <button type="submit" style="background:transparent;border:none;color:var(--gold);font-size:1.3rem;padding:14px 20px;cursor:pointer"><i class="fas fa-search"></i></button>
         </form>
+        <div class="search-suggestions" id="searchSuggestions" style="display:none;margin-bottom:24px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden"></div>
         <div class="search-results" id="searchResults">
           <div class="empty-collection">
             <i class="fas fa-search"></i>
@@ -30,5 +31,56 @@
     </div>
   </section>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchInput');
+  const suggestionsDiv = document.getElementById('searchSuggestions');
+
+  if (!searchInput) return;
+
+  const sampleProducts = [
+    { sku: 'TUR-N-001', title: 'Turkish Gold Necklace', price: 'Rs. 25,000', image: 'newlogo.png', url: '/product/turkish-gold-necklace' },
+    { sku: 'TUR-N-002', title: 'Turkish Diamond Necklace', price: 'Rs. 35,000', image: 'newlogo.png', url: '/product/turkish-diamond-necklace' },
+    { sku: 'TUR-N-003', title: 'Turkish Pearl Necklace', price: 'Rs. 18,000', image: 'newlogo.png', url: '/product/turkish-pearl-necklace' },
+    { sku: '1CT-N-001', title: '1 Carat Diamond Necklace', price: 'Rs. 45,000', image: 'newlogo.png', url: '/product/1-carat-diamond-necklace' },
+    { sku: '1CT-N-002', title: '1 Carat Gold Necklace', price: 'Rs. 38,000', image: 'newlogo.png', url: '/product/1-carat-gold-necklace' },
+    { sku: 'TUR-R-001', title: 'Turkish Gold Ring', price: 'Rs. 12,000', image: 'newlogo.png', url: '/product/turkish-gold-ring' },
+    { sku: 'TUR-E-001', title: 'Turkish Gold Earrings', price: 'Rs. 15,000', image: 'newlogo.png', url: '/product/turkish-gold-earrings' },
+    { sku: '1CT-R-001', title: '1 Carat Diamond Ring', price: 'Rs. 55,000', image: 'newlogo.png', url: '/product/1-carat-diamond-ring' },
+    { sku: 'TUR-B-001', title: 'Turkish Gold Bracelet', price: 'Rs. 20,000', image: 'newlogo.png', url: '/product/turkish-gold-bracelet' },
+    { sku: '1CT-E-001', title: '1 Carat Diamond Earrings', price: 'Rs. 42,000', image: 'newlogo.png', url: '/product/1-carat-diamond-earrings' }
+  ];
+
+  searchInput.addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    if (q.length < 1) { suggestionsDiv.style.display = 'none'; return; }
+
+    const matches = sampleProducts.filter(p =>
+      p.title.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)
+    ).slice(0, 10);
+
+    if (matches.length === 0) { suggestionsDiv.style.display = 'none'; return; }
+
+    suggestionsDiv.style.display = 'block';
+    suggestionsDiv.innerHTML = matches.map(p => `
+      <a href="${p.url}" style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);text-decoration:none;color:var(--text);transition:var(--transition)">
+        <img src="${p.image}" alt="${p.title}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;background:var(--cream)">
+        <div style="flex:1">
+          <div style="font-size:0.85rem;font-weight:500">${p.title}</div>
+          <div style="font-size:0.72rem;color:var(--text-light)">SKU: ${p.sku}</div>
+        </div>
+        <div style="font-family:var(--font-heading);color:var(--gold);font-weight:600;font-size:0.9rem">${p.price}</div>
+      </a>
+    `).join('');
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!suggestionsDiv.contains(e.target) && e.target !== searchInput) {
+      suggestionsDiv.style.display = 'none';
+    }
+  });
+});
+</script>
 
 <%- include('../partials/footer') %>

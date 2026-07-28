@@ -1,23 +1,26 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
 
-const pageSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  slug: { type: String, unique: true },
-  content: { type: String, default: '' },
-  metaTitle: String,
-  metaDescription: String,
-  metaKeywords: String,
-  featuredImage: String,
-  status: { type: String, enum: ['draft', 'published', 'scheduled'], default: 'draft' },
-  scheduledAt: Date,
-  displayOrder: { type: Number, default: 0 }
-}, { timestamps: true });
-
-pageSchema.pre('save', function(next) {
-  if (!this.slug) {
-    this.slug = this.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const Page = sequelize.define('Page', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  title: { type: DataTypes.STRING, allowNull: false },
+  slug: { type: DataTypes.STRING, unique: true },
+  content: { type: DataTypes.TEXT, defaultValue: '' },
+  metaTitle: { type: DataTypes.STRING },
+  metaDescription: { type: DataTypes.TEXT },
+  metaKeywords: { type: DataTypes.STRING },
+  featuredImage: { type: DataTypes.STRING },
+  status: { type: DataTypes.ENUM('draft', 'published', 'scheduled'), defaultValue: 'draft' },
+  scheduledAt: { type: DataTypes.DATE },
+  displayOrder: { type: DataTypes.INTEGER, defaultValue: 0 }
+}, {
+  hooks: {
+    beforeSave: (page) => {
+      if (!page.slug) {
+        page.slug = page.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      }
+    }
   }
-  next();
 });
 
-module.exports = mongoose.model('Page', pageSchema);
+module.exports = Page;

@@ -1,14 +1,21 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
 
-const cartSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  sessionId: { type: String },
-  items: [{
-    product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-    quantity: { type: Number, required: true, min: 1, default: 1 }
-  }],
-  couponCode: String,
-  discount: { type: Number, default: 0 }
-}, { timestamps: true });
+const Cart = sequelize.define('Cart', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  user: { type: DataTypes.INTEGER },
+  sessionId: { type: DataTypes.STRING },
+  items: { type: DataTypes.TEXT, defaultValue: '[]' },
+  couponCode: { type: DataTypes.STRING },
+  discount: { type: DataTypes.DECIMAL(12, 2), defaultValue: 0 }
+});
 
-module.exports = mongoose.model('Cart', cartSchema);
+Cart.prototype.toJSON = function() {
+  const values = { ...this.get() };
+  if (values.items && typeof values.items === 'string') {
+    try { values.items = JSON.parse(values.items); } catch { values.items = []; }
+  }
+  return values;
+};
+
+module.exports = Cart;

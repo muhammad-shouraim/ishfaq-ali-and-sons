@@ -1,0 +1,39 @@
+<%- include('../partials/header') %>
+<div class="page-header">
+  <h1 class="page-title"><%= promotion ? 'Edit' : 'New' %> Promotion</h1>
+  <a href="<%= adminPath %>/promotions" class="admin-btn">Back</a>
+</div>
+<div class="admin-card">
+  <div class="admin-card-body">
+    <form action="<%= adminPath %>/promotions/<%= promotion ? 'edit/' + promotion.id : 'create' %>" method="POST" class="admin-form">
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" name="title" class="form-input" value="<%= promotion ? promotion.title : '' %>" required>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" class="form-input" rows="3"><%= promotion ? promotion.description : '' %></textarea>
+      </div>
+      <div class="form-group">
+        <label>Discount %</label>
+        <input type="number" name="discountPercent" class="form-input" value="<%= promotion ? promotion.discountPercent : 0 %>" min="0" max="100">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Start Date *</label>
+          <input type="datetime-local" name="startDate" class="form-input" value="<%= promotion ? new Date(promotion.startDate).toISOString().slice(0,16) : '' %>" required>
+        </div>
+        <div class="form-group">
+          <label>End Date *</label>
+          <input type="datetime-local" name="endDate" class="form-input" value="<%= promotion ? new Date(promotion.endDate).toISOString().slice(0,16) : '' %>" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Link URL</label>
+        <input type="text" name="linkUrl" class="form-input" value="<%= promotion ? promotion.linkUrl : '/shop' %>">
+      </div>
+      <button type="submit" class="admin-btn admin-btn-primary">Save</button>
+    </form>
+  </div>
+</div>
+<%- include('../partials/footer') %>

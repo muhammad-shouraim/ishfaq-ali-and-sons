@@ -1,62 +1,68 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
 
-const productSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
-  slug: { type: String, unique: true },
-  sku: { type: String, unique: true },
-  barcode: { type: String },
-  description: { type: String, default: '' },
-  shortDescription: { type: String, default: '' },
-  specifications: [{ label: String, value: String }],
-  category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
-  subcategory: { type: String, default: '' },
-  brand: { type: String, default: '' },
-  images: [{ type: String }],
-  thumbnail: { type: String },
-  videoUrl: { type: String, default: '' },
-  price: { type: Number, required: true },
-  comparePrice: { type: Number, default: 0 },
-  costPrice: { type: Number, default: 0 },
-  stock: { type: Number, default: 0 },
-  lowStockThreshold: { type: Number, default: 5 },
-  minOrderQty: { type: Number, default: 1 },
-  maxOrderQty: { type: Number, default: 0 },
-  weight: { type: String, default: '' },
-  dimensions: { type: String, default: '' },
-  taxClass: { type: String, default: 'standard' },
-  shippingClass: { type: String, default: 'standard' },
-  returnPolicy: { type: String, default: '' },
-  warranty: { type: String, default: '' },
-  isActive: { type: Boolean, default: true },
-  isFeatured: { type: Boolean, default: false },
-  isTrending: { type: Boolean, default: false },
-  isNewArrival: { type: Boolean, default: false },
-  isSale: { type: Boolean, default: false },
-  tags: [String],
-  material: { type: String, default: '' },
-  ratings: { type: Number, default: 0 },
-  numReviews: { type: Number, default: 0 },
-  metaTitle: String,
-  metaDescription: String,
-  seoKeywords: [String],
-  variants: [{
-    name: String,
-    sku: String,
-    price: Number,
-    stock: { type: Number, default: 0 },
-    images: [{ type: String }],
-    isActive: { type: Boolean, default: true }
-  }]
-}, { timestamps: true });
-
-productSchema.pre('save', function(next) {
-  if (!this.slug) {
-    this.slug = this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const Product = sequelize.define('Product', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  name: { type: DataTypes.STRING, allowNull: false },
+  slug: { type: DataTypes.STRING, unique: true },
+  sku: { type: DataTypes.STRING, unique: true },
+  barcode: { type: DataTypes.STRING },
+  description: { type: DataTypes.TEXT, defaultValue: '' },
+  shortDescription: { type: DataTypes.TEXT, defaultValue: '' },
+  specifications: { type: DataTypes.TEXT, defaultValue: '[]' },
+  category: { type: DataTypes.INTEGER },
+  subcategory: { type: DataTypes.STRING, defaultValue: '' },
+  brand: { type: DataTypes.STRING, defaultValue: '' },
+  images: { type: DataTypes.TEXT, defaultValue: '[]' },
+  thumbnail: { type: DataTypes.STRING },
+  videoUrl: { type: DataTypes.STRING, defaultValue: '' },
+  price: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
+  comparePrice: { type: DataTypes.DECIMAL(12, 2), defaultValue: 0 },
+  costPrice: { type: DataTypes.DECIMAL(12, 2), defaultValue: 0 },
+  stock: { type: DataTypes.INTEGER, defaultValue: 0 },
+  lowStockThreshold: { type: DataTypes.INTEGER, defaultValue: 5 },
+  minOrderQty: { type: DataTypes.INTEGER, defaultValue: 1 },
+  maxOrderQty: { type: DataTypes.INTEGER, defaultValue: 0 },
+  weight: { type: DataTypes.STRING, defaultValue: '' },
+  dimensions: { type: DataTypes.STRING, defaultValue: '' },
+  taxClass: { type: DataTypes.STRING, defaultValue: 'standard' },
+  shippingClass: { type: DataTypes.STRING, defaultValue: 'standard' },
+  returnPolicy: { type: DataTypes.TEXT, defaultValue: '' },
+  warranty: { type: DataTypes.TEXT, defaultValue: '' },
+  isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
+  isFeatured: { type: DataTypes.BOOLEAN, defaultValue: false },
+  isTrending: { type: DataTypes.BOOLEAN, defaultValue: false },
+  isNewArrival: { type: DataTypes.BOOLEAN, defaultValue: false },
+  isSale: { type: DataTypes.BOOLEAN, defaultValue: false },
+  tags: { type: DataTypes.TEXT, defaultValue: '[]' },
+  material: { type: DataTypes.STRING, defaultValue: '' },
+  ratings: { type: DataTypes.DECIMAL(3, 2), defaultValue: 0 },
+  numReviews: { type: DataTypes.INTEGER, defaultValue: 0 },
+  metaTitle: { type: DataTypes.STRING },
+  metaDescription: { type: DataTypes.TEXT },
+  seoKeywords: { type: DataTypes.TEXT, defaultValue: '[]' },
+  variants: { type: DataTypes.TEXT, defaultValue: '[]' }
+}, {
+  hooks: {
+    beforeSave: (product) => {
+      if (!product.slug) {
+        product.slug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      }
+      if (!product.sku) {
+        product.sku = `IAS-${Date.now()}`;
+      }
+    }
   }
-  if (!this.sku) {
-    this.sku = `IAS-${Date.now()}`;
-  }
-  next();
 });
 
-module.exports = mongoose.model('Product', productSchema);
+Product.prototype.toJSON = function() {
+  const values = { ...this.get() };
+  ['images', 'tags', 'specifications', 'seoKeywords', 'variants'].forEach(f => {
+    if (values[f] && typeof values[f] === 'string') {
+      try { values[f] = JSON.parse(values[f]); } catch { values[f] = []; }
+    }
+  });
+  return values;
+};
+
+module.exports = Product;

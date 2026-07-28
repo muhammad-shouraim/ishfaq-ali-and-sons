@@ -1,16 +1,15 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
 
-const activityLogSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  action: { type: String, required: true },
-  resource: { type: String },
-  resourceId: { type: mongoose.Schema.Types.ObjectId },
-  details: mongoose.Schema.Types.Mixed,
-  ip: String,
-  userAgent: String
-}, { timestamps: true });
+const ActivityLog = sequelize.define('ActivityLog', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  user: { type: DataTypes.INTEGER },
+  action: { type: DataTypes.STRING, allowNull: false },
+  resource: { type: DataTypes.STRING },
+  resourceId: { type: DataTypes.INTEGER },
+  details: { type: DataTypes.TEXT },
+  ip: { type: DataTypes.STRING },
+  userAgent: { type: DataTypes.TEXT }
+});
 
-activityLogSchema.index({ createdAt: -1 });
-activityLogSchema.index({ user: 1 });
-
-module.exports = mongoose.model('ActivityLog', activityLogSchema);
+module.exports = ActivityLog;

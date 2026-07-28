@@ -28,12 +28,12 @@ async function loadWishlistPage() {
       <div class="product-card">
         <div class="product-card-image">
           <div class="product-image-placeholder-sm"><i class="fas fa-gem"></i></div>
-          <button class="wishlist-toggle-sm active wishlist-remove-btn" data-product-id="${item._id}"><i class="fas fa-heart" style="color:#e74c3c"></i></button>
+          <button class="wishlist-toggle-sm active wishlist-remove-btn" data-product-id="${item.id}"><i class="fas fa-heart" style="color:#e74c3c"></i></button>
         </div>
         <div class="product-card-body">
-          <h3><a href="/product/${item.slug || item._id}">${item.name}</a></h3>
+          <h3><a href="/product/${item.slug || item.id}">${item.name}</a></h3>
           <span class="price">Rs. ${Number(item.price).toLocaleString()}</span>
-          <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${item._id}">Add to Bag</button>
+          <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${item.id}">Add to Bag</button>
         </div>
       </div>
     `).join('')}</div>`;
@@ -83,6 +83,6 @@ async function checkWishlistStatus(productId) {
   try {
     const res = await fetch('/api/wishlist');
     const data = await res.json();
-    return data.items && data.items.some(i => i._id === productId || i === productId);
+    return data.items && data.items.some(i => i.id === productId || i === productId);
   } catch { return false; }
 }
