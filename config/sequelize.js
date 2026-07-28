@@ -21,7 +21,7 @@ const connectDB = async () => {
   } catch (error) {
     console.error('Database Connection Error:', error.message);
     console.log('Make sure MySQL is running and MYSQL_* env vars are set correctly.');
-    process.exit(1);
+    console.log('App will start without database connection.');
   }
 };
 
