@@ -15,10 +15,13 @@ function initNavToggle() {
   const links = document.getElementById('headerNav');
   const closeBtn = document.getElementById('navMobileClose');
   if (!toggle || !links) return;
-  const overlay = document.createElement('div');
-  overlay.className = 'nav-overlay';
+  let overlay = document.querySelector('.nav-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'nav-overlay';
+    document.body.appendChild(overlay);
+  }
   overlay.addEventListener('click', closeNav);
-  document.body.appendChild(overlay);
 
   function openNav() {
     toggle.classList.add('active');

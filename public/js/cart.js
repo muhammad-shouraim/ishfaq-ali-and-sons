@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadCartCount();
   loadCartSidebar();
   setupCartListeners();
+  if (document.getElementById('cartItems')) loadCartPage();
 });
 
 async function loadCartCount() {

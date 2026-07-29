@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   loadWishlistCount();
   setupWishlistListeners();
+  if (document.getElementById('wishlistContent')) loadWishlistPage();
 });
 
 async function loadWishlistCount() {
