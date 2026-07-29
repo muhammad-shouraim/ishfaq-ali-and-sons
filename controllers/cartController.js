@@ -27,12 +27,12 @@ const getCart = async (userId, sessionId) => {
 };
 
 exports.getCartPage = async (req, res) => {
-  const cart = await getCart(req.user?.id, req.sessionID);
+  const cart = await getCart(req.user?.id, req.guestSessionId);
   res.render('pages/cart', { title: 'Shopping Cart', cart });
 };
 
 exports.getCartData = async (req, res) => {
-  const cart = await getCart(req.user?.id, req.sessionID);
+  const cart = await getCart(req.user?.id, req.guestSessionId);
   if (!cart) return res.json({ items: [], subtotal: 0, total: 0, count: 0 });
   const subtotal = cart.items.reduce((sum, item) => sum + (item.product?.price || 0) * item.quantity, 0);
   res.json({ items: cart.items, subtotal, total: subtotal, count: cart.items.reduce((s, i) => s + i.quantity, 0) });
@@ -44,14 +44,14 @@ exports.addToCart = async (req, res) => {
     const product = await Product.findByPk(productId);
     if (!product || !product.isActive) return res.status(404).json({ message: 'Product not found' });
 
-    let cart = await Cart.findOne({ where: req.user ? { user: req.user.id } : { sessionId: req.sessionID } });
+    let cart = await Cart.findOne({ where: req.user ? { user: req.user.id } : { sessionId: req.guestSessionId } });
     let items = [];
     if (cart) {
       try { items = JSON.parse(cart.items); } catch { items = []; }
     } else {
       cart = Cart.build({ items: '[]' });
       if (req.user) cart.user = req.user.id;
-      else cart.sessionId = req.sessionID;
+      else cart.sessionId = req.guestSessionId;
     }
     const existing = items.find(i => Number(i.product) === Number(productId));
     if (existing) {
@@ -71,7 +71,7 @@ exports.addToCart = async (req, res) => {
 exports.updateCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
-    let cart = await Cart.findOne({ where: req.user ? { user: req.user.id } : { sessionId: req.sessionID } });
+    let cart = await Cart.findOne({ where: req.user ? { user: req.user.id } : { sessionId: req.guestSessionId } });
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
     let items = [];
     try { items = JSON.parse(cart.items); } catch { items = []; }
@@ -98,7 +98,7 @@ exports.updateCart = async (req, res) => {
 
 exports.removeFromCart = async (req, res) => {
   try {
-    let cart = await Cart.findOne({ where: req.user ? { user: req.user.id } : { sessionId: req.sessionID } });
+    let cart = await Cart.findOne({ where: req.user ? { user: req.user.id } : { sessionId: req.guestSessionId } });
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
     let items = [];
     try { items = JSON.parse(cart.items); } catch { items = []; }
@@ -122,12 +122,12 @@ exports.applyCoupon = async (req, res) => {
       }
     });
     if (!coupon) return res.status(400).json({ message: 'Invalid or expired coupon' });
-    const cart = await getCart(req.user?.id, req.sessionID);
+    const cart = await getCart(req.user?.id, req.guestSessionId);
     const subtotal = cart.items.reduce((sum, i) => sum + (i.product?.price || 0) * i.quantity, 0);
     let discount = coupon.type === 'percentage' ? (subtotal * coupon.value / 100) : coupon.value;
     if (coupon.maxDiscount) discount = Math.min(discount, Number(coupon.maxDiscount));
     if (cart) {
-      const cartRow = await Cart.findOne({ where: { user: req.user?.id, sessionId: req.sessionID } });
+      const cartRow = await Cart.findOne({ where: { user: req.user?.id, sessionId: req.guestSessionId } });
       if (cartRow) {
         cartRow.couponCode = coupon.code;
         cartRow.discount = discount;

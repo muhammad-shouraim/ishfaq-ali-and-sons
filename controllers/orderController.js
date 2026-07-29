@@ -6,7 +6,7 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 
 exports.getCheckout = async (req, res) => {
-  const where = req.user ? { user: req.user.id } : { sessionId: req.sessionID };
+  const where = req.user ? { user: req.user.id } : { sessionId: req.guestSessionId };
   const cartRow = await Cart.findOne({ where });
   if (!cartRow) return res.redirect('/cart');
   const cart = cartRow.toJSON();
@@ -23,7 +23,7 @@ exports.getCheckout = async (req, res) => {
 
 exports.placeOrder = async (req, res) => {
   try {
-    const where = req.user ? { user: req.user.id } : { sessionId: req.sessionID };
+    const where = req.user ? { user: req.user.id } : { sessionId: req.guestSessionId };
     const cartRow = await Cart.findOne({ where });
     if (!cartRow) return res.status(400).json({ message: 'Cart is empty' });
     const cart = cartRow.toJSON();

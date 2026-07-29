@@ -18,26 +18,26 @@ const getWishlist = async (userId, sessionId) => {
 };
 
 exports.getWishlistPage = async (req, res) => {
-  const wishlist = await getWishlist(req.user?.id, req.sessionID);
+  const wishlist = await getWishlist(req.user?.id, req.guestSessionId);
   res.render('pages/wishlist', { title: 'My Wishlist', wishlist });
 };
 
 exports.getWishlistData = async (req, res) => {
-  const wishlist = await getWishlist(req.user?.id, req.sessionID);
+  const wishlist = await getWishlist(req.user?.id, req.guestSessionId);
   res.json({ items: wishlist?.items || [] });
 };
 
 exports.toggleWishlist = async (req, res) => {
   try {
     const { productId } = req.body;
-    let wishlist = await Wishlist.findOne({ where: req.user ? { user: req.user.id } : { sessionId: req.sessionID } });
+    let wishlist = await Wishlist.findOne({ where: req.user ? { user: req.user.id } : { sessionId: req.guestSessionId } });
     let items = [];
     if (wishlist) {
       try { items = JSON.parse(wishlist.items); } catch { items = []; }
     } else {
       wishlist = Wishlist.build({ items: '[]' });
       if (req.user) wishlist.user = req.user.id;
-      else wishlist.sessionId = req.sessionID;
+      else wishlist.sessionId = req.guestSessionId;
     }
     const exists = items.some(i => Number(i) === Number(productId));
     if (exists) {
@@ -57,7 +57,7 @@ exports.toggleWishlist = async (req, res) => {
 
 exports.removeFromWishlist = async (req, res) => {
   try {
-    let wishlist = await Wishlist.findOne({ where: req.user ? { user: req.user.id } : { sessionId: req.sessionID } });
+    let wishlist = await Wishlist.findOne({ where: req.user ? { user: req.user.id } : { sessionId: req.guestSessionId } });
     if (!wishlist) return res.status(404).json({ message: 'Wishlist not found' });
     let items = [];
     try { items = JSON.parse(wishlist.items); } catch { items = []; }
