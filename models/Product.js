@@ -9,11 +9,11 @@ const Product = sequelize.define('Product', {
   barcode: { type: DataTypes.STRING },
   description: { type: DataTypes.TEXT, defaultValue: '' },
   shortDescription: { type: DataTypes.TEXT, defaultValue: '' },
-  specifications: { type: DataTypes.TEXT, defaultValue: '[]' },
+  specifications: { type: DataTypes.TEXT, defaultValue: '[]', get() { const r = this.getDataValue('specifications'); if (r && typeof r === 'string') { try { return JSON.parse(r); } catch { return []; } } return r || []; }, set(v) { this.setDataValue('specifications', typeof v === 'string' ? v : JSON.stringify(v)); } },
   category: { type: DataTypes.INTEGER },
   subcategory: { type: DataTypes.STRING, defaultValue: '' },
   brand: { type: DataTypes.STRING, defaultValue: '' },
-  images: { type: DataTypes.TEXT, defaultValue: '[]' },
+  images: { type: DataTypes.TEXT, defaultValue: '[]', get() { const r = this.getDataValue('images'); if (r && typeof r === 'string') { try { return JSON.parse(r); } catch { return []; } } return r || []; }, set(v) { this.setDataValue('images', typeof v === 'string' ? v : JSON.stringify(v)); } },
   thumbnail: { type: DataTypes.STRING },
   videoUrl: { type: DataTypes.STRING, defaultValue: '' },
   price: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
@@ -34,14 +34,14 @@ const Product = sequelize.define('Product', {
   isTrending: { type: DataTypes.BOOLEAN, defaultValue: false },
   isNewArrival: { type: DataTypes.BOOLEAN, defaultValue: false },
   isSale: { type: DataTypes.BOOLEAN, defaultValue: false },
-  tags: { type: DataTypes.TEXT, defaultValue: '[]' },
+  tags: { type: DataTypes.TEXT, defaultValue: '[]', get() { const r = this.getDataValue('tags'); if (r && typeof r === 'string') { try { return JSON.parse(r); } catch { return []; } } return r || []; }, set(v) { this.setDataValue('tags', typeof v === 'string' ? v : JSON.stringify(v)); } },
   material: { type: DataTypes.STRING, defaultValue: '' },
   ratings: { type: DataTypes.DECIMAL(3, 2), defaultValue: 0 },
   numReviews: { type: DataTypes.INTEGER, defaultValue: 0 },
   metaTitle: { type: DataTypes.STRING },
   metaDescription: { type: DataTypes.TEXT },
-  seoKeywords: { type: DataTypes.TEXT, defaultValue: '[]' },
-  variants: { type: DataTypes.TEXT, defaultValue: '[]' }
+  seoKeywords: { type: DataTypes.TEXT, defaultValue: '[]', get() { const r = this.getDataValue('seoKeywords'); if (r && typeof r === 'string') { try { return JSON.parse(r); } catch { return []; } } return r || []; }, set(v) { this.setDataValue('seoKeywords', typeof v === 'string' ? v : JSON.stringify(v)); } },
+  variants: { type: DataTypes.TEXT, defaultValue: '[]', get() { const r = this.getDataValue('variants'); if (r && typeof r === 'string') { try { return JSON.parse(r); } catch { return []; } } return r || []; }, set(v) { this.setDataValue('variants', typeof v === 'string' ? v : JSON.stringify(v)); } }
 }, {
   hooks: {
     beforeSave: (product) => {

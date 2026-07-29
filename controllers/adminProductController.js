@@ -120,8 +120,9 @@ exports.getEditProduct = async (req, res) => {
     if (!product) return res.redirect(ADMIN_PATH + '?message=&messageType=danger');
     const categories = await Category.findAll({ order: [['name', 'ASC']] });
     const parentCategories = categories.filter(c => !c.parentId);
+    const productData = product.toJSON();
     res.render('admin/pages/product-form', {
-      title: 'Edit Product', product, categories, parentCategories, isEditing: true
+      title: 'Edit Product', product: productData, categories, parentCategories, isEditing: true
     });
   } catch (err) {
     res.redirect(ADMIN_PATH + '?message=' + encodeURIComponent(err.message) + '&messageType=danger');
