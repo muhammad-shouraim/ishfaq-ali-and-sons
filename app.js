@@ -123,6 +123,14 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// Block old /admin path — show 404 (must be before admin routes)
+app.use((req, res, next) => {
+  if (req.path.startsWith('/admin')) {
+    return res.status(404).render('pages/404', { title: 'Page Not Found', message: 'The page you are looking for does not exist.' });
+  }
+  next();
+});
+
 app.use('/', require('./routes/page'));
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/product'));
@@ -136,14 +144,6 @@ app.use('/', require('./routes/seo'));
 app.use('/', require('./routes/admin'));
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
-
-// Block old /admin path — show 404
-app.use((req, res, next) => {
-  if (req.path.startsWith('/admin')) {
-    return res.status(404).render('pages/404', { title: 'Page Not Found', message: 'The page you are looking for does not exist.' });
-  }
-  next();
-});
 
 // Redirect old /category/ URLs to /collection/
 app.use((req, res, next) => {

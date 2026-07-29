@@ -8,7 +8,7 @@ const { Op } = require('sequelize');
 exports.getHome = async (req, res) => {
   try {
     let categories = await Category.findAll({ where: { isActive: true }, order: [['sortOrder', 'ASC']] });
-    categories = categories.map(c => {
+    categories = categories.filter(c => c.parentId !== null).map(c => {
       const cat = c.get({ plain: true });
       if (!cat.image) {
         const imgPath = path.join(__dirname, '..', 'public', 'images', 'categories', cat.slug + '.jpg');
