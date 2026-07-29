@@ -971,6 +971,11 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 .thumb-item:hover, .thumb-item.active { border-color: var(--gold); }
 .thumb-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+#mainImageContainer { position: relative; }
+.gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; background: rgba(255,255,255,0.85); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: var(--black); transition: var(--transition); box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 2; }
+.gallery-arrow:hover { background: var(--gold); color: var(--white); }
+.gallery-prev { left: 10px; }
+.gallery-next { right: 10px; }
 .img-zoom-btn { position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: var(--black); transition: var(--transition); box-shadow: 0 2px 8px rgba(0,0,0,0.12); z-index: 2; }
 .img-zoom-btn:hover { background: var(--gold); color: var(--white); transform: scale(1.1); }
 

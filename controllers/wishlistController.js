@@ -12,7 +12,7 @@ const getWishlist = async (userId, sessionId) => {
   const productIds = data.items.filter(Boolean);
   if (productIds.length > 0) {
     const products = await Product.findAll({ where: { id: productIds } });
-    data.items = productIds.map(id => products.find(p => p.id === id) || id);
+    data.items = productIds.map(id => { const p = products.find(pr => Number(pr.id) === Number(id)); return p ? p.toJSON() : id; });
   }
   return data;
 };

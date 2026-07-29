@@ -85,7 +85,7 @@ async function handleCheckout(e) {
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing Order...';
   try {
     const res = await fetch('/api/checkout', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
         name: form.name.value, phone: form.phone.value, address: form.address.value,
         city: form.city.value, postalCode: form.postalCode.value,
