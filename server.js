@@ -21,6 +21,26 @@ connectDB().then(() => {
   const db = require('./config/sequelize');
   db.sync({ alter: false }).then(async () => {
     console.log('Database tables synced');
+    // Ensure slug column exists — safe to run repeatedly
+    try {
+      await db.query("ALTER TABLE Products ADD COLUMN slug VARCHAR(255) UNIQUE AFTER name");
+      console.log('Added slug column to Products table');
+    } catch (e) {
+      if (!e.message.includes('Duplicate column')) {
+        console.error('Slug column check:', e.message);
+      }
+    }
+    // Backfill missing slugs for existing products
+    try {
+      const [rows] = await db.query("SELECT id, name FROM Products WHERE slug IS NULL OR slug = ''");
+      for (const row of rows) {
+        const slug = row.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        await db.query("UPDATE Products SET slug = ? WHERE id = ?", { replacements: [slug, row.id] });
+      }
+      if (rows.length > 0) console.log(`Backfilled ${rows.length} missing slugs`);
+    } catch (e) {
+      console.error('Slug backfill error:', e.message);
+    }
     const seedDatabase = require('./scripts/auto-seed');
     await seedDatabase();
   }).catch(err => console.error('Sync error:', err.message));

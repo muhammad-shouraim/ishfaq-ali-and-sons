@@ -54,13 +54,17 @@ exports.getProducts = async (req, res) => {
 
 exports.getProduct = async (req, res) => {
   try {
-    let product = await Product.findOne({ where: { slug: req.params.slug } });
+    let product;
+    try {
+      product = await Product.findOne({ where: { slug: req.params.slug } });
+    } catch (slugErr) {
+      console.error('getProduct slug lookup error (column may be missing):', slugErr.message);
+    }
     if (!product && /^\d+$/.test(req.params.slug)) {
       product = await Product.findByPk(Number(req.params.slug));
     }
     if (!product) {
-      console.error('getProduct: product not found for slug:', req.params.slug);
-      return res.redirect('/');
+      return res.status(404).render('pages/404', { title: 'Product Not Found', message: 'The requested product could not be found.' });
     }
     const productData = product.toJSON();
     if (productData.category) {
