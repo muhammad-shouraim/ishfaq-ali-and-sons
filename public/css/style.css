@@ -701,7 +701,6 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
   .header { top: 0; }
   .header-nav { width: 100%; left: -100%; }
   .header-nav.active { left: 0; }
-  .header-logo img { height: 45px; }
   .hero-overlay-content { padding: 20px 16px; }
   .hero-overlay-content h1 { font-size: 2.2rem; }
   .hero-overlay-content p { font-size: 0.9rem; }
