@@ -14,8 +14,13 @@ const getCart = async (userId, sessionId) => {
   if (productIds.length > 0) {
     const products = await Product.findAll({ where: { id: productIds } });
     data.items = data.items.map(item => {
-      const p = products.find(pr => pr.id === item.product);
-      return { ...item, product: p || item.product };
+      const p = products.find(pr => Number(pr.id) === Number(item.product));
+      return { ...item, product: p ? p.toJSON() : item.product };
+    });
+    data.items.forEach(item => {
+      if (item.product && typeof item.product === 'object') {
+        item.product.price = Number(item.product.price);
+      }
     });
   }
   return data;

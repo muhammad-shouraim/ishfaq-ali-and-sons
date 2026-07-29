@@ -38,14 +38,14 @@
           <div class="product-main-image" id="mainImageContainer">
             <% var prodImages = typeof product.images === 'string' ? JSON.parse(product.images || '[]') : (product.images || []); %>
             <% var mainImg = product.thumbnail || (prodImages.length > 0 ? prodImages[0] : '/images/newlogo.png'); %>
-            <img src="<%= mainImg %>" alt="<%= product.name %>" id="mainProductImage">
+            <img src="<%= mainImg %>" alt="<%= product.name %>" id="mainProductImage" onerror="this.onerror=null;this.src='/images/newlogo.png'">
             <button class="img-zoom-btn" id="zoomBtn" aria-label="Zoom"><i class="fas fa-search-plus"></i></button>
           </div>
           <% if (prodImages.length > 1) { %>
           <div class="product-thumbnails">
             <% prodImages.forEach(function(img, idx) { %>
             <div class="thumb-item <%= idx === 0 ? 'active' : '' %>" data-img="<%= img %>">
-              <img src="<%= img %>" alt="<%= product.name %>">
+              <img src="<%= img %>" alt="<%= product.name %>" onerror="this.parentElement.style.display='none'">
             </div>
             <% }) %>
           </div>
@@ -128,9 +128,12 @@
         <h2>Related Products</h2>
         <div class="products-grid">
           <% related.forEach(function(item) { %>
+          <% var relImages = typeof item.images === 'string' ? (item.images ? JSON.parse(item.images) : []) : (item.images || []); %>
+          <% var relImg = item.thumbnail || (relImages.length > 0 ? relImages[0] : '/images/newlogo.png'); %>
           <div class="product-card">
             <div class="product-card-image">
-              <div class="product-image-placeholder-sm"><i class="fas fa-gem"></i></div>
+              <img src="<%= relImg %>" alt="<%= item.name %>" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="product-image-placeholder-sm" style="display:none"><i class="fas fa-gem"></i></div>
               <button class="wishlist-toggle-sm" data-product-id="<%= item.id %>"><i class="far fa-heart"></i></button>
             </div>
             <div class="product-card-body">
@@ -291,7 +294,7 @@ document.querySelectorAll('.quick-buy-btn').forEach(function(btn) {
         var overlay = document.getElementById('cartOverlay');
         var sidebar = document.getElementById('cartSidebar');
         if (overlay && sidebar) { overlay.classList.add('active'); sidebar.classList.add('active'); }
-        loadCartData();
+        loadCartSidebar();
       } else {
         window.showToast(data.message || 'Error', 'error');
       }

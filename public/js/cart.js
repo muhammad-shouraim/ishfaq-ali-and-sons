@@ -68,6 +68,9 @@ function setupCartListeners() {
         window.showToast('Added to bag!', 'success');
         loadCartCount();
         loadCartSidebar();
+        var cartOverlay = document.getElementById('cartOverlay');
+        var cartSidebar = document.getElementById('cartSidebar');
+        if (cartOverlay && cartSidebar) { cartOverlay.classList.add('active'); cartSidebar.classList.add('active'); }
       } else {
         window.showToast(data.message || 'Failed to add', 'error');
       }
