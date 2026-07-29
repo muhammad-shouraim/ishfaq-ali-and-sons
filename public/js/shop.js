@@ -40,12 +40,15 @@ function initShop() {
         grid.innerHTML = data.products.map(p => `
           <div class="product-card">
             <div class="product-card-image">
-              <div class="product-image-placeholder-sm"><i class="fas fa-gem"></i></div>
+              <a href="/product/${p.slug}">
+                <img src="${p.thumbnail || '/images/newlogo.png'}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover">
+              </a>
+              ${p.comparePrice > 0 ? '<span class="badge badge-sale">Sale</span>' : ''}
               <button class="wishlist-toggle-sm" data-product-id="${p.id}"><i class="far fa-heart"></i></button>
             </div>
             <div class="product-card-body">
               <h3><a href="/product/${p.slug}">${p.name}</a></h3>
-              <span class="price">Rs. ${Number(p.price).toLocaleString()}</span>
+              ${p.comparePrice > 0 ? '<span class="price old-price">Rs. ' + Number(p.price).toLocaleString() + '</span><span class="price sale-price">Rs. ' + Number(p.comparePrice).toLocaleString() + '</span>' : '<span class="price">Rs. ' + Number(p.price).toLocaleString() + '</span>'}
               <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${p.id}">Add to Bag</button>
             </div>
           </div>
@@ -97,12 +100,15 @@ function initCategoryShop() {
         grid.innerHTML = data.products.map(p => `
           <div class="product-card">
             <div class="product-card-image">
-              <div class="product-image-placeholder-sm"><i class="fas fa-gem"></i></div>
+              <a href="/product/${p.slug}">
+                <img src="${p.thumbnail || '/images/newlogo.png'}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover">
+              </a>
+              ${p.comparePrice > 0 ? '<span class="badge badge-sale">Sale</span>' : ''}
               <button class="wishlist-toggle-sm" data-product-id="${p.id}"><i class="far fa-heart"></i></button>
             </div>
             <div class="product-card-body">
               <h3><a href="/product/${p.slug}">${p.name}</a></h3>
-              <span class="price">Rs. ${Number(p.price).toLocaleString()}</span>
+              ${p.comparePrice > 0 ? '<span class="price old-price">Rs. ' + Number(p.price).toLocaleString() + '</span><span class="price sale-price">Rs. ' + Number(p.comparePrice).toLocaleString() + '</span>' : '<span class="price">Rs. ' + Number(p.price).toLocaleString() + '</span>'}
               <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${p.id}">Add to Bag</button>
             </div>
           </div>

@@ -253,6 +253,7 @@
   .admin-card { padding: 14px; }
   .admin-table th, .admin-table td { padding: 6px 6px; font-size: 0.7rem; }
   .page-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .admin-form input[type="file"] { padding: 12px; font-size: 0.95rem; min-height: 44px; }
 }
 .low-stock-row td { background-color: #fff0f0 !important; }
 .low-stock-row:hover td { background-color: #ffe0e0 !important; }
