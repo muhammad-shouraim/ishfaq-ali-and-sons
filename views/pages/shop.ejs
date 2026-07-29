@@ -24,17 +24,16 @@
               <h4>Categories</h4>
               <div class="filter-options" id="categoryFilter">
                 <label><input type="radio" name="category" value="" checked> All</label>
-                <label><input type="radio" name="category" value="karit"> Karit</label>
-                <label><input type="radio" name="category" value="turkish-jewelry"> Turkish Jewelry</label>
-                <label style="padding-left:20px;font-size:0.82rem"><input type="radio" name="category" value="turkish-rings"> Turkish Rings</label>
-                <label style="padding-left:20px;font-size:0.82rem"><input type="radio" name="category" value="turkish-earrings"> Turkish Ear Rings</label>
-                <label style="padding-left:20px;font-size:0.82rem"><input type="radio" name="category" value="turkish-necklace"> Turkish Necklace</label>
-                <label style="padding-left:20px;font-size:0.82rem"><input type="radio" name="category" value="turkish-bracelet"> Turkish Bracelet</label>
-                <label><input type="radio" name="category" value="1-carat"> 1 Carat</label>
-                <label style="padding-left:20px;font-size:0.82rem"><input type="radio" name="category" value="1-carat-rings"> 1 Carat Rings</label>
-                <label style="padding-left:20px;font-size:0.82rem"><input type="radio" name="category" value="1-carat-earrings"> 1 Carat Ear Rings</label>
-                <label style="padding-left:20px;font-size:0.82rem"><input type="radio" name="category" value="1-carat-necklace"> 1 Carat Necklace</label>
-                <label style="padding-left:20px;font-size:0.82rem"><input type="radio" name="category" value="1-carat-bracelet"> 1 Carat Bracelet</label>
+                <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+                  <% categories.forEach(function(cat) { %>
+                    <label><input type="radio" name="category" value="<%= cat.slug %>"> <%= cat.name %></label>
+                    <% if (cat.children && cat.children.length > 0) { %>
+                      <% cat.children.forEach(function(child) { %>
+                        <label style="padding-left:20px;font-size:0.82rem"><input type="radio" name="category" value="<%= child.slug %>"> <%= child.name %></label>
+                      <% }); %>
+                    <% } %>
+                  <% }); %>
+                <% } %>
               </div>
             </div>
 

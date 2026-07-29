@@ -3,8 +3,17 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 
 exports.getShop = async (req, res) => {
-  const categories = await Category.findAll({ where: { isActive: true } });
-  res.render('pages/shop', { title: 'Shop', categories, query: req.query });
+  const allCategories = await Category.findAll({
+    where: { isActive: true },
+    include: [{ model: Category, as: 'children' }],
+    order: [['sortOrder', 'ASC']]
+  });
+  const parentCategories = allCategories.filter(c => !c.parentId).map(c => {
+    const plain = c.get({ plain: true });
+    plain.children = allCategories.filter(child => child.parentId === c.id);
+    return plain;
+  });
+  res.render('pages/shop', { title: 'Shop', categories: parentCategories, query: req.query });
 };
 
 exports.getProducts = async (req, res) => {

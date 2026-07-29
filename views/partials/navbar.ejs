@@ -16,16 +16,16 @@
         <button class="nav-mobile-close" id="navMobileClose" aria-label="Close Menu"><i class="fas fa-times"></i></button>
       </div>
 
-      <div class="nav-mobile-links">
-        <a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>"><i class="fas fa-home"></i> Home</a>
-        <a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>"><i class="fas fa-store"></i> Shop</a>
+      <div class="nav-desktop-links">
+        <a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>">Home</a>
+        <a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>">Shop</a>
 
         <% if (typeof navCategories !== 'undefined' && navCategories.length > 0) { %>
           <% navCategories.forEach(function(cat) { %>
             <% var catPrefix = cat.slug.replace(/[^a-z0-9]+/g, '-') + '-'; %>
             <div class="nav-item nav-dropdown">
               <a href="/collection/<%= cat.slug %>" class="nav-dropdown-toggle <%= currentUrl.startsWith('/collection/' + cat.slug) ? 'active' : '' %>">
-                <i class="fas fa-tag"></i> <%= cat.name %> <i class="fas fa-chevron-down"></i>
+                <%= cat.name %> <i class="fas fa-chevron-down"></i>
               </a>
               <div class="nav-dropdown-menu">
                 <% (cat.children || []).forEach(function(child) { %>
@@ -41,16 +41,17 @@
                       </div>
                     </div>
                   <% } else { %>
-                    <a href="/collection/<%= cat.slug %>/<%= childSuffix %>"><i class="fas fa-angle-right"></i> <%= child.name %></a>
+                    <a href="/collection/<%= cat.slug %>/<%= childSuffix %>"><%= child.name %></a>
                   <% } %>
                 <% }); %>
               </div>
             </div>
           <% }); %>
         <% } %>
+      </div>
 
+      <div class="nav-mobile-extras">
         <div class="nav-mobile-divider"></div>
-
         <a href="/wishlist"><i class="far fa-heart"></i> Wishlist <span class="wishlist-count-mobile-nav" id="wishlistCountMobileNav">0</span></a>
         <a href="/track-order"><i class="fas fa-truck"></i> Track Order</a>
         <a href="/contact"><i class="fas fa-envelope"></i> Contact Us</a>
@@ -116,7 +117,6 @@
   </div>
 </div>
 
-<!-- Auth Modal -->
 <div class="auth-modal-overlay" id="authModalOverlay" onclick="if(event.target===this)closeAuthModal()">
   <div class="auth-modal">
     <button class="auth-modal-close" onclick="closeAuthModal()"><i class="fas fa-times"></i></button>
@@ -125,7 +125,6 @@
       <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">Create Account</button>
     </div>
 
-    <!-- Login Form -->
     <form id="loginForm" class="auth-modal-form active" autocomplete="off">
       <input type="hidden" name="redirect" value="">
       <div class="form-group">
@@ -143,7 +142,6 @@
       <p class="auth-switch-text">Don't have an account? <a href="#" onclick="switchAuthTab('signup');return false">Create one</a></p>
     </form>
 
-    <!-- Signup Form -->
     <form id="signupForm" class="auth-modal-form" autocomplete="off">
       <div class="form-group">
         <label for="signupName">Full Name</label>
@@ -176,7 +174,6 @@ function switchAuthTab(tab) {
   document.querySelectorAll('.auth-modal-form').forEach(f => f.classList.toggle('active', f.id === tab + 'Form'));
 }
 
-/* Modal form handlers */
 document.addEventListener('DOMContentLoaded', function() {
   var loginForm = document.getElementById('loginForm');
   if (loginForm) loginForm.addEventListener('submit', async function(e) {
@@ -228,7 +225,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  /* Auto-open modal if redirected with ?login=1 */
   (function(){
     var p = new URLSearchParams(window.location.search);
     if (p.get('login') === '1') {
