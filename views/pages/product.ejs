@@ -35,12 +35,20 @@
       <% if (product) { %>
       <div class="product-detail" data-aos="fade-up">
         <div class="product-gallery">
-          <div class="product-main-image">
-            <div class="product-image-placeholder">
-              <i class="fas fa-gem"></i>
-              <span><%= product.name %></span>
-            </div>
+          <div class="product-main-image" id="mainImageContainer">
+            <% var prodImages = typeof product.images === 'string' ? JSON.parse(product.images || '[]') : (product.images || []); %>
+            <% var mainImg = product.thumbnail || (prodImages.length > 0 ? prodImages[0] : '/images/newlogo.png'); %>
+            <img src="<%= mainImg %>" alt="<%= product.name %>" id="mainProductImage">
           </div>
+          <% if (prodImages.length > 1) { %>
+          <div class="product-thumbnails">
+            <% prodImages.forEach(function(img, idx) { %>
+            <div class="thumb-item <%= idx === 0 ? 'active' : '' %>" data-img="<%= img %>">
+              <img src="<%= img %>" alt="<%= product.name %>">
+            </div>
+            <% }) %>
+          </div>
+          <% } %>
         </div>
         <div class="product-info">
           <div class="product-badges">
@@ -145,5 +153,20 @@
     </div>
   </section>
 </main>
+
+<script>
+// Product gallery thumbnail swap
+document.querySelectorAll('.thumb-item').forEach(function(item) {
+  item.addEventListener('click', function() {
+    var mainImg = document.getElementById('mainProductImage');
+    var newSrc = this.getAttribute('data-img');
+    if (mainImg && newSrc) {
+      mainImg.src = newSrc;
+      document.querySelectorAll('.thumb-item').forEach(function(t) { t.classList.remove('active'); });
+      this.classList.add('active');
+    }
+  });
+});
+</script>
 
 <%- include('../partials/footer') %>

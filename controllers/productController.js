@@ -49,17 +49,18 @@ exports.getProduct = async (req, res) => {
       include: [{ model: Category, attributes: ['name', 'slug'], as: 'categoryData' }]
     });
     if (!product) return res.redirect('/');
+    const productData = product.toJSON();
     const related = await Product.findAll({
-      where: { category: product.category, id: { [Op.ne]: product.id }, isActive: true },
+      where: { category: productData.category, id: { [Op.ne]: productData.id }, isActive: true },
       limit: 4
     });
     res.render('pages/product', {
-      title: product.name, product, related,
-      metaDescription: product.shortDescription || product.description || 'ISHFAQ ALI & SONS - Premium Luxury Jewelry',
-      metaKeywords: product.tags ? (Array.isArray(product.tags) ? product.tags.join(', ') : product.tags) : 'jewelry, luxury',
-      ogTitle: product.name + ' | ISHFAQ ALI & SONS',
-      ogDescription: (product.shortDescription || product.description || '').substring(0, 200),
-      ogImage: product.images && product.images.length > 0 ? (typeof product.images === 'string' ? JSON.parse(product.images)[0] : product.images[0]) : '/images/logo.jpeg'
+      title: productData.name, product: productData, related,
+      metaDescription: productData.shortDescription || productData.description || 'ISHFAQ ALI & SONS - Premium Luxury Jewelry',
+      metaKeywords: productData.tags ? (Array.isArray(productData.tags) ? productData.tags.join(', ') : productData.tags) : 'jewelry, luxury',
+      ogTitle: productData.name + ' | ISHFAQ ALI & SONS',
+      ogDescription: (productData.shortDescription || productData.description || '').substring(0, 200),
+      ogImage: productData.images && productData.images.length > 0 ? productData.images[0] : '/images/logo.jpeg'
     });
   } catch (err) {
     res.redirect('/');
