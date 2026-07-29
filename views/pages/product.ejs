@@ -39,6 +39,7 @@
             <% var prodImages = typeof product.images === 'string' ? JSON.parse(product.images || '[]') : (product.images || []); %>
             <% var mainImg = product.thumbnail || (prodImages.length > 0 ? prodImages[0] : '/images/newlogo.png'); %>
             <img src="<%= mainImg %>" alt="<%= product.name %>" id="mainProductImage">
+            <button class="img-zoom-btn" id="zoomBtn" aria-label="Zoom"><i class="fas fa-search-plus"></i></button>
           </div>
           <% if (prodImages.length > 1) { %>
           <div class="product-thumbnails">
@@ -154,6 +155,17 @@
   </section>
 </main>
 
+<div class="img-lightbox" id="imgLightbox">
+  <div class="img-lightbox-overlay" id="imgLightboxOverlay"></div>
+  <button class="img-lightbox-close" id="imgLightboxClose"><i class="fas fa-times"></i></button>
+  <button class="img-lightbox-nav img-lightbox-prev" id="imgLightboxPrev"><i class="fas fa-chevron-left"></i></button>
+  <button class="img-lightbox-nav img-lightbox-next" id="imgLightboxNext"><i class="fas fa-chevron-right"></i></button>
+  <div class="img-lightbox-content">
+    <img src="" alt="" id="imgLightboxImg">
+  </div>
+  <div class="img-lightbox-counter" id="imgLightboxCounter"></div>
+</div>
+
 <script>
 // Product gallery thumbnail hover
 document.querySelectorAll('.thumb-item').forEach(function(item) {
@@ -167,6 +179,87 @@ document.querySelectorAll('.thumb-item').forEach(function(item) {
     }
   });
 });
+
+// Image zoom lightbox
+(function() {
+  var lightbox = document.getElementById('imgLightbox');
+  var overlay = document.getElementById('imgLightboxOverlay');
+  var closeBtn = document.getElementById('imgLightboxClose');
+  var img = document.getElementById('imgLightboxImg');
+  var prevBtn = document.getElementById('imgLightboxPrev');
+  var nextBtn = document.getElementById('imgLightboxNext');
+  var counter = document.getElementById('imgLightboxCounter');
+  var zoomBtn = document.getElementById('zoomBtn');
+  var mainImg = document.getElementById('mainProductImage');
+  var thumbs = document.querySelectorAll('.thumb-item');
+  var images = [];
+  var currentIdx = 0;
+
+  thumbs.forEach(function(t) { images.push(t.getAttribute('data-img')); });
+  if (mainImg && mainImg.src && images.indexOf(mainImg.src) === -1) {
+    images.unshift(mainImg.src);
+  }
+
+  function openLightbox(idx) {
+    if (!images.length) return;
+    currentIdx = idx;
+    img.src = images[currentIdx];
+    img.alt = mainImg ? mainImg.alt : '';
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    updateCounter();
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function prevImage() {
+    if (images.length < 2) return;
+    currentIdx = (currentIdx - 1 + images.length) % images.length;
+    img.src = images[currentIdx];
+    updateCounter();
+  }
+
+  function nextImage() {
+    if (images.length < 2) return;
+    currentIdx = (currentIdx + 1) % images.length;
+    img.src = images[currentIdx];
+    updateCounter();
+  }
+
+  function updateCounter() {
+    if (counter && images.length > 1) {
+      counter.textContent = (currentIdx + 1) + ' / ' + images.length;
+    } else if (counter) {
+      counter.textContent = '';
+    }
+  }
+
+  if (zoomBtn) {
+    zoomBtn.addEventListener('click', function(e) { e.stopPropagation(); openLightbox(0); });
+  }
+  if (mainImg) {
+    mainImg.addEventListener('click', function() { openLightbox(0); });
+  }
+  if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+  if (overlay) overlay.addEventListener('click', closeLightbox);
+  if (prevBtn) prevBtn.addEventListener('click', prevImage);
+  if (nextBtn) nextBtn.addEventListener('click', nextImage);
+  document.addEventListener('keydown', function(e) {
+    if (!lightbox || !lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'ArrowRight') nextImage();
+  });
+  thumbs.forEach(function(t, i) {
+    t.addEventListener('click', function() {
+      var idx = images.length > thumbs.length ? i + 1 : i;
+      openLightbox(idx);
+    });
+  });
+})();
 
 // Tab switching
 document.querySelectorAll('.tab-btn').forEach(function(btn) {
