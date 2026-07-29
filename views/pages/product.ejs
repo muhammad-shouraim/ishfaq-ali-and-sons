@@ -85,8 +85,8 @@
             </button>
           </div>
           <div class="product-meta">
-            <% if (product.category) { %>
-            <div class="meta-item"><strong>Category:</strong> <a href="/collection/<%= product.category.slug %>"><%= product.category.name %></a></div>
+            <% if (product.categoryData) { %>
+            <div class="meta-item"><strong>Category:</strong> <a href="/collection/<%= product.categoryData.slug %>"><%= product.categoryData.name %></a></div>
             <% } %>
             <% if (product.sku) { %><div class="meta-item"><strong>SKU:</strong> <%= product.sku %></div><% } %>
             <% if (product.material) { %><div class="meta-item"><strong>Material:</strong> <%= product.material %></div><% } %>

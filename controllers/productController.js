@@ -54,12 +54,16 @@ exports.getProducts = async (req, res) => {
 
 exports.getProduct = async (req, res) => {
   try {
-    const product = await Product.findOne({
-      where: { slug: req.params.slug },
-      include: [{ model: Category, attributes: ['name', 'slug'], as: 'categoryData' }]
-    });
-    if (!product) return res.redirect('/');
+    const product = await Product.findOne({ where: { slug: req.params.slug } });
+    if (!product) {
+      console.error('getProduct: product not found for slug:', req.params.slug);
+      return res.redirect('/');
+    }
     const productData = product.toJSON();
+    if (productData.category) {
+      const cat = await Category.findByPk(productData.category, { attributes: ['name', 'slug'] });
+      if (cat) productData.categoryData = cat.toJSON();
+    }
     const reviews = await Review.findAll({
       where: { product: productData.id, isApproved: true },
       order: [['createdAt', 'DESC']]
@@ -80,6 +84,7 @@ exports.getProduct = async (req, res) => {
       ogImage: productData.images && productData.images.length > 0 ? productData.images[0] : '/images/logo.jpeg'
     });
   } catch (err) {
+    console.error('getProduct error:', err);
     res.redirect('/');
   }
 };

@@ -599,7 +599,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 
 .wishlist-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
   .header-nav {
     position: fixed; top: 0; left: -100%; width: 300px; height: 100vh;
     background: var(--white); flex-direction: column; gap: 0;

@@ -13,7 +13,7 @@ function initNavToggle() {
   const links = document.getElementById('headerNav');
   if (!links) return;
   let toggle = document.getElementById('mobileToggle');
-  if (!toggle && window.innerWidth <= 1024) {
+  if (!toggle && window.innerWidth <= 1280) {
     toggle = document.createElement('div');
     toggle.className = 'mobile-toggle';
     toggle.id = 'mobileToggle';
