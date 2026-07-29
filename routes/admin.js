@@ -19,7 +19,7 @@ const settingCtrl = require('../controllers/adminSettingController');
 const promoCtrl = require('../controllers/adminPromotionController');
 
 router.use(protectAdmin);
-router.use(requireAdmin);
+router.use(ADMIN_PATH, requireAdmin);
 
 // ===== DASHBOARD =====
 router.get(ADMIN_PATH, adminCtrl.getDashboard);
