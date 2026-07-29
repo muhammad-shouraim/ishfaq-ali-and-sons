@@ -7,6 +7,12 @@ const cloudinary = require('../config/cloudinary');
 const ADMIN_PATH = require('../config/adminPath');
 const { logAdminAction } = require('../utils/adminLogger');
 
+function toArray(obj) {
+  if (Array.isArray(obj)) return obj;
+  if (obj && typeof obj === 'object') return Object.values(obj);
+  return [];
+}
+
 exports.listProducts = async (req, res) => {
   try {
     const { search, category, isActive, isFeatured, sort, page = 1, limit = 20 } = req.query;
@@ -88,16 +94,16 @@ exports.createProduct = async (req, res) => {
       metaDescription: data.metaDescription || '',
       images: JSON.stringify(allImages),
       thumbnail,
-      specifications: data.specifications ? JSON.stringify(Array.isArray(data.specifications) ? data.specifications : []) : '[]',
+      specifications: data.specifications ? JSON.stringify(toArray(data.specifications)) : '[]',
       seoKeywords: data.seoKeywords ? JSON.stringify(Array.isArray(data.seoKeywords) ? data.seoKeywords : data.seoKeywords.split(',').map(k => k.trim())) : '[]',
-      variants: data.variants ? JSON.stringify(typeof data.variants === 'string' ? JSON.parse(data.variants) : data.variants) : '[]'
+      variants: data.variants ? JSON.stringify(typeof data.variants === 'string' ? JSON.parse(data.variants) : toArray(data.variants)) : '[]'
     });
     await ActivityLog.create({ user: req.user.id, action: 'create_product', resource: 'Product', resourceId: product.id, details: JSON.stringify({ name: product.name }), ip: req.ip });
     await logAdminAction(req, 'create_product', 'Product', product.id, product.name, `Created product "${product.name}"`);
     if (req.xhr || req.headers.accept?.includes('json')) {
       res.json({ success: true, product });
     } else {
-      res.redirect(ADMIN_PATH + '/products');
+      res.redirect(ADMIN_PATH + '/products?message=' + encodeURIComponent('Product created successfully') + '&messageType=success');
     }
   } catch (err) {
     if (req.xhr || req.headers.accept?.includes('json')) {
@@ -163,16 +169,16 @@ exports.updateProduct = async (req, res) => {
       metaDescription: data.metaDescription || '',
       images: JSON.stringify(allImages),
       thumbnail,
-      specifications: data.specifications ? JSON.stringify(Array.isArray(data.specifications) ? data.specifications : []) : product.specifications,
+      specifications: data.specifications ? JSON.stringify(toArray(data.specifications)) : product.specifications,
       seoKeywords: data.seoKeywords ? JSON.stringify(Array.isArray(data.seoKeywords) ? data.seoKeywords : data.seoKeywords.split(',').map(k => k.trim())) : product.seoKeywords,
-      variants: data.variants ? JSON.stringify(typeof data.variants === 'string' ? JSON.parse(data.variants) : data.variants) : product.variants
+      variants: data.variants ? JSON.stringify(typeof data.variants === 'string' ? JSON.parse(data.variants) : toArray(data.variants)) : product.variants
     });
     await ActivityLog.create({ user: req.user.id, action: 'update_product', resource: 'Product', resourceId: product.id, details: JSON.stringify({ name: product.name }), ip: req.ip });
     await logAdminAction(req, 'update_product', 'Product', product.id, product.name, `Updated product "${product.name}"`);
     if (req.xhr || req.headers.accept?.includes('json')) {
       res.json({ success: true, product });
     } else {
-      res.redirect(ADMIN_PATH + '/products');
+      res.redirect(ADMIN_PATH + '/products?message=' + encodeURIComponent('Product updated successfully') + '&messageType=success');
     }
   } catch (err) {
     if (req.xhr || req.headers.accept?.includes('json')) {

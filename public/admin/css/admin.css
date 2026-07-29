@@ -255,6 +255,11 @@
   .page-header { flex-direction: column; align-items: flex-start; gap: 8px; }
   .admin-form input[type="file"] { padding: 12px; font-size: 0.95rem; min-height: 44px; }
 }
+.product-action-btn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0 !important; }
+.product-actions-td { white-space: nowrap; }
+@media (max-width: 768px) {
+  .product-action-btn { width: 40px; height: 40px; font-size: 0.9rem; }
+}
 .low-stock-row td { background-color: #fff0f0 !important; }
 .low-stock-row:hover td { background-color: #ffe0e0 !important; }
 .activity-log { max-height: 300px; overflow-y: auto; }

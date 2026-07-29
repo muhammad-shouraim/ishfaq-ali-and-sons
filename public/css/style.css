@@ -734,7 +734,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
   .collections-grid { grid-template-columns: 1fr; }
   .subcategories-grid { grid-template-columns: 1fr; }
   .categories-slider { grid-template-columns: 1fr; }
-  .products-slider { grid-template-columns: 1fr; }
+  .products-slider { grid-template-columns: repeat(2, 1fr); }
   .products-grid { grid-template-columns: repeat(2, 1fr); }
   .wishlist-grid { grid-template-columns: repeat(2, 1fr); }
   .values-grid { grid-template-columns: 1fr; }

@@ -308,9 +308,12 @@
           <button type="button" class="admin-btn admin-btn-sm" onclick="addSpec()">Add Specification</button>
           <div class="tab-nav-buttons">
             <button type="button" class="btn-prev" onclick="goPrev(8)">Previous</button>
-            <button type="submit" class="btn-next" id="submitBtn"><%= isEditing ? 'Update Product' : 'Create Product' %></button>
           </div>
         </div>
+      </div>
+
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--admin-border);display:flex;gap:10px;justify-content:flex-end">
+        <button type="submit" class="btn-next" id="submitBtn" style="padding:12px 32px;font-size:0.9rem"><%= isEditing ? 'Update Product' : 'Create Product' %></button>
       </div>
     </form>
   </div>
@@ -449,8 +452,12 @@
       if (!validateTab(i)) {
         e.preventDefault();
         showTab(i);
-        var btn = document.querySelector('.tab-pane.active .btn-next');
-        if (btn) { btn.classList.add('shake'); setTimeout(function() { btn.classList.remove('shake'); }, 500); }
+        var tab = document.querySelector('.tab-pane.active');
+        if (tab) {
+          tab.classList.add('shake');
+          setTimeout(function() { tab.classList.remove('shake'); }, 500);
+          tab.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
         return;
       }
     }

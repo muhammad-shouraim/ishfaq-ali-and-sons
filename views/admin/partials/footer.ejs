@@ -5,6 +5,16 @@
   </div><!-- admin-main -->
 </div><!-- admin-body -->
 <script src="/admin/js/admin.js"></script>
+<script>
+(function() {
+  var flash = document.querySelector('.admin-alert');
+  if (flash && typeof adminToast === 'function') {
+    var msg = flash.textContent.trim();
+    var type = flash.classList.contains('admin-alert-success') ? 'success' : flash.classList.contains('admin-alert-danger') ? 'error' : 'warning';
+    setTimeout(function() { adminToast(msg, type); }, 100);
+  }
+})();
+</script>
 <% if (typeof useEditor !== 'undefined' && useEditor) { %>
 <script>
 tinymce.init({
