@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavToggle();
   initNavDropdowns();
   initUserDropdown();
-  initSearchToggle();
   initCartToggle();
   initToast();
 });
@@ -91,19 +90,6 @@ function initUserDropdown() {
       toggle.parentElement.classList.remove('active');
     }
   });
-}
-
-// Search Toggle
-function initSearchToggle() {
-  const openBtn = document.getElementById('searchToggle');
-  const overlay = document.getElementById('searchOverlay');
-  const closeBtn = document.getElementById('searchClose');
-  const input = document.getElementById('searchInput');
-  if (!overlay) return;
-  if (openBtn) openBtn.addEventListener('click', () => { overlay.classList.add('active'); if (input) setTimeout(() => input.focus(), 100); });
-  if (closeBtn) closeBtn.addEventListener('click', () => overlay.classList.remove('active'));
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.classList.remove('active'); });
 }
 
 // Cart Toggle

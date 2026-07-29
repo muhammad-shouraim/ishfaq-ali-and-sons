@@ -26,11 +26,6 @@ const getCart = async (userId, sessionId) => {
   return data;
 };
 
-exports.getCartPage = async (req, res) => {
-  const cart = await getCart(req.user?.id, req.guestSessionId);
-  res.render('pages/cart', { title: 'Shopping Cart', cart });
-};
-
 exports.getCartData = async (req, res) => {
   const cart = await getCart(req.user?.id, req.guestSessionId);
   if (!cart) return res.json({ items: [], subtotal: 0, total: 0, count: 0 });

@@ -8,10 +8,10 @@ const User = require('../models/User');
 exports.getCheckout = async (req, res) => {
   const where = req.user ? { user: req.user.id } : { sessionId: req.guestSessionId };
   const cartRow = await Cart.findOne({ where });
-  if (!cartRow) return res.redirect('/cart');
+  if (!cartRow) return res.redirect('/shop');
   const cart = cartRow.toJSON();
   const items = cart.items || [];
-  if (items.length === 0) return res.redirect('/cart');
+  if (items.length === 0) return res.redirect('/shop');
   const productIds = items.map(i => i.product);
   const products = productIds.length > 0 ? await Product.findAll({ where: { id: productIds } }) : [];
   items.forEach(item => {

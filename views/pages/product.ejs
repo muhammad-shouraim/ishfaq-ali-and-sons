@@ -123,7 +123,58 @@
           <% } %>
         </div>
         <div class="tab-content" id="tab-reviews">
-          <p>Reviews will appear here once customers purchase this product.</p>
+          <div class="reviews-summary">
+            <div class="reviews-avg">
+              <span class="reviews-avg-number"><%= reviewAvg %></span>
+              <div class="stars-display" data-rating="<%= Math.round(reviewAvg) %>"></div>
+              <span class="reviews-count">(<%= reviewTotal %> <%= reviewTotal === 1 ? 'review' : 'reviews' %>)</span>
+            </div>
+          </div>
+          <div class="reviews-list" id="reviewsList">
+            <% if (reviews && reviews.length > 0) { %>
+              <% reviews.forEach(function(r) { %>
+              <div class="review-item">
+                <div class="review-header">
+                  <div class="reviewer-info">
+                    <strong><%= r.name %></strong>
+                    <div class="stars-display" data-rating="<%= r.rating %>"></div>
+                  </div>
+                  <span class="review-date"><%= new Date(r.createdAt).toLocaleDateString() %></span>
+                </div>
+                <% if (r.title) { %><h4 class="review-title"><%= r.title %></h4><% } %>
+                <p class="review-comment"><%= r.comment %></p>
+              </div>
+              <% }) %>
+            <% } else { %>
+              <p class="reviews-empty">No reviews yet. Be the first to review!</p>
+            <% } %>
+          </div>
+          <div class="review-form-wrap">
+            <button class="btn btn-outline" id="showReviewFormBtn"><i class="far fa-star"></i> Write a Review</button>
+            <form id="reviewForm" class="review-form" style="display:none" data-product-id="<%= product.id %>">
+              <h4>Write Your Review</h4>
+              <div class="form-group">
+                <label for="reviewName">Your Name</label>
+                <input type="text" id="reviewName" name="name" required placeholder="Enter your name">
+              </div>
+              <div class="form-group">
+                <label for="reviewRating">Rating</label>
+                <div class="star-rating" id="starRating">
+                  <i class="far fa-star" data-value="1"></i>
+                  <i class="far fa-star" data-value="2"></i>
+                  <i class="far fa-star" data-value="3"></i>
+                  <i class="far fa-star" data-value="4"></i>
+                  <i class="far fa-star" data-value="5"></i>
+                </div>
+                <input type="hidden" name="rating" id="reviewRatingValue" value="0">
+              </div>
+              <div class="form-group">
+                <label for="reviewComment">Your Review</label>
+                <textarea id="reviewComment" name="comment" rows="4" required placeholder="Share your experience with this product"></textarea>
+              </div>
+              <button type="submit" class="btn btn-gold">Submit Review</button>
+            </form>
+          </div>
         </div>
       </div>
 
@@ -326,6 +377,126 @@ document.querySelectorAll('.quick-buy-btn').forEach(function(btn) {
     result.style.display = 'none';
   });
 })();
+
+// Reviews - star rating
+(function() {
+  var stars = document.querySelectorAll('#starRating i');
+  var ratingInput = document.getElementById('reviewRatingValue');
+  if (!stars.length || !ratingInput) return;
+  stars.forEach(function(star) {
+    star.addEventListener('click', function() {
+      var val = parseInt(this.getAttribute('data-value'));
+      ratingInput.value = val;
+      stars.forEach(function(s) {
+        var sv = parseInt(s.getAttribute('data-value'));
+        if (sv <= val) {
+          s.className = 'fas fa-star active';
+        } else {
+          s.className = 'far fa-star';
+        }
+      });
+    });
+    star.addEventListener('mouseenter', function() {
+      var val = parseInt(this.getAttribute('data-value'));
+      stars.forEach(function(s) {
+        var sv = parseInt(s.getAttribute('data-value'));
+        s.className = sv <= val ? 'fas fa-star active' : 'far fa-star';
+      });
+    });
+    star.addEventListener('mouseleave', function() {
+      var selected = parseInt(ratingInput.value);
+      stars.forEach(function(s) {
+        var sv = parseInt(s.getAttribute('data-value'));
+        if (selected > 0) {
+          s.className = sv <= selected ? 'fas fa-star active' : 'far fa-star';
+        } else {
+          s.className = 'far fa-star';
+        }
+      });
+    });
+  });
+
+  // Display stars for existing reviews
+  document.querySelectorAll('.stars-display').forEach(function(el) {
+    var rating = parseInt(el.getAttribute('data-rating'));
+    if (!rating) return;
+    var html = '';
+    for (var i = 1; i <= 5; i++) {
+      html += i <= rating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+    }
+    el.innerHTML = html;
+  });
+})();
+
+// Review form toggle
+var showFormBtn = document.getElementById('showReviewFormBtn');
+var reviewForm = document.getElementById('reviewForm');
+if (showFormBtn && reviewForm) {
+  showFormBtn.addEventListener('click', function() {
+    reviewForm.style.display = reviewForm.style.display === 'none' ? 'block' : 'none';
+  });
+}
+
+// Review form submit
+var reviewFormEl = document.getElementById('reviewForm');
+if (reviewFormEl) {
+  reviewFormEl.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var btn = this.querySelector('button[type="submit"]');
+    var productId = this.getAttribute('data-product-id');
+    var name = document.getElementById('reviewName').value.trim();
+    var rating = document.getElementById('reviewRatingValue').value;
+    var comment = document.getElementById('reviewComment').value.trim();
+    if (!name || rating === '0' || !comment) {
+      window.showToast('Please fill in all fields and select a rating', 'error');
+      return;
+    }
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    try {
+      var res = await fetch('/api/products/' + productId + '/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ name: name, rating: rating, comment: comment })
+      });
+      var data = await res.json();
+      if (data.success) {
+        window.showToast('Review submitted!', 'success');
+        this.style.display = 'none';
+        document.getElementById('reviewName').value = '';
+        document.getElementById('reviewRatingValue').value = '0';
+        document.getElementById('reviewComment').value = '';
+        document.querySelectorAll('#starRating i').forEach(function(s) { s.className = 'far fa-star'; });
+        // Reload reviews
+        var reviewsRes = await fetch('/api/products/' + productId + '/reviews');
+        var reviewsData = await reviewsRes.json();
+        var list = document.getElementById('reviewsList');
+        if (reviewsData.reviews && reviewsData.reviews.length > 0) {
+          list.innerHTML = reviewsData.reviews.map(function(r) {
+            var starsHtml = '';
+            for (var i = 1; i <= 5; i++) {
+              starsHtml += i <= r.rating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+            }
+            var date = new Date(r.createdAt).toLocaleDateString();
+            var titleHtml = r.title ? '<h4 class="review-title">' + r.title + '</h4>' : '';
+            return '<div class="review-item"><div class="review-header"><div class="reviewer-info"><strong>' + r.name + '</strong><div class="stars-display">' + starsHtml + '</div></div><span class="review-date">' + date + '</span></div>' + titleHtml + '<p class="review-comment">' + r.comment + '</p></div>';
+          }).join('');
+        } else {
+          list.innerHTML = '<p class="reviews-empty">No reviews yet. Be the first to review!</p>';
+        }
+        // Update summary
+        var summaryEl = document.querySelector('.reviews-avg-number');
+        var countEl = document.querySelector('.reviews-count');
+        if (summaryEl) summaryEl.textContent = reviewsData.avgRating;
+        if (countEl) countEl.textContent = '(' + reviewsData.total + ' ' + (reviewsData.total === 1 ? 'review' : 'reviews') + ')';
+      } else {
+        window.showToast(data.message || 'Failed to submit review', 'error');
+      }
+    } catch(err) {
+      window.showToast('Connection error', 'error');
+    }
+    btn.disabled = false; btn.textContent = 'Submit Review';
+  });
+}
 </script>
 
 <%- include('../partials/footer') %>

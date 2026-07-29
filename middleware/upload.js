@@ -31,8 +31,22 @@ if (isCloudinaryConfigured) {
   storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, uploadDir),
     filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, uniqueSuffix + path.extname(file.originalname));
+      const ext = path.extname(file.originalname);
+      const productName = (req.body && req.body.name) || 'product';
+      const sanitized = productName.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '') || 'product';
+      const timestamp = Date.now();
+      let index;
+      if (file.fieldname === 'thumbnail') {
+        index = 1;
+      } else {
+        if (!req._imgCount) req._imgCount = 0;
+        req._imgCount++;
+        index = req._imgCount + 1;
+      }
+      cb(null, sanitized + '-' + index + '-' + timestamp + ext);
     }
   });
 }

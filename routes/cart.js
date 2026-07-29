@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getCartPage, getCartData, addToCart, updateCart, removeFromCart, applyCoupon } = require('../controllers/cartController');
-
-router.get('/cart', getCartPage);
+const { getCartData, addToCart, updateCart, removeFromCart, applyCoupon } = require('../controllers/cartController');
 router.get('/api/cart', getCartData);
 router.post('/api/cart/add', addToCart);
 router.put('/api/cart/update', updateCart);

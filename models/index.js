@@ -18,6 +18,7 @@ User.hasMany(Media, { foreignKey: 'uploadedBy' });
 Product.belongsTo(Category, { foreignKey: 'category', as: 'categoryData' });
 Category.hasMany(Product, { foreignKey: 'category' });
 
+Product.hasMany(Review, { foreignKey: 'product' });
 Review.belongsTo(Product, { foreignKey: 'product' });
 Review.belongsTo(User, { foreignKey: 'user' });
 

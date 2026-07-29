@@ -70,9 +70,9 @@
     </nav>
 
     <div class="header-actions">
-      <button class="header-action search-toggle" id="searchToggle" aria-label="Search">
+      <a href="/shop" class="header-action" aria-label="Search">
         <i class="fas fa-search"></i>
-      </button>
+      </a>
       <a href="/wishlist" class="header-action mobile-wishlist-hide" aria-label="Wishlist">
         <i class="far fa-heart"></i>
         <span class="badge wishlist-count" id="wishlistCount">0</span>
@@ -107,15 +107,6 @@
   </div>
 </header>
 
-<div class="search-overlay" id="searchOverlay">
-  <button class="search-close" id="searchClose"><i class="fas fa-times"></i></button>
-  <div class="search-overlay-content">
-    <form action="/search" method="GET" class="search-overlay-form">
-      <input type="text" name="q" placeholder="Search products..." autocomplete="off" id="searchInput">
-      <button type="submit"><i class="fas fa-search"></i></button>
-    </form>
-  </div>
-</div>
 
 <div class="auth-modal-overlay" id="authModalOverlay" onclick="if(event.target===this)closeAuthModal()">
   <div class="auth-modal">
@@ -182,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
     try {
       var res = await fetch('/login', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ email: this.email.value, password: this.password.value, redirect: this.redirect.value || '' })
       });
       var data = await res.json();
@@ -207,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
     try {
       var res = await fetch('/signup', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ name: this.name.value, email: this.email.value, password: this.password.value })
       });
       var data = await res.json();

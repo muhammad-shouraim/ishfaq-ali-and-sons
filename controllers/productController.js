@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const Review = require('../models/Review');
 
 exports.getShop = async (req, res) => {
   const allCategories = await Category.findAll({
@@ -59,12 +60,19 @@ exports.getProduct = async (req, res) => {
     });
     if (!product) return res.redirect('/');
     const productData = product.toJSON();
+    const reviews = await Review.findAll({
+      where: { product: productData.id, isApproved: true },
+      order: [['createdAt', 'DESC']]
+    });
+    const reviewTotal = reviews.length;
+    const reviewAvg = reviewTotal > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / reviewTotal) : 0;
     const related = await Product.findAll({
       where: { category: productData.category, id: { [Op.ne]: productData.id }, isActive: true },
       limit: 4
     });
     res.render('pages/product', {
       title: productData.name, product: productData, related,
+      reviews, reviewTotal, reviewAvg: Math.round(reviewAvg * 10) / 10,
       metaDescription: productData.shortDescription || productData.description || 'ISHFAQ ALI & SONS - Premium Luxury Jewelry',
       metaKeywords: productData.tags ? (Array.isArray(productData.tags) ? productData.tags.join(', ') : productData.tags) : 'jewelry, luxury',
       ogTitle: productData.name + ' | ISHFAQ ALI & SONS',
