@@ -1,4 +1,6 @@
 const Category = require('../models/Category');
+const fs = require('fs');
+const path = require('path');
 
 const subCategories = {
   'rings': 'Rings',
@@ -19,6 +21,14 @@ const mainCategories = {
   '1-carat': { name: '1 Carat', icon: 'fa-crown', description: 'Explore our stunning 1 Carat collection, where brilliance meets sophistication.' },
   'south-indian': { name: 'South Indian', icon: 'fa-ring', description: 'Explore our exclusive South Indian jewelry collection, crafted with traditional elegance.' }
 };
+
+function getCategoryImage(slug) {
+  const imgPath = path.join(__dirname, '..', 'public', 'images', 'categories', slug + '.jpg');
+  if (fs.existsSync(imgPath)) {
+    return '/images/categories/' + slug + '.jpg';
+  }
+  return null;
+}
 
 exports.getCategoryLanding = (req, res) => {
   const mainSlug = req.path.split('/')[2];
@@ -56,13 +66,14 @@ exports.getCategoryLanding = (req, res) => {
     name: mainCat.name,
     slug: mainSlug,
     description: mainCat.description,
-    icon: mainCat.icon
+    icon: mainCat.icon,
+    image: getCategoryImage(mainSlug)
   };
 
   const subs = Object.entries(subCategories).filter(([slug]) => !slug.includes('-necklace')).map(([slug, name]) => ({
     slug: `${mainSlug}/${slug}`,
     name,
-    image: `/images/categories/${mainSlug}-${slug}.jpg`,
+    image: getCategoryImage(`${mainSlug}-${slug}`) || `/images/categories/${mainSlug}-${slug}.jpg`,
     description: `Exquisite ${mainCat.name.toLowerCase()} ${name.toLowerCase()}`
   }));
 

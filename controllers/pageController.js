@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const Category = require('../models/Category');
 const Product = require('../models/Product');
 const Order = require('../models/Order');
@@ -5,7 +7,17 @@ const { Op } = require('sequelize');
 
 exports.getHome = async (req, res) => {
   try {
-    const categories = await Category.findAll({ where: { isActive: true }, order: [['sortOrder', 'ASC']] });
+    let categories = await Category.findAll({ where: { isActive: true }, order: [['sortOrder', 'ASC']] });
+    categories = categories.map(c => {
+      const cat = c.get({ plain: true });
+      if (!cat.image) {
+        const imgPath = path.join(__dirname, '..', 'public', 'images', 'categories', cat.slug + '.jpg');
+        if (fs.existsSync(imgPath)) {
+          cat.image = '/images/categories/' + cat.slug + '.jpg';
+        }
+      }
+      return cat;
+    });
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
     const newArrivals = await Product.findAll({
