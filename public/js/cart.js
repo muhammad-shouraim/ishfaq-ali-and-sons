@@ -27,21 +27,23 @@ async function loadCartSidebar() {
       footer.style.display = 'none';
       return;
     }
-    body.innerHTML = data.items.map(item => `
-      <div class="cart-item">
-        <div class="cart-item-image"><i class="fas fa-gem"></i></div>
-        <div class="cart-item-info">
-          <h4>${item.product ? item.product.name : 'Product'}</h4>
-          <span class="item-price">Rs. ${Number(item.product ? item.product.price : 0).toLocaleString()}</span>
-          <div class="cart-item-qty">
-            <button class="qty-change" data-id="${item.product ? item.product.id : ''}" data-action="minus">-</button>
-            <span>${item.quantity}</span>
-            <button class="qty-change" data-id="${item.product ? item.product.id : ''}" data-action="plus">+</button>
-            <button class="cart-item-remove" data-id="${item.product ? item.product.id : ''}"><i class="fas fa-trash-alt"></i></button>
-          </div>
-        </div>
-      </div>
-    `).join('');
+    body.innerHTML = data.items.map(item => {
+      var p = item.product || {};
+      var img = p.thumbnail || (p.images && p.images.length > 0 ? p.images[0] : null) || '/images/newlogo.png';
+      return '<div class="cart-item">' +
+        '<div class="cart-item-image"><img src="' + img + '" alt="' + (p.name || 'Product') + '" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\\\'fas fa-gem\\\'></i>\'"></div>' +
+        '<div class="cart-item-info">' +
+          '<h4><a href="/product/' + (p.slug || '') + '" style="color:inherit;text-decoration:none">' + (p.name || 'Product') + '</a></h4>' +
+          '<span class="item-price">Rs. ' + Number(p.price || 0).toLocaleString() + '</span>' +
+          '<div class="cart-item-qty">' +
+            '<button class="qty-change" data-id="' + (p.id || '') + '" data-action="minus">-</button>' +
+            '<span>' + item.quantity + '</span>' +
+            '<button class="qty-change" data-id="' + (p.id || '') + '" data-action="plus">+</button>' +
+            '<button class="cart-item-remove" data-id="' + (p.id || '') + '"><i class="fas fa-trash-alt"></i></button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
     footer.style.display = 'flex';
     document.getElementById('cartSubtotal').textContent = `Rs. ${Number(data.subtotal).toLocaleString()}`;
     document.querySelectorAll('.qty-change').forEach(btn => btn.addEventListener('click', handleQtyChange));
@@ -132,24 +134,24 @@ async function loadCartPage() {
       return;
     }
     if (summary) summary.style.display = 'block';
-    container.innerHTML = data.items.map(item => `
-      <div class="cart-item">
-        <div class="cart-item-image"><i class="fas fa-gem"></i></div>
-        <div class="cart-item-info">
-          <h4>${item.product ? item.product.name : 'Product'}</h4>
-          <span class="item-price">Rs. ${Number(item.product ? item.product.price : 0).toLocaleString()}</span>
-          <div class="cart-item-qty">
-            <button class="qty-change" data-id="${item.product ? item.product.id : ''}" data-action="minus">-</button>
-            <span>${item.quantity}</span>
-            <button class="qty-change" data-id="${item.product ? item.product.id : ''}" data-action="plus">+</button>
-            <button class="cart-item-remove" data-id="${item.product ? item.product.id : ''}"><i class="fas fa-trash-alt"></i></button>
-          </div>
-        </div>
-        <div class="cart-item-total" style="font-weight:600;color:var(--gold);font-family:var(--font-heading);font-size:1.1rem">
-          Rs. ${Number((item.product ? item.product.price : 0) * item.quantity).toLocaleString()}
-        </div>
-      </div>
-    `).join('');
+    container.innerHTML = data.items.map(item => {
+      var p = item.product || {};
+      var img = p.thumbnail || (p.images && p.images.length > 0 ? p.images[0] : null) || '/images/newlogo.png';
+      return '<div class="cart-item">' +
+        '<div class="cart-item-image"><img src="' + img + '" alt="' + (p.name || 'Product') + '" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\\\'fas fa-gem\\\'></i>\'"></div>' +
+        '<div class="cart-item-info">' +
+          '<h4><a href="/product/' + (p.slug || '') + '" style="color:inherit;text-decoration:none">' + (p.name || 'Product') + '</a></h4>' +
+          '<span class="item-price">Rs. ' + Number(p.price || 0).toLocaleString() + '</span>' +
+          '<div class="cart-item-qty">' +
+            '<button class="qty-change" data-id="' + (p.id || '') + '" data-action="minus">-</button>' +
+            '<span>' + item.quantity + '</span>' +
+            '<button class="qty-change" data-id="' + (p.id || '') + '" data-action="plus">+</button>' +
+            '<button class="cart-item-remove" data-id="' + (p.id || '') + '"><i class="fas fa-trash-alt"></i></button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="cart-item-total" style="font-weight:600;color:var(--gold);font-family:var(--font-heading);font-size:1.1rem">Rs. ' + Number((p.price || 0) * item.quantity).toLocaleString() + '</div>' +
+      '</div>';
+    }).join('');
 
     const subtotal = data.subtotal;
     const shipping = subtotal >= 5000 ? 0 : 200;

@@ -24,19 +24,24 @@ async function loadWishlistPage() {
       container.innerHTML = `<div class="empty-collection"><i class="far fa-heart"></i><h3>Your Wishlist is Empty</h3><p>Save your favorite pieces to your wishlist.</p><a href="/shop" class="btn btn-gold">Browse Collection</a></div>`;
       return;
     }
-    container.innerHTML = `<div class="products-grid">${data.items.map(item => `
-      <div class="product-card">
-        <div class="product-card-image">
-          <div class="product-image-placeholder-sm"><i class="fas fa-gem"></i></div>
-          <button class="wishlist-toggle-sm active wishlist-remove-btn" data-product-id="${item.id}"><i class="fas fa-heart" style="color:#e74c3c"></i></button>
-        </div>
-        <div class="product-card-body">
-          <h3><a href="/product/${item.slug || item.id}">${item.name}</a></h3>
-          <span class="price">Rs. ${Number(item.price).toLocaleString()}</span>
-          <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${item.id}">Add to Bag</button>
-        </div>
-      </div>
-    `).join('')}</div>`;
+    container.innerHTML = '<div class="products-grid">' + data.items.map(function(item) {
+      var img = item.thumbnail || (item.images && item.images.length > 0 ? item.images[0] : null) || '/images/newlogo.png';
+      var hoverImg = (item.images && item.images.length > 0) ? item.images[0] : img;
+      return '<div class="product-card">' +
+        '<div class="product-card-image">' +
+          '<a href="/product/' + (item.slug || item.id) + '">' +
+            '<img class="main-img" src="' + img + '" alt="' + item.name + '" onerror="this.style.display=\'none\'">' +
+            '<img class="hover-img" src="' + hoverImg + '" alt="' + item.name + '" onerror="this.style.display=\'none\'">' +
+          '</a>' +
+          '<button class="wishlist-toggle-sm active wishlist-remove-btn" data-product-id="' + item.id + '"><i class="fas fa-heart" style="color:#e74c3c"></i></button>' +
+        '</div>' +
+        '<div class="product-card-body">' +
+          '<h3><a href="/product/' + (item.slug || item.id) + '">' + item.name + '</a></h3>' +
+          '<span class="price">Rs. ' + Number(item.price).toLocaleString() + '</span>' +
+          '<button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="' + item.id + '">Add to Bag</button>' +
+        '</div>' +
+      '</div>';
+    }).join('') + '</div>';
     document.querySelectorAll('.wishlist-remove-btn').forEach(btn => btn.addEventListener('click', handleRemoveWishlist));
   } catch {}
 }

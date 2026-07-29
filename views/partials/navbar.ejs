@@ -9,39 +9,63 @@
     </a>
 
     <nav class="header-nav" id="headerNav">
-      <a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>">Home</a>
-      <a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>">Shop</a>
+      <div class="nav-mobile-header">
+        <div class="nav-mobile-logo">
+          <img src="/images/newlogo.png" alt="ISHFAQ ALI & SONS">
+        </div>
+        <button class="nav-mobile-close" id="navMobileClose" aria-label="Close Menu"><i class="fas fa-times"></i></button>
+      </div>
 
-      <% if (typeof navCategories !== 'undefined' && navCategories.length > 0) { %>
-        <% navCategories.forEach(function(cat) { %>
-          <% var catPrefix = cat.slug.replace(/[^a-z0-9]+/g, '-') + '-'; %>
-          <div class="nav-item nav-dropdown">
-            <a href="/collection/<%= cat.slug %>" class="nav-dropdown-toggle <%= currentUrl.startsWith('/collection/' + cat.slug) ? 'active' : '' %>">
-              <%= cat.name %> <i class="fas fa-chevron-down"></i>
-            </a>
-            <div class="nav-dropdown-menu">
-              <% (cat.children || []).forEach(function(child) { %>
-                <% var childSuffix = child.slug.startsWith(catPrefix) ? child.slug.slice(catPrefix.length) : child.slug; %>
-                <% if (child.children && child.children.length > 0) { %>
-                  <div class="nav-item-sub">
-                    <a href="/collection/<%= cat.slug %>/<%= childSuffix %>" class="nav-sub-toggle"><%= child.name %> <i class="fas fa-chevron-right"></i></a>
-                    <div class="nav-sub-menu">
-                      <% child.children.forEach(function(gc) { %>
-                        <% var gcSuffix = gc.slug.startsWith(child.slug + '-') ? gc.slug.slice(child.slug.length + 1) : gc.slug; %>
-                        <a href="/collection/<%= cat.slug %>/<%= childSuffix %>/<%= gcSuffix %>"><%= gc.name %></a>
-                      <% }); %>
+      <div class="nav-mobile-links">
+        <a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>"><i class="fas fa-home"></i> Home</a>
+        <a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>"><i class="fas fa-store"></i> Shop</a>
+
+        <% if (typeof navCategories !== 'undefined' && navCategories.length > 0) { %>
+          <% navCategories.forEach(function(cat) { %>
+            <% var catPrefix = cat.slug.replace(/[^a-z0-9]+/g, '-') + '-'; %>
+            <div class="nav-item nav-dropdown">
+              <a href="/collection/<%= cat.slug %>" class="nav-dropdown-toggle <%= currentUrl.startsWith('/collection/' + cat.slug) ? 'active' : '' %>">
+                <i class="fas fa-tag"></i> <%= cat.name %> <i class="fas fa-chevron-down"></i>
+              </a>
+              <div class="nav-dropdown-menu">
+                <% (cat.children || []).forEach(function(child) { %>
+                  <% var childSuffix = child.slug.startsWith(catPrefix) ? child.slug.slice(catPrefix.length) : child.slug; %>
+                  <% if (child.children && child.children.length > 0) { %>
+                    <div class="nav-item-sub">
+                      <a href="/collection/<%= cat.slug %>/<%= childSuffix %>" class="nav-sub-toggle"><%= child.name %> <i class="fas fa-chevron-right"></i></a>
+                      <div class="nav-sub-menu">
+                        <% child.children.forEach(function(gc) { %>
+                          <% var gcSuffix = gc.slug.startsWith(child.slug + '-') ? gc.slug.slice(child.slug.length + 1) : gc.slug; %>
+                          <a href="/collection/<%= cat.slug %>/<%= childSuffix %>/<%= gcSuffix %>"><%= gc.name %></a>
+                        <% }); %>
+                      </div>
                     </div>
-                  </div>
-                <% } else { %>
-                  <a href="/collection/<%= cat.slug %>/<%= childSuffix %>"><%= child.name %></a>
-                <% } %>
-              <% }); %>
+                  <% } else { %>
+                    <a href="/collection/<%= cat.slug %>/<%= childSuffix %>"><i class="fas fa-angle-right"></i> <%= child.name %></a>
+                  <% } %>
+                <% }); %>
+              </div>
             </div>
-          </div>
-        <% }); %>
-      <% } %>
+          <% }); %>
+        <% } %>
 
-      <div class="nav-mobile-extra"></div>
+        <div class="nav-mobile-divider"></div>
+
+        <a href="/wishlist"><i class="far fa-heart"></i> Wishlist <span class="wishlist-count-mobile-nav" id="wishlistCountMobileNav">0</span></a>
+        <a href="/track-order"><i class="fas fa-truck"></i> Track Order</a>
+        <a href="/contact"><i class="fas fa-envelope"></i> Contact Us</a>
+
+        <% if (user) { %>
+          <div class="nav-mobile-divider"></div>
+          <a href="/profile"><i class="fas fa-user"></i> My Profile</a>
+          <a href="/orders"><i class="fas fa-box"></i> My Orders</a>
+          <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <% } else { %>
+          <div class="nav-mobile-divider"></div>
+          <a href="#" onclick="openAuthModal('login');return false"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+          <a href="#" onclick="openAuthModal('signup');return false"><i class="fas fa-user-plus"></i> Create Account</a>
+        <% } %>
+      </div>
     </nav>
 
     <div class="header-actions">

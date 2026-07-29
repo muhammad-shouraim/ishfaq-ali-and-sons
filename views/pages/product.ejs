@@ -129,20 +129,29 @@
 
       <% if (related && related.length) { %>
       <section class="related-products" data-aos="fade-up">
-        <h2>Related Products</h2>
+        <h2>You May <span>Also Like</span></h2>
         <div class="products-grid">
           <% related.forEach(function(item) { %>
           <% var relImages = typeof item.images === 'string' ? (item.images ? JSON.parse(item.images) : []) : (item.images || []); %>
           <% var relImg = item.thumbnail || (relImages.length > 0 ? relImages[0] : '/images/newlogo.png'); %>
+          <% var relHover = relImages.length > 0 ? relImages[0] : relImg; %>
           <div class="product-card">
             <div class="product-card-image">
-              <img src="<%= relImg %>" alt="<%= item.name %>" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-              <div class="product-image-placeholder-sm" style="display:none"><i class="fas fa-gem"></i></div>
+              <a href="/product/<%= item.slug %>">
+                <img class="main-img" src="<%= relImg %>" alt="<%= item.name %>" onerror="this.style.display='none'">
+                <img class="hover-img" src="<%= relHover %>" alt="<%= item.name %>" onerror="this.style.display='none'">
+              </a>
+              <% if (item.comparePrice > 0) { %><span class="badge badge-sale">Sale</span><% } %>
               <button class="wishlist-toggle-sm" data-product-id="<%= item.id %>"><i class="far fa-heart"></i></button>
             </div>
             <div class="product-card-body">
               <h3><a href="/product/<%= item.slug %>"><%= item.name %></a></h3>
-              <span class="price"><%= currencySymbol %> <%= Number(item.price).toLocaleString() %></span>
+              <% if (item.comparePrice > 0) { %>
+                <span class="price old-price"><%= currencySymbol %> <%= Number(item.price).toLocaleString() %></span>
+                <span class="price sale-price"><%= currencySymbol %> <%= Number(item.comparePrice).toLocaleString() %></span>
+              <% } else { %>
+                <span class="price"><%= currencySymbol %> <%= Number(item.price).toLocaleString() %></span>
+              <% } %>
               <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="<%= item.id %>">Add to Bag</button>
             </div>
           </div>
@@ -281,6 +290,42 @@ document.querySelectorAll('.quick-buy-btn').forEach(function(btn) {
     btn.disabled = false; btn.innerHTML = '<i class="fas fa-bolt"></i> Quick Buy';
   });
 });
+
+// Image Zoom on Hover
+(function() {
+  var container = document.getElementById('mainImageContainer');
+  var img = document.getElementById('mainProductImage');
+  if (!container || !img || window.innerWidth <= 1024) return;
+  var lens = document.createElement('div');
+  lens.className = 'img-zoom-lens';
+  var result = document.createElement('div');
+  result.className = 'img-zoom-result';
+  container.appendChild(lens);
+  container.appendChild(result);
+  container.addEventListener('mousemove', function(e) {
+    e.preventDefault();
+    var rect = container.getBoundingClientRect();
+    var x = e.clientX - rect.left - lens.offsetWidth / 2;
+    var y = e.clientY - rect.top - lens.offsetHeight / 2;
+    if (x > container.offsetWidth - lens.offsetWidth) x = container.offsetWidth - lens.offsetWidth;
+    if (x < 0) x = 0;
+    if (y > container.offsetHeight - lens.offsetHeight) y = container.offsetHeight - lens.offsetHeight;
+    if (y < 0) y = 0;
+    lens.style.left = x + 'px';
+    lens.style.top = y + 'px';
+    lens.style.display = 'block';
+    result.style.display = 'block';
+    var cx = result.offsetWidth / lens.offsetWidth;
+    var cy = result.offsetHeight / lens.offsetHeight;
+    result.style.backgroundImage = 'url(' + img.src + ')';
+    result.style.backgroundSize = (container.offsetWidth * cx) + 'px ' + (container.offsetHeight * cy) + 'px';
+    result.style.backgroundPosition = (-x * cx) + 'px ' + (-y * cy) + 'px';
+  });
+  container.addEventListener('mouseleave', function() {
+    lens.style.display = 'none';
+    result.style.display = 'none';
+  });
+})();
 </script>
 
 <%- include('../partials/footer') %>
