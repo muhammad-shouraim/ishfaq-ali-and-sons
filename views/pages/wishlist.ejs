@@ -15,12 +15,35 @@
   <section class="section">
     <div class="container">
       <div class="wishlist-content" data-aos="fade-up" id="wishlistContent">
-        <div class="empty-collection" style="text-align:center;padding:80px 20px">
-          <i class="far fa-heart" style="font-size:3.5rem;color:var(--gray-dark);margin-bottom:20px;display:block"></i>
-          <h3 style="font-size:1.4rem;margin-bottom:10px">Your Wishlist is Empty</h3>
-          <p style="margin-bottom:24px;color:var(--text-light)">Save your favorite pieces to your wishlist.</p>
-          <a href="/shop" class="btn btn-gold">Browse Collection</a>
-        </div>
+        <% if (wishlist && wishlist.items && wishlist.items.length > 0) { %>
+          <div class="products-grid">
+            <% wishlist.items.forEach(function(item) { %>
+              <% if (typeof item === 'object' && item.id) { %>
+                <div class="product-card" data-images='<%= JSON.stringify(item.images || []) %>'>
+                  <div class="product-card-image">
+                    <a href="/product/<%= item.slug %>">
+                      <img class="main-img" src="<%= item.thumbnail || '/images/newlogo.png' %>" alt="<%= item.name %>">
+                      <img class="hover-img" src="<%= (item.images && item.images[0]) ? item.images[0] : (item.thumbnail || '/images/newlogo.png') %>" alt="<%= item.name %>">
+                    </a>
+                    <button class="wishlist-toggle-sm active wishlist-remove-btn" data-product-id="<%= item.id %>"><i class="fas fa-heart" style="color:#e74c3c"></i></button>
+                  </div>
+                  <div class="product-card-body">
+                    <h3><a href="/product/<%= item.slug %>"><%= item.name %></a></h3>
+                    <span class="price">Rs. <%= Number(item.price).toLocaleString() %></span>
+                    <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="<%= item.id %>">Add to Bag</button>
+                  </div>
+                </div>
+              <% } %>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="empty-collection" style="text-align:center;padding:80px 20px">
+            <i class="far fa-heart" style="font-size:3.5rem;color:var(--gray-dark);margin-bottom:20px;display:block"></i>
+            <h3 style="font-size:1.4rem;margin-bottom:10px">Your Wishlist is Empty</h3>
+            <p style="margin-bottom:24px;color:var(--text-light)">Save your favorite pieces to your wishlist.</p>
+            <a href="/shop" class="btn btn-gold">Browse Collection</a>
+          </div>
+        <% } %>
       </div>
     </div>
   </section>
