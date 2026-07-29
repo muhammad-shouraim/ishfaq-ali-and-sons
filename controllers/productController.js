@@ -95,3 +95,34 @@ exports.getProduct = async (req, res) => {
     res.redirect('/');
   }
 };
+
+exports.debugProduct = async (req, res) => {
+  const result = { slug: req.params.slug, steps: [] };
+  try {
+    result.steps.push('findOne by slug');
+    let product = await Product.findOne({ where: { slug: req.params.slug } });
+    result.steps.push({ foundBySlug: !!product });
+    if (!product && /^\d+$/.test(req.params.slug)) {
+      result.steps.push('findByPk by ID');
+      product = await Product.findByPk(Number(req.params.slug));
+      result.steps.push({ foundById: !!product });
+    }
+    if (product) {
+      const pj = product.toJSON();
+      result.steps.push({ id: pj.id, name: pj.name, slug: pj.slug, category: pj.category });
+    } else {
+      result.steps.push('product not found');
+      // Try direct SQL
+      try {
+        const sequelize = require('../config/sequelize');
+        const [rows] = await sequelize.query("SELECT id, name, slug FROM Products WHERE id = ? OR slug = ? LIMIT 1", { replacements: [Number(req.params.slug) || 0, req.params.slug] });
+        result.steps.push({ rawSqlResult: rows });
+      } catch (sqlErr) {
+        result.steps.push({ rawSqlError: sqlErr.message });
+      }
+    }
+  } catch (err) {
+    result.steps.push({ error: err.message, stack: err.stack?.split('\n').slice(0, 3) });
+  }
+  res.json(result);
+};
