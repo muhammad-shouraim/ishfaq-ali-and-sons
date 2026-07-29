@@ -978,6 +978,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 @media (max-width:480px) { .product-carousel-track .product-card-image img { max-height:180px; } }
 
 /* Empty carousel state */
+.product-carousel-track .empty-carousel { flex:1 1 100%; width:100%; }
 .empty-carousel {
   width:100%; text-align:center; padding:48px 20px;
   background:var(--cream); border-radius:var(--radius);
@@ -987,6 +988,11 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 .empty-carousel p { font-size:0.95rem; color:var(--text-light); margin:0; }
 .empty-carousel p a { color:var(--gold); font-weight:500; }
 .empty-carousel p a:hover { color:var(--gold-dark); }
+
+/* Carousel placeholder cards */
+.product-card-placeholder { visibility:hidden !important; border:none !important; box-shadow:none !important; background:transparent !important; }
+.product-card-placeholder .product-card-image,
+.product-card-placeholder .product-card-body { display:none; }
 
 /* Category carousel */
 .category-carousel { display:flex; align-items:center; gap:12px; }

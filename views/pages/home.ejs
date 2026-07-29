@@ -99,7 +99,9 @@
                 </div>
               </div>
             <% }) %>
+            <% for (var pi = bestSellers.length; pi < 4; pi++) { %><div class="product-card product-card-placeholder"></div><% } %>
           <% } else { %>
+            <% for (var pi = 0; pi < 4; pi++) { %><div class="product-card product-card-placeholder"></div><% } %>
             <div class="empty-carousel">
               <i class="fas fa-gem"></i>
               <p><a href="/shop">Coming Soon — Browse our collection</a></p>
@@ -147,7 +149,9 @@
                 </div>
               </div>
             <% }) %>
+            <% for (var pi = newArrivals.length; pi < 4; pi++) { %><div class="product-card product-card-placeholder"></div><% } %>
           <% } else { %>
+            <% for (var pi = 0; pi < 4; pi++) { %><div class="product-card product-card-placeholder"></div><% } %>
             <div class="empty-carousel">
               <i class="fas fa-gem"></i>
               <p><a href="/shop">Coming Soon — Browse our collection</a></p>
@@ -187,6 +191,7 @@
               </div>
             </div>
           <% }) %>
+          <% for (var pi = saleProducts.length; pi < 4; pi++) { %><div class="product-card product-card-placeholder"></div><% } %>
         </div>
         <button class="carousel-btn carousel-next" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
       </div>
@@ -310,13 +315,19 @@ function initProductCarousel(container) {
 
 document.querySelectorAll('.product-carousel').forEach(initProductCarousel);
 
-// Product card image hover
+// Product card image hover & click navigation
 document.querySelectorAll('.product-card').forEach(function(card) {
   var mainImg = card.querySelector('.main-img');
   var hoverImg = card.querySelector('.hover-img');
-  if (!mainImg || !hoverImg) return;
-  card.addEventListener('mouseenter', function() { mainImg.style.opacity = '0'; hoverImg.style.opacity = '1'; });
-  card.addEventListener('mouseleave', function() { mainImg.style.opacity = '1'; hoverImg.style.opacity = '0'; });
+  if (mainImg && hoverImg) {
+    card.addEventListener('mouseenter', function() { mainImg.style.opacity = '0'; hoverImg.style.opacity = '1'; });
+    card.addEventListener('mouseleave', function() { mainImg.style.opacity = '1'; hoverImg.style.opacity = '0'; });
+  }
+  card.addEventListener('click', function(e) {
+    if (e.target.closest('a') || e.target.closest('button')) return;
+    var link = card.querySelector('a[href^="/product/"]');
+    if (link) window.location.href = link.getAttribute('href');
+  });
 });
 </script>
 

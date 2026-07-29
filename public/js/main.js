@@ -10,10 +10,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Nav Toggle (Mobile)
 function initNavToggle() {
-  const toggle = document.getElementById('mobileToggle');
   const links = document.getElementById('headerNav');
+  if (!links) return;
+  let toggle = document.getElementById('mobileToggle');
+  if (!toggle && window.innerWidth <= 1024) {
+    toggle = document.createElement('div');
+    toggle.className = 'mobile-toggle';
+    toggle.id = 'mobileToggle';
+    toggle.setAttribute('aria-label', 'Menu');
+    for (let i = 0; i < 3; i++) { toggle.appendChild(document.createElement('span')); }
+    const container = document.querySelector('.header .container');
+    if (container) container.insertBefore(toggle, container.firstChild);
+  }
   const closeBtn = document.getElementById('navMobileClose');
-  if (!toggle || !links) return;
+  if (!toggle) return;
   let overlay = document.querySelector('.nav-overlay');
   if (!overlay) {
     overlay = document.createElement('div');
