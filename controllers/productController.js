@@ -68,15 +68,24 @@ exports.getProduct = async (req, res) => {
     }
     const productData = product.toJSON();
     if (productData.category) {
-      const cat = await Category.findByPk(productData.category, { attributes: ['name', 'slug'] });
-      if (cat) productData.categoryData = cat.toJSON();
+      try {
+        const cat = await Category.findByPk(productData.category, { attributes: ['name', 'slug'] });
+        if (cat) productData.categoryData = cat.toJSON();
+      } catch (catErr) {
+        console.error('Category lookup error:', catErr.message);
+      }
     }
-    const reviews = await Review.findAll({
-      where: { product: productData.id, isApproved: true },
-      order: [['createdAt', 'DESC']]
-    });
-    const reviewTotal = reviews.length;
-    const reviewAvg = reviewTotal > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / reviewTotal) : 0;
+    let reviews = [], reviewTotal = 0, reviewAvg = 0;
+    try {
+      reviews = await Review.findAll({
+        where: { product: productData.id, isApproved: true },
+        order: [['createdAt', 'DESC']]
+      });
+      reviewTotal = reviews.length;
+      reviewAvg = reviewTotal > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / reviewTotal) : 0;
+    } catch (revErr) {
+      console.error('Reviews query error (table may need migration):', revErr.message);
+    }
     const related = await Product.findAll({
       where: { category: productData.category, id: { [Op.ne]: productData.id }, isActive: true },
       limit: 4

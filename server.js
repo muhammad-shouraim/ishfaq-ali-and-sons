@@ -41,6 +41,26 @@ connectDB().then(() => {
     } catch (e) {
       console.error('Slug backfill error:', e.message);
     }
+    // Ensure Reviews table has all required columns
+    const reviewColumns = [
+      ['name', 'VARCHAR(255) NOT NULL'],
+      ['rating', 'INT NOT NULL'],
+      ['title', 'VARCHAR(255)'],
+      ['comment', 'TEXT NOT NULL'],
+      ['adminReply', 'TEXT'],
+      ['repliedAt', 'DATETIME'],
+      ['repliedBy', 'INT']
+    ];
+    for (const [col, def] of reviewColumns) {
+      try {
+        await db.query(`ALTER TABLE Reviews ADD COLUMN ${col} ${def}`);
+        console.log(`Added ${col} column to Reviews table`);
+      } catch (e) {
+        if (!e.message.includes('Duplicate column')) {
+          console.error(`Reviews ${col} column check:`, e.message);
+        }
+      }
+    }
     const seedDatabase = require('./scripts/auto-seed');
     await seedDatabase();
   }).catch(err => console.error('Sync error:', err.message));
