@@ -37,22 +37,24 @@ function initShop() {
       const count = document.getElementById('resultCount');
       if (count) count.textContent = `Showing ${data.total} product${data.total !== 1 ? 's' : ''}`;
       if (data.products && data.products.length > 0) {
-        grid.innerHTML = data.products.map(p => `
-          <div class="product-card">
-            <div class="product-card-image">
-              <a href="/product/${p.slug}">
-                <img src="${p.thumbnail || '/images/newlogo.png'}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover">
-              </a>
-              ${p.comparePrice > 0 ? '<span class="badge badge-sale">Sale</span>' : ''}
-              <button class="wishlist-toggle-sm" data-product-id="${p.id}"><i class="far fa-heart"></i></button>
-            </div>
-            <div class="product-card-body">
-              <h3><a href="/product/${p.slug}">${p.name}</a></h3>
-              ${p.comparePrice > 0 ? '<span class="price old-price">Rs. ' + Number(p.price).toLocaleString() + '</span><span class="price sale-price">Rs. ' + Number(p.comparePrice).toLocaleString() + '</span>' : '<span class="price">Rs. ' + Number(p.price).toLocaleString() + '</span>'}
-              <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${p.id}">Add to Bag</button>
-            </div>
-          </div>
-        `).join('');
+        grid.innerHTML = data.products.map(p => {
+          var hoverImg = (p.images && p.images.length > 0) ? p.images[0] : p.thumbnail || '/images/newlogo.png';
+          return '<div class="product-card" data-images=\'' + JSON.stringify(p.images || []) + '\'>' +
+            '<div class="product-card-image">' +
+              '<a href="/product/' + p.slug + '">' +
+                '<img class="main-img" src="' + (p.thumbnail || '/images/newlogo.png') + '" alt="' + p.name + '">' +
+                '<img class="hover-img" src="' + hoverImg + '" alt="' + p.name + '">' +
+              '</a>' +
+              (p.comparePrice > 0 ? '<span class="badge badge-sale">Sale</span>' : '') +
+              '<button class="wishlist-toggle-sm" data-product-id="' + p.id + '"><i class="far fa-heart"></i></button>' +
+            '</div>' +
+            '<div class="product-card-body">' +
+              '<h3><a href="/product/' + p.slug + '">' + p.name + '</a></h3>' +
+              (p.comparePrice > 0 ? '<span class="price old-price">Rs. ' + Number(p.price).toLocaleString() + '</span><span class="price sale-price">Rs. ' + Number(p.comparePrice).toLocaleString() + '</span>' : '<span class="price">Rs. ' + Number(p.price).toLocaleString() + '</span>') +
+              '<button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="' + p.id + '">Add to Bag</button>' +
+            '</div>' +
+          '</div>';
+        }).join('');
         if (pagination && data.pages > 1) {
           pagination.innerHTML = Array.from({ length: data.pages }, (_, i) =>
             `<button class="${i + 1 === data.currentPage ? 'active' : ''}" data-page="${i + 1}">${i + 1}</button>`
@@ -97,22 +99,24 @@ function initCategoryShop() {
       const res = await fetch(`/api/products?${params.toString()}`);
       const data = await res.json();
       if (data.products && data.products.length > 0) {
-        grid.innerHTML = data.products.map(p => `
-          <div class="product-card">
-            <div class="product-card-image">
-              <a href="/product/${p.slug}">
-                <img src="${p.thumbnail || '/images/newlogo.png'}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover">
-              </a>
-              ${p.comparePrice > 0 ? '<span class="badge badge-sale">Sale</span>' : ''}
-              <button class="wishlist-toggle-sm" data-product-id="${p.id}"><i class="far fa-heart"></i></button>
-            </div>
-            <div class="product-card-body">
-              <h3><a href="/product/${p.slug}">${p.name}</a></h3>
-              ${p.comparePrice > 0 ? '<span class="price old-price">Rs. ' + Number(p.price).toLocaleString() + '</span><span class="price sale-price">Rs. ' + Number(p.comparePrice).toLocaleString() + '</span>' : '<span class="price">Rs. ' + Number(p.price).toLocaleString() + '</span>'}
-              <button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="${p.id}">Add to Bag</button>
-            </div>
-          </div>
-        `).join('');
+        grid.innerHTML = data.products.map(p => {
+          var hoverImg = (p.images && p.images.length > 0) ? p.images[0] : p.thumbnail || '/images/newlogo.png';
+          return '<div class="product-card" data-images=\'' + JSON.stringify(p.images || []) + '\'>' +
+            '<div class="product-card-image">' +
+              '<a href="/product/' + p.slug + '">' +
+                '<img class="main-img" src="' + (p.thumbnail || '/images/newlogo.png') + '" alt="' + p.name + '">' +
+                '<img class="hover-img" src="' + hoverImg + '" alt="' + p.name + '">' +
+              '</a>' +
+              (p.comparePrice > 0 ? '<span class="badge badge-sale">Sale</span>' : '') +
+              '<button class="wishlist-toggle-sm" data-product-id="' + p.id + '"><i class="far fa-heart"></i></button>' +
+            '</div>' +
+            '<div class="product-card-body">' +
+              '<h3><a href="/product/' + p.slug + '">' + p.name + '</a></h3>' +
+              (p.comparePrice > 0 ? '<span class="price old-price">Rs. ' + Number(p.price).toLocaleString() + '</span><span class="price sale-price">Rs. ' + Number(p.comparePrice).toLocaleString() + '</span>' : '<span class="price">Rs. ' + Number(p.price).toLocaleString() + '</span>') +
+              '<button class="btn btn-sm btn-gold add-to-cart-btn" data-product-id="' + p.id + '">Add to Bag</button>' +
+            '</div>' +
+          '</div>';
+        }).join('');
       } else {
         grid.innerHTML = `<div class="empty-collection"><i class="fas fa-gem"></i><h3>No Products Yet</h3><p>Products in this category will be available soon.</p></div>`;
       }
@@ -122,3 +126,18 @@ function initCategoryShop() {
   if (sortSelect) sortSelect.addEventListener('change', loadProducts);
   loadProducts();
 }
+
+document.addEventListener('mouseover', function(e) {
+  var card = e.target.closest('.product-card');
+  if (!card) return;
+  var main = card.querySelector('.main-img');
+  var hover = card.querySelector('.hover-img');
+  if (main && hover) { main.style.opacity = '0'; hover.style.opacity = '1'; }
+});
+document.addEventListener('mouseout', function(e) {
+  var card = e.target.closest('.product-card');
+  if (!card) return;
+  var main = card.querySelector('.main-img');
+  var hover = card.querySelector('.hover-img');
+  if (main && hover) { main.style.opacity = '1'; hover.style.opacity = '0'; }
+});

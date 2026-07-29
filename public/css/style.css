@@ -641,7 +641,6 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
   .nav-sub-menu a:hover { color: var(--gold); background: transparent; }
 
   .header { z-index: auto; }
-  .header .container { position: relative; z-index: 1000; }
   .mobile-toggle { display: flex; z-index: 10000; }
   .mobile-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
   .mobile-toggle.active span:nth-child(2) { opacity: 0; }
