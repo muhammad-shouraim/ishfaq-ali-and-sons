@@ -46,23 +46,6 @@
         <% } %>
       </div>
 
-      <div class="nav-mobile-extras">
-        <div class="nav-mobile-divider"></div>
-        <a href="/wishlist"><i class="far fa-heart"></i> Wishlist <span class="wishlist-count-mobile-nav" id="wishlistCountMobileNav">0</span></a>
-        <a href="/track-order"><i class="fas fa-truck"></i> Track Order</a>
-        <a href="/contact"><i class="fas fa-envelope"></i> Contact Us</a>
-
-        <% if (user) { %>
-          <div class="nav-mobile-divider"></div>
-          <a href="/profile"><i class="fas fa-user"></i> My Profile</a>
-          <a href="/orders"><i class="fas fa-box"></i> My Orders</a>
-          <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        <% } else { %>
-          <div class="nav-mobile-divider"></div>
-          <a href="#" onclick="openAuthModal('login');return false"><i class="fas fa-sign-in-alt"></i> Sign In</a>
-          <a href="#" onclick="openAuthModal('signup');return false"><i class="fas fa-user-plus"></i> Create Account</a>
-        <% } %>
-      </div>
     </nav>
 
     <div class="header-actions">

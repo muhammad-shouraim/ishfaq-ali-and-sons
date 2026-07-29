@@ -766,8 +766,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
   .pagination button { padding: 6px 10px; font-size: 0.78rem; }
 }
 
-.nav-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9998; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
-.nav-overlay.active { opacity: 1; visibility: visible; }
+.nav-overlay { position: fixed; inset: 0; z-index: 9998; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; pointer-events:none; }
 
 .points-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--gold); color: var(--white); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-top: 8px; }
 .points-badge i { font-size: 0.75rem; }

@@ -54,7 +54,10 @@ exports.getProducts = async (req, res) => {
 
 exports.getProduct = async (req, res) => {
   try {
-    const product = await Product.findOne({ where: { slug: req.params.slug } });
+    let product = await Product.findOne({ where: { slug: req.params.slug } });
+    if (!product && /^\d+$/.test(req.params.slug)) {
+      product = await Product.findByPk(Number(req.params.slug));
+    }
     if (!product) {
       console.error('getProduct: product not found for slug:', req.params.slug);
       return res.redirect('/');
