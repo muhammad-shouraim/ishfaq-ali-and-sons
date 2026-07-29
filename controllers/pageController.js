@@ -86,21 +86,7 @@ exports.getShipping = (req, res) => {
   res.render('pages/shipping', { title: 'Shipping Policy' });
 };
 
-exports.getTrackOrder = (req, res) => {
-  res.render('pages/track-order', { title: 'Track Order', order: null, error: null });
-};
 
-exports.postTrackOrder = async (req, res) => {
-  const { orderNumber } = req.body;
-  if (!orderNumber) {
-    return res.render('pages/track-order', { title: 'Track Order', order: null, error: 'Please enter an order number.' });
-  }
-  const order = await Order.findOne({ where: { orderNumber: orderNumber.trim().toUpperCase() } });
-  if (!order) {
-    return res.render('pages/track-order', { title: 'Track Order', order: null, error: 'No order found with that number.' });
-  }
-  res.render('pages/track-order', { title: 'Track Order', order, error: null });
-};
 
 exports.get404 = (req, res) => {
   res.redirect('/');
