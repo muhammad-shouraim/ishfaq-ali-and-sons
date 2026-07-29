@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { getShop, getProducts, getProduct, debugProduct } = require('../controllers/productController');
+const { getShop, getProducts, getProduct } = require('../controllers/productController');
 const { getCategoryDetail, getCategoryLanding } = require('../controllers/categoryController');
 const { getReviews, addReview } = require('../controllers/reviewController');
 
 router.get('/shop', getShop);
 router.get('/api/products', getProducts);
-router.get('/api/debug/product/:slug', debugProduct);
 router.get('/product/:slug', getProduct);
 router.get('/api/products/:productId/reviews', getReviews);
 router.post('/api/products/:productId/reviews', addReview);
