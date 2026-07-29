@@ -72,9 +72,9 @@
             <button class="btn btn-gold add-to-cart-btn" data-product-id="<%= product.id %>" style="flex:1">
               <i class="fas fa-shopping-bag"></i> Add to Bag
             </button>
-            <a href="/checkout" class="btn btn-outline" style="padding:12px 16px;font-size:0.72rem;white-space:nowrap">
+            <button class="btn btn-outline quick-buy-btn" data-product-id="<%= product.id %>" style="padding:12px 16px;font-size:0.72rem;white-space:nowrap">
               <i class="fas fa-bolt"></i> Quick Buy
-            </a>
+            </button>
             <button class="action-btn wishlist-toggle" data-product-id="<%= product.id %>">
               <i class="far fa-heart"></i>
             </button>
@@ -97,16 +97,16 @@
         </div>
       </div>
 
-      <div class="product-tabs" data-aos="fade-up">
+        <div class="product-tabs" data-aos="fade-up">
         <div class="tabs-header">
-          <button class="tab-btn active" data-tab="description">Description</button>
-          <button class="tab-btn" data-tab="specifications">Specifications</button>
+          <% if (product.description) { %><button class="tab-btn active" data-tab="description">Description</button><% } %>
+          <button class="tab-btn <%= !product.description ? 'active' : '' %>" data-tab="specifications">Specifications</button>
           <button class="tab-btn" data-tab="reviews">Reviews</button>
         </div>
-        <div class="tab-content active" id="tab-description">
-          <p><%= product.description || 'No description available.' %></p>
+        <div class="tab-content <%= product.description ? 'active' : '' %>" id="tab-description">
+          <p><%= product.description %></p>
         </div>
-        <div class="tab-content" id="tab-specifications">
+        <div class="tab-content <%= !product.description ? 'active' : '' %>" id="tab-specifications">
           <% if (product.specifications && product.specifications.length) { %>
           <table class="specs-table">
             <% product.specifications.forEach(function(spec) { %>
@@ -155,9 +155,9 @@
 </main>
 
 <script>
-// Product gallery thumbnail swap
+// Product gallery thumbnail hover
 document.querySelectorAll('.thumb-item').forEach(function(item) {
-  item.addEventListener('click', function() {
+  item.addEventListener('mouseenter', function() {
     var mainImg = document.getElementById('mainProductImage');
     var newSrc = this.getAttribute('data-img');
     if (mainImg && newSrc) {
@@ -165,6 +165,47 @@ document.querySelectorAll('.thumb-item').forEach(function(item) {
       document.querySelectorAll('.thumb-item').forEach(function(t) { t.classList.remove('active'); });
       this.classList.add('active');
     }
+  });
+});
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var tab = this.getAttribute('data-tab');
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+    this.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+  });
+});
+
+// Quick Buy
+document.querySelectorAll('.quick-buy-btn').forEach(function(btn) {
+  btn.addEventListener('click', async function() {
+    var productId = this.getAttribute('data-product-id');
+    var btn = this;
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    try {
+      var res = await fetch('/api/cart/add', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: Number(productId), quantity: 1 })
+      });
+      var data = await res.json();
+      if (data.success) {
+        window.showToast('Added to cart!', 'success');
+        var badge = document.getElementById('cartCount');
+        if (badge) badge.textContent = data.count || 1;
+        var overlay = document.getElementById('cartOverlay');
+        var sidebar = document.getElementById('cartSidebar');
+        if (overlay && sidebar) { overlay.classList.add('active'); sidebar.classList.add('active'); }
+        loadCartData();
+      } else {
+        window.showToast(data.message || 'Error', 'error');
+      }
+    } catch(e) {
+      window.showToast('Connection error', 'error');
+    }
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-bolt"></i> Quick Buy';
   });
 });
 </script>

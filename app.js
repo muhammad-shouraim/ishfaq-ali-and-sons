@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const rateLimit = require('express-rate-limit');
 const passport = require('./config/passport');
 const { protect } = require('./middleware/auth');
@@ -20,6 +21,13 @@ app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'ishfaq-ali-sons-session-secret-2025',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true }
+}));
 
 app.use(passport.initialize());
 
