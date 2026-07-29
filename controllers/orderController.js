@@ -6,7 +6,8 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 
 exports.getCheckout = async (req, res) => {
-  const cartRow = await Cart.findOne({ where: { user: req.user.id } });
+  const where = req.user ? { user: req.user.id } : { sessionId: req.sessionID };
+  const cartRow = await Cart.findOne({ where });
   if (!cartRow) return res.redirect('/cart');
   const cart = cartRow.toJSON();
   const items = cart.items || [];
@@ -14,7 +15,7 @@ exports.getCheckout = async (req, res) => {
   const productIds = items.map(i => i.product);
   const products = productIds.length > 0 ? await Product.findAll({ where: { id: productIds } }) : [];
   items.forEach(item => {
-    item.product = products.find(p => p.id === Number(item.product));
+    item.product = products.find(p => Number(p.id) === Number(item.product));
   });
   cart.items = items;
   res.render('pages/checkout', { title: 'Checkout', cart });
@@ -22,7 +23,8 @@ exports.getCheckout = async (req, res) => {
 
 exports.placeOrder = async (req, res) => {
   try {
-    const cartRow = await Cart.findOne({ where: { user: req.user.id } });
+    const where = req.user ? { user: req.user.id } : { sessionId: req.sessionID };
+    const cartRow = await Cart.findOne({ where });
     if (!cartRow) return res.status(400).json({ message: 'Cart is empty' });
     const cart = cartRow.toJSON();
     const items = cart.items || [];
@@ -33,7 +35,7 @@ exports.placeOrder = async (req, res) => {
 
     const { name, phone, address, city, postalCode, paymentMethod, notes } = req.body;
     const orderItems = items.map(item => {
-      const p = products.find(pr => pr.id === Number(item.product));
+      const p = products.find(pr => Number(pr.id) === Number(item.product));
       return {
         product: Number(item.product),
         name: p?.name || '',
@@ -47,7 +49,7 @@ exports.placeOrder = async (req, res) => {
     const total = subtotal + shippingCost - Number(cart.discount || 0);
 
     const order = await Order.create({
-      user: req.user.id,
+      user: req.user ? req.user.id : null,
       items: JSON.stringify(orderItems),
       shippingInfo: JSON.stringify({ name, phone, address, city, postalCode }),
       paymentMethod,
@@ -60,8 +62,10 @@ exports.placeOrder = async (req, res) => {
     });
     await Cart.destroy({ where: { id: cartRow.id } });
 
-    const pointsEarned = Math.floor(total / 100);
-    await User.update({ points: sequelize.literal(`points + ${pointsEarned}`) }, { where: { id: req.user.id } });
+    if (req.user) {
+      const pointsEarned = Math.floor(total / 100);
+      await User.update({ points: sequelize.literal(`points + ${pointsEarned}`) }, { where: { id: req.user.id } });
+    }
 
     res.json({ success: true, orderId: order.id, orderNumber: order.orderNumber });
   } catch (err) {

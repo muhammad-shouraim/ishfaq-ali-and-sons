@@ -288,13 +288,7 @@ document.querySelectorAll('.quick-buy-btn').forEach(function(btn) {
       });
       var data = await res.json();
       if (data.success) {
-        window.showToast('Added to cart!', 'success');
-        var badge = document.getElementById('cartCount');
-        if (badge) badge.textContent = data.count || 1;
-        var overlay = document.getElementById('cartOverlay');
-        var sidebar = document.getElementById('cartSidebar');
-        if (overlay && sidebar) { overlay.classList.add('active'); sidebar.classList.add('active'); }
-        loadCartSidebar();
+        window.location.href = '/checkout';
       } else {
         window.showToast(data.message || 'Error', 'error');
       }
