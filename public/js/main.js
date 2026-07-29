@@ -13,11 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
 function initNavToggle() {
   const toggle = document.getElementById('mobileToggle');
   const links = document.getElementById('headerNav');
+  if (!toggle || !links) return;
   const overlay = document.createElement('div');
   overlay.className = 'nav-overlay';
   overlay.addEventListener('click', () => { toggle.classList.remove('active'); links.classList.remove('active'); overlay.classList.remove('active'); });
   document.body.appendChild(overlay);
-  if (!toggle || !links) return;
   toggle.addEventListener('click', () => {
     toggle.classList.toggle('active');
     links.classList.toggle('active');
@@ -25,7 +25,7 @@ function initNavToggle() {
   });
   document.querySelectorAll('#headerNav a').forEach(link => {
     link.addEventListener('click', () => {
-      if (link.classList.contains('nav-dropdown-toggle') && window.innerWidth <= 1024) {
+      if ((link.classList.contains('nav-dropdown-toggle') || link.classList.contains('nav-sub-toggle')) && window.innerWidth <= 1024) {
         return;
       }
       toggle.classList.remove('active');
@@ -39,6 +39,16 @@ function initNavToggle() {
 function initNavDropdowns() {
   const toggles = document.querySelectorAll('.nav-dropdown-toggle');
   toggles.forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+      if (window.innerWidth <= 1024) {
+        e.preventDefault();
+        toggle.parentElement.classList.toggle('active');
+      }
+    });
+  });
+  // Mobile sub-menu toggle
+  const subToggles = document.querySelectorAll('.nav-sub-toggle');
+  subToggles.forEach(toggle => {
     toggle.addEventListener('click', (e) => {
       if (window.innerWidth <= 1024) {
         e.preventDefault();

@@ -147,7 +147,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
   border-bottom: 1px solid var(--border);
 }
 .header .container { display: flex; align-items: center; justify-content: space-between; height: var(--nav-height); }
-.header-logo img { height: 85px; width: auto; }
+.header-logo img { height: 100px; width: auto; }
 .header-nav { display: flex; gap: 32px; }
 .header-nav a {
   font-size: 0.78rem; font-weight: 500; text-transform: uppercase;
@@ -626,14 +626,14 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
   .nav-item-sub { width: 100%; }
   .nav-sub-toggle { padding: 12px 20px; border-bottom: 1px solid var(--border); font-size: 0.82rem; color: var(--text-light); }
   .nav-sub-toggle:hover { background: transparent; color: var(--gold); }
-  .nav-sub-toggle i { display: none; }
+  .nav-sub-toggle i { display: inline-block; font-size: 0.55rem; transition: transform 0.3s ease; }
   .nav-sub-menu {
     position: static; opacity: 1; visibility: visible;
     transform: none; box-shadow: none; border: none;
     max-height: 0; overflow: hidden; transition: max-height 0.35s ease;
     padding: 0; border-radius: 0; background: rgba(0,0,0,0.02);
   }
-  .nav-item-sub:hover .nav-sub-menu, .nav-dropdown.active .nav-item-sub .nav-sub-menu { max-height: 200px; opacity: 1; visibility: visible; transform: none; }
+  .nav-item-sub:hover .nav-sub-menu, .nav-dropdown.active .nav-item-sub .nav-sub-menu, .nav-item-sub.active .nav-sub-menu { max-height: 200px; opacity: 1; visibility: visible; transform: none; }
   .nav-sub-menu a { padding: 10px 32px; font-size: 0.8rem; border-bottom: 1px solid var(--border); color: var(--text-light); }
   .nav-sub-menu a:last-child { border-bottom: none; }
   .nav-sub-menu a:hover { color: var(--gold); background: transparent; }
@@ -665,7 +665,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
   .header { top: 0; }
   .header-nav { width: 100%; left: -100%; }
   .header-nav.active { left: 0; }
-  .header-logo img { height: 50px; }
+  .header-logo img { height: 70px; }
   .hero-overlay-content { padding: 20px 16px; }
   .hero-overlay-content h1 { font-size: 2.2rem; }
   .hero-overlay-content p { font-size: 0.9rem; }

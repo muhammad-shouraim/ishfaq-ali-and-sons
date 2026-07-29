@@ -37,7 +37,7 @@ app.use(protect);
 
 // Maintenance mode check — non-admin visitors see maintenance page
 app.use(async (req, res, next) => {
-  if (req.path.startsWith('/admin-auth-x9k2') || req.path.startsWith('/ishfaq-control-panel-x7k9') || req.path.startsWith('/admin') || req.path === '/maintenance') return next();
+  if (req.path.startsWith('/admin-auth-x9k2') || req.path.startsWith('/ishfaq-control-panel-x7k9') || req.path === '/maintenance') return next();
   if (req.cookies && req.cookies.admin_token) {
     try {
       const jwt = require('jsonwebtoken');
@@ -137,10 +137,10 @@ app.use('/', require('./routes/admin'));
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// Block old /admin path — redirect to homepage
+// Block old /admin path — show 404
 app.use((req, res, next) => {
   if (req.path.startsWith('/admin')) {
-    return res.redirect('/');
+    return res.status(404).render('pages/404', { title: 'Page Not Found', message: 'The page you are looking for does not exist.' });
   }
   next();
 });
