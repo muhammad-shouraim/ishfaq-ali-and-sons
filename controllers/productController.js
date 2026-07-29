@@ -97,32 +97,56 @@ exports.getProduct = async (req, res) => {
 };
 
 exports.debugProduct = async (req, res) => {
-  const result = { slug: req.params.slug, steps: [] };
+  const s = [];
   try {
-    result.steps.push('findOne by slug');
+    s.push({ step: 1, msg: 'findOne by slug: ' + req.params.slug });
     let product = await Product.findOne({ where: { slug: req.params.slug } });
-    result.steps.push({ foundBySlug: !!product });
+    s.push({ step: 2, found: !!product });
     if (!product && /^\d+$/.test(req.params.slug)) {
-      result.steps.push('findByPk by ID');
+      s.push({ step: 3, msg: 'try findByPk' });
       product = await Product.findByPk(Number(req.params.slug));
-      result.steps.push({ foundById: !!product });
+      s.push({ step: 4, found: !!product });
     }
-    if (product) {
-      const pj = product.toJSON();
-      result.steps.push({ id: pj.id, name: pj.name, slug: pj.slug, category: pj.category });
-    } else {
-      result.steps.push('product not found');
-      // Try direct SQL
-      try {
-        const sequelize = require('../config/sequelize');
-        const [rows] = await sequelize.query("SELECT id, name, slug FROM Products WHERE id = ? OR slug = ? LIMIT 1", { replacements: [Number(req.params.slug) || 0, req.params.slug] });
-        result.steps.push({ rawSqlResult: rows });
-      } catch (sqlErr) {
-        result.steps.push({ rawSqlError: sqlErr.message });
-      }
+    if (!product) {
+      return res.json({ slug: req.params.slug, steps: s, final: 'not found' });
     }
-  } catch (err) {
-    result.steps.push({ error: err.message, stack: err.stack?.split('\n').slice(0, 3) });
+    s.push({ step: 5, msg: 'after toJSON' });
+    const pj = product.toJSON();
+    s.push({ step: 6, id: pj.id, name: pj.name, slug: pj.slug });
+
+    s.push({ step: 7, msg: 'category lookup id=' + pj.category });
+    try {
+      const cat = await Category.findByPk(pj.category, { attributes: ['name', 'slug'] });
+      s.push({ step: 8, catFound: !!cat });
+    } catch (e) { s.push({ step: '8err', err: e.message }); }
+
+    s.push({ step: 9, msg: 'reviews query' });
+    try {
+      const reviews = await Review.findAll({ where: { product: pj.id, isApproved: true }, order: [['createdAt', 'DESC']] });
+      s.push({ step: 10, count: reviews.length });
+    } catch (e) { s.push({ step: '10err', err: e.message }); }
+
+    s.push({ step: 11, msg: 'related query' });
+    try {
+      const related = await Product.findAll({ where: { category: pj.category, id: { [Op.ne]: pj.id }, isActive: true }, limit: 4 });
+      s.push({ step: 12, count: related.length });
+    } catch (e) { s.push({ step: '12err', err: e.message }); }
+
+    s.push({ step: 13, msg: 'render template' });
+    try {
+      const html = await new Promise((resolve, reject) => {
+        res.render('pages/product', {
+          title: pj.name, product: pj, related: [], reviews: [], reviewTotal: 0, reviewAvg: 0,
+          metaDescription: pj.shortDescription || '', metaKeywords: '',
+          ogTitle: pj.name + ' | ISHFAQ ALI & SONS',
+          ogDescription: (pj.shortDescription || '').substring(0, 200),
+          ogImage: (pj.images && pj.images.length > 0) ? pj.images[0] : '/images/logo.jpeg'
+        }, (err, html) => { if (err) reject(err); else resolve(html); });
+      });
+      s.push({ step: 14, len: html.length });
+    } catch (e) { s.push({ step: '14err', err: e.message }); }
+  } catch (e) {
+    s.push({ step: 'outer', err: e.message });
   }
-  res.json(result);
+  if (!res.headersSent) res.json({ slug: req.params.slug, steps: s });
 };
