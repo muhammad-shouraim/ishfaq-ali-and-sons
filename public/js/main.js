@@ -47,7 +47,7 @@ function initNavToggle() {
 
   document.querySelectorAll('#headerNav a').forEach(link => {
     link.addEventListener('click', (e) => {
-      if ((link.classList.contains('nav-dropdown-toggle') || link.classList.contains('nav-sub-toggle')) && window.innerWidth <= 1280) {
+      if ((link.classList.contains('nav-dropdown-toggle') || link.classList.contains('nav-sub-toggle')) && window.innerWidth <= 768) {
         e.preventDefault();
         return;
       }
@@ -67,7 +67,7 @@ function initNavDropdowns() {
   const toggles = document.querySelectorAll('.nav-dropdown-toggle');
   toggles.forEach(toggle => {
     toggle.addEventListener('click', (e) => {
-      if (e.target.tagName === 'I' || window.innerWidth <= 1280) {
+      if (e.target.tagName === 'I' || window.innerWidth <= 768) {
         e.preventDefault();
         toggle.parentElement.classList.toggle('active');
       }
@@ -77,7 +77,7 @@ function initNavDropdowns() {
   const subToggles = document.querySelectorAll('.nav-sub-toggle');
   subToggles.forEach(toggle => {
     toggle.addEventListener('click', (e) => {
-      if (window.innerWidth <= 1280) {
+      if (window.innerWidth <= 768) {
         e.preventDefault();
         toggle.parentElement.classList.toggle('active');
       }
