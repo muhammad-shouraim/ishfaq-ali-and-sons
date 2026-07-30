@@ -1,55 +1,21 @@
-const cloudinary = require('../config/cloudinary');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const isCloudinaryConfigured = process.env.CLOUDINARY_CLOUD_NAME &&
-  process.env.CLOUDINARY_CLOUD_NAME !== 'your_cloud_name' &&
-  process.env.CLOUDINARY_API_KEY &&
-  process.env.CLOUDINARY_API_KEY !== 'your_api_key' &&
-  process.env.CLOUDINARY_API_SECRET &&
-  process.env.CLOUDINARY_API_SECRET !== 'your_api_secret';
-
-let storage, useCloudinary = false;
-
-if (isCloudinaryConfigured) {
-  useCloudinary = true;
-  storage = new CloudinaryStorage({
-    cloudinary,
-    params: {
-      folder: 'ishfaq-ali-and-sons',
-      allowed_formats: ['jpeg', 'jpg', 'png', 'gif', 'webp', 'svg'],
-      transformation: [{ quality: 'auto', fetch_format: 'auto' }]
-    }
-  });
-} else {
-  const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-  storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => {
-      const ext = path.extname(file.originalname);
-      const productName = (req.body && req.body.name) || 'product';
-      const sanitized = productName.toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '') || 'product';
-      const timestamp = Date.now();
-      let index;
-      if (file.fieldname === 'thumbnail') {
-        index = 1;
-      } else {
-        if (!req._imgCount) req._imgCount = 0;
-        req._imgCount++;
-        index = req._imgCount + 1;
-      }
-      cb(null, sanitized + '-' + index + '-' + timestamp + ext);
-    }
-  });
+const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).slice(2, 8);
+    cb(null, timestamp + '-' + random + ext);
+  }
+});
 
 const upload = multer({
   storage,
@@ -61,19 +27,16 @@ const upload = multer({
   }
 });
 
-// Middleware to fix file paths for local storage
 upload.fixPaths = (req, res, next) => {
   if (req.files) {
     Object.keys(req.files).forEach(field => {
       req.files[field].forEach(f => {
-        if (!useCloudinary) {
-          f.secure_url = '/uploads/' + path.basename(f.path);
-          f.path = '/uploads/' + path.basename(f.path);
-        }
+        f.secure_url = '/uploads/' + path.basename(f.path);
+        f.path = '/uploads/' + path.basename(f.path);
       });
     });
   }
-  if (req.file && !useCloudinary) {
+  if (req.file) {
     req.file.secure_url = '/uploads/' + path.basename(req.file.path);
     req.file.path = '/uploads/' + path.basename(req.file.path);
   }

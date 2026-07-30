@@ -7,7 +7,8 @@ node_modules/
 Thumbs.db
 *.log
 logs/
-uploads/
+uploads/*
+!uploads/.gitkeep
 .vercel
 mysql-data/
 shouraimportifoilio ias/
