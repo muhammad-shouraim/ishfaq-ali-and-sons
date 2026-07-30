@@ -46,13 +46,15 @@ const Product = sequelize.define('Product', {
   hooks: {
     beforeSave: async (product) => {
       if (!product.slug) {
-        let slug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        const existing = await Product.findOne({ where: { slug, id: { [Op.ne]: product.id || 0 } } });
-        if (existing) slug += '-' + Date.now();
-        product.slug = slug;
+        product.slug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       }
+      const existingSlug = await Product.findOne({ where: { slug: product.slug, id: { [Op.ne]: product.id || 0 } } });
+      if (existingSlug) product.slug += '-' + Date.now();
       if (!product.sku) {
         product.sku = `IAS-${Date.now()}`;
+      } else {
+        const existingSku = await Product.findOne({ where: { sku: product.sku, id: { [Op.ne]: product.id || 0 } } });
+        if (existingSku) product.sku += '-' + Date.now();
       }
     }
   }
