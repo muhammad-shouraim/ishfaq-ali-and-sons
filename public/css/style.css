@@ -155,7 +155,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 .header-logo { line-height: 0; }
 .header-logo img { height: 75px; width: auto; max-height: 75px; }
 @media (max-width: 768px) { .header-logo img { height: 50px; max-height: 50px; } }
-.header-nav { display: flex; gap: 32px; position: absolute; left: 50%; transform: translateX(-50%); }
+.header-nav { display: flex; gap: 32px; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 .nav-mobile-header { display: none; }
 .nav-desktop-links { display: flex; gap: 32px; align-items: center; }
 .nav-mobile-extras { display: none; }
