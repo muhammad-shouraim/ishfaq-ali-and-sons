@@ -160,9 +160,14 @@ app.get('/__migrate__', async (req, res) => {
     try { await sequelize.query('ALTER TABLE `' + table + '` ADD COLUMN `' + col + '` ' + def); return 'added'; }
     catch (e) { return e.message.includes('Duplicate column') ? 'exists' : 'error: ' + e.message; }
   };
-  const r1 = await addCol('orders', 'accountName', 'VARCHAR(255) DEFAULT NULL AFTER notes');
-  const r2 = await addCol('orders', 'transactionId', 'VARCHAR(255) DEFAULT NULL AFTER accountName');
-  res.json({ accountName: r1, transactionId: r2 });
+  var tables = ['Orders', 'orders'];
+  var result = {};
+  for (var t of tables) {
+    result[t] = {};
+    result[t].accountName = await addCol(t, 'accountName', 'VARCHAR(255) DEFAULT NULL AFTER notes');
+    result[t].transactionId = await addCol(t, 'transactionId', 'VARCHAR(255) DEFAULT NULL AFTER accountName');
+  }
+  res.json(result);
 });
 
 app.use('/', require('./routes/admin'));
