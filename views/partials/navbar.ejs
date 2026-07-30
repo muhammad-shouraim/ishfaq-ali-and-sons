@@ -1,65 +1,61 @@
 <style>
-.header .container { position: static !important; }
-.header-nav { position: static !important; left: auto !important; top: auto !important; transform: none !important; flex: 1 !important; justify-content: center !important; }
-.nav-desktop-links { display: flex !important; gap: 32px; align-items: center; }
-@media (max-width: 768px) {
-  .header-nav { position: fixed !important; left: -100% !important; top: 0 !important; width: 300px !important; height: 100vh !important; flex: none !important; justify-content: flex-start !important; transform: none !important; }
-  .header-nav.active { left: 0 !important; }
-  .nav-desktop-links { display: block !important; width: 100% !important; }
-  .mobile-toggle { display: flex !important; }
-}
-@media (min-width: 769px) {
-  .header-nav { position: static !important; display: flex !important; left: auto !important; top: auto !important; transform: none !important; flex: 1 !important; justify-content: center !important; }
-  .header-nav.active { left: auto !important; }
-  .nav-desktop-links { display: flex !important; }
-  .mobile-toggle { display: none !important; }
-}
+  .header { position: sticky; top: 0; z-index: 1000; background: #fff; border-bottom: 1px solid var(--border); }
+  .header .container { display: flex; align-items: center; justify-content: space-between; height: var(--nav-height); gap: 20px; flex-wrap: wrap; }
+  .header-logo { flex-shrink: 0; }
+  .header-logo img { height: 90px; width: auto; }
+  .header-nav { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .header-nav a { font-size: 0.78rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: var(--text); padding: 4px 0; white-space: nowrap; }
+  .header-nav a:hover, .header-nav a.active { color: var(--gold); }
+  .header-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .header-action { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; color: var(--text); font-size: 1rem; border-radius: 50%; position: relative; }
+  .header-action:hover { color: var(--gold); background: rgba(200,169,110,0.08); }
+  .header-action .badge { position: absolute; top: 4px; right: 4px; width: 16px; height: 16px; background: var(--gold); color: #fff; font-size: 0.55rem; font-weight: 700; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .nav-item { position: relative; }
+  .nav-dropdown-toggle { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .nav-dropdown-toggle i { font-size: 0.55rem; }
+  .nav-dropdown-menu { position: absolute; top: 100%; left: 0; min-width: 200px; background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-lg); opacity: 0; visibility: hidden; transform: translateY(8px); transition: all 0.3s ease; z-index: 100; padding: 8px 0; border-radius: var(--radius); }
+  .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown.active .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+  .nav-dropdown-menu a { display: block; padding: 10px 20px; font-size: 0.85rem; color: var(--text); text-transform: none; letter-spacing: 0; }
+  .nav-dropdown-menu a:hover { background: var(--cream); color: var(--gold); }
+  .nav-dropdown:hover .nav-dropdown-toggle i { transform: rotate(180deg); transition: transform 0.3s ease; }
+  @media (max-width: 768px) {
+    .header .container { flex-direction: column; height: auto; padding: 10px 20px; gap: 10px; }
+    .header-nav { justify-content: center; }
+    .header-logo img { height: 60px; }
+  }
 </style>
+
 <header class="header" id="header">
   <div class="container">
     <a href="/" class="header-logo">
       <img src="/images/newlogo.png" alt="ISHFAQ ALI & SONS">
     </a>
 
-    <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+    <nav class="header-nav">
+      <a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>">Home</a>
+      <a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>">Shop</a>
 
-    <nav class="header-nav" id="headerNav">
-      <div class="nav-mobile-header">
-        <div class="nav-mobile-logo">
-          <img src="/images/newlogo.png" alt="ISHFAQ ALI & SONS">
+      <% if (typeof navCategories !== 'undefined' && navCategories.length > 0) { %>
+      <div class="nav-item nav-dropdown">
+        <a href="/shop" class="nav-dropdown-toggle">
+          Categories <i class="fas fa-chevron-down"></i>
+        </a>
+        <div class="nav-dropdown-menu nav-dropdown-menu-wide">
+          <% navCategories.forEach(function(cat) { %>
+            <a href="/collection/<%= cat.slug %>"><%= cat.name %></a>
+          <% }); %>
         </div>
-        <button class="nav-mobile-close" id="navMobileClose" aria-label="Close Menu"><i class="fas fa-times"></i></button>
       </div>
-
-      <div class="nav-desktop-links">
-        <a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>">Home</a>
-        <a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>">Shop</a>
-
-        <% if (typeof navCategories !== 'undefined' && navCategories.length > 0) { %>
-        <div class="nav-item nav-dropdown">
-          <a href="/shop" class="nav-dropdown-toggle">
-            Categories <i class="fas fa-chevron-down"></i>
-          </a>
-          <div class="nav-dropdown-menu nav-dropdown-menu-wide">
-            <% navCategories.forEach(function(cat) { %>
-              <a href="/collection/<%= cat.slug %>"><%= cat.name %></a>
-            <% }); %>
-          </div>
-        </div>
-        <% } else { %>
-          <a href="/shop">Categories</a>
-        <% } %>
-      </div>
-
+      <% } else { %>
+        <a href="/shop">Categories</a>
+      <% } %>
     </nav>
 
     <div class="header-actions">
       <a href="/shop" class="header-action" aria-label="Search">
         <i class="fas fa-search"></i>
       </a>
-      <a href="/wishlist" class="header-action mobile-wishlist-hide" aria-label="Wishlist">
+      <a href="/wishlist" class="header-action" aria-label="Wishlist">
         <i class="far fa-heart"></i>
         <span class="badge wishlist-count" id="wishlistCount">0</span>
       </a>
@@ -67,31 +63,28 @@
         <i class="fas fa-shopping-bag"></i>
         <span class="badge cart-count" id="cartCount">0</span>
       </button>
-      
 
       <% if (user) { %>
-      <div class="user-dropdown mobile-user-hide">
+      <div class="user-dropdown" style="position:relative">
         <button class="header-action" aria-label="Account">
           <i class="far fa-user"></i>
         </button>
-        <div class="dropdown-menu dropdown-menu-right">
-          <a href="/profile"><i class="fas fa-user"></i> My Profile</a>
-          <a href="/orders"><i class="fas fa-box"></i> My Orders</a>
-          <a href="/wishlist"><i class="far fa-heart"></i> Wishlist</a>
-          <div class="dropdown-divider"></div>
-          <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <div class="dropdown-menu" style="position:absolute;top:100%;right:0;min-width:200px;background:#fff;border:1px solid var(--border);box-shadow:var(--shadow-lg);opacity:0;visibility:hidden;z-index:100;padding:8px 0;border-radius:var(--radius)">
+          <a href="/profile" style="display:block;padding:10px 20px;font-size:0.85rem;color:var(--text)"><i class="fas fa-user"></i> My Profile</a>
+          <a href="/orders" style="display:block;padding:10px 20px;font-size:0.85rem;color:var(--text)"><i class="fas fa-box"></i> My Orders</a>
+          <a href="/wishlist" style="display:block;padding:10px 20px;font-size:0.85rem;color:var(--text)"><i class="far fa-heart"></i> Wishlist</a>
+          <div style="height:1px;background:var(--border);margin:4px 0"></div>
+          <a href="/logout" style="display:block;padding:10px 20px;font-size:0.85rem;color:var(--text)"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
       </div>
       <% } else { %>
-      <button class="header-action mobile-user-hide" id="authModalBtn" aria-label="Login" onclick="openAuthModal('login')">
+      <button class="header-action" id="authModalBtn" aria-label="Login" onclick="openAuthModal('login')">
         <i class="far fa-user"></i>
       </button>
       <% } %>
-      
     </div>
   </div>
 </header>
-
 
 <div class="auth-modal-overlay" id="authModalOverlay" onclick="if(event.target===this)closeAuthModal()">
   <div class="auth-modal">
@@ -118,7 +111,7 @@
       <p class="auth-switch-text">Don't have an account? <a href="#" onclick="switchAuthTab('signup');return false">Create one</a></p>
     </form>
 
-    <form id="signupForm" class="auth-modal-form" autocomplete="off">
+    <form id="signupForm" class="auth-modal-form active" autocomplete="off">
       <div class="form-group">
         <label for="signupName">Full Name</label>
         <input type="text" id="signupName" name="name" placeholder="Your full name" required>
