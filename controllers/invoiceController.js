@@ -82,15 +82,15 @@ exports.generateInvoice = async (req, res) => {
 
     y += 10;
     const discount = Number(order.discount || 0);
-    const shipping = subtotal >= 5000 ? 0 : 200;
-    const grandTotal = subtotal - discount + shipping;
+    const shipCost = subtotal >= 5000 ? 0 : 200;
+    const grandTotal = subtotal - discount + shipCost;
 
     doc.moveTo(350, y - 4).lineTo(550, y - 4).strokeColor('#E5DDD0').stroke();
 
     doc.fontSize(9).font('Helvetica');
     doc.text('Subtotal:', 350, y); doc.text(`Rs. ${subtotal.toLocaleString()}`, 430, y, { align: 'right', width: 120 });
     y += 16;
-    doc.text('Shipping:', 350, y); doc.text(shipping === 0 ? 'Free' : `Rs. ${shipping}`, 430, y, { align: 'right', width: 120 });
+    doc.text('Shipping:', 350, y); doc.text(shipCost === 0 ? 'Free' : `Rs. ${shipCost}`, 430, y, { align: 'right', width: 120 });
     y += 16;
     if (discount > 0) {
       doc.text('Discount:', 350, y); doc.text(`-Rs. ${discount.toLocaleString()}`, 430, y, { align: 'right', width: 120 });
