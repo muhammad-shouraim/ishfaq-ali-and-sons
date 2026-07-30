@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, Op } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Product = sequelize.define('Product', {
@@ -44,9 +44,12 @@ const Product = sequelize.define('Product', {
   variants: { type: DataTypes.TEXT, defaultValue: '[]', get() { const r = this.getDataValue('variants'); if (r && typeof r === 'string') { try { return JSON.parse(r); } catch { return []; } } return r || []; }, set(v) { this.setDataValue('variants', typeof v === 'string' ? v : JSON.stringify(v)); } }
 }, {
   hooks: {
-    beforeSave: (product) => {
+    beforeSave: async (product) => {
       if (!product.slug) {
-        product.slug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        let slug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const existing = await Product.findOne({ where: { slug, id: { [Op.ne]: product.id || 0 } } });
+        if (existing) slug += '-' + Date.now();
+        product.slug = slug;
       }
       if (!product.sku) {
         product.sku = `IAS-${Date.now()}`;

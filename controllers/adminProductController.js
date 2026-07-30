@@ -74,6 +74,7 @@ exports.createProduct = async (req, res) => {
     const categoryId = data.subSubcategoryId || data.subcategoryId || data.categoryId;
     const product = await Product.create({
       name: data.name,
+      slug: data.slug || '',
       sku: data.sku || '',
       description: data.description || '',
       shortDescription: data.shortDescription || '',
