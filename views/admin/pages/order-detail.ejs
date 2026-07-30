@@ -38,9 +38,9 @@
     </div>
     <div class="admin-card-body">
       <table class="info-table">
-        <tr><td>Name</td><td><strong><%= order.customerName %></strong></td></tr>
-        <tr><td>Email</td><td><%= order.customerEmail %></td></tr>
-        <tr><td>Phone</td><td><%= order.customerPhone || '-' %></td></tr>
+        <tr><td>Name</td><td><strong><%= (typeof order.shippingInfo === 'object' && order.shippingInfo.name) || order.shippingName || '-' %></strong></td></tr>
+        <tr><td>Email</td><td><%= (typeof order.shippingInfo === 'object' && order.shippingInfo.email) || order.customerEmail || '-' %></td></tr>
+        <tr><td>Phone</td><td><%= (typeof order.shippingInfo === 'object' && order.shippingInfo.phone) || order.customerPhone || '-' %></td></tr>
       </table>
     </div>
   </div>
@@ -51,11 +51,11 @@
     </div>
     <div class="admin-card-body">
       <table class="info-table">
-        <tr><td>Address</td><td><%= order.shippingAddress || '-' %></td></tr>
-        <tr><td>City</td><td><%= order.shippingCity || '-' %></td></tr>
-        <tr><td>State</td><td><%= order.shippingState || '-' %></td></tr>
-        <tr><td>Zip</td><td><%= order.shippingZip || '-' %></td></tr>
-        <tr><td>Country</td><td><%= order.shippingCountry || '-' %></td></tr>
+        <tr><td>Address</td><td><%= (typeof order.shippingInfo === 'object' && order.shippingInfo.address) || order.shippingAddress || '-' %></td></tr>
+        <tr><td>City</td><td><%= (typeof order.shippingInfo === 'object' && order.shippingInfo.city) || order.shippingCity || '-' %></td></tr>
+        <tr><td>State</td><td><%= (typeof order.shippingInfo === 'object' && order.shippingInfo.state) || order.shippingState || '-' %></td></tr>
+        <tr><td>Zip</td><td><%= (typeof order.shippingInfo === 'object' && order.shippingInfo.postalCode) || order.shippingZip || '-' %></td></tr>
+        <tr><td>Country</td><td><%= (typeof order.shippingInfo === 'object' && order.shippingInfo.country) || order.shippingCountry || '-' %></td></tr>
       </table>
     </div>
   </div>

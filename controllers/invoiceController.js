@@ -9,6 +9,7 @@ exports.generateInvoice = async (req, res) => {
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
     const items = typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || []);
+    const shipping = typeof order.shippingInfo === 'string' ? JSON.parse(order.shippingInfo) : (order.shippingInfo || {});
     const doc = new PDFDocument({ size: 'A4', margin: 40 });
 
     res.setHeader('Content-Type', 'application/pdf');
@@ -40,9 +41,9 @@ exports.generateInvoice = async (req, res) => {
 
     doc.fontSize(9).font('Helvetica-Bold').fillColor(black).text('Bill To:');
     doc.fontSize(8.5).font('Helvetica').fillColor(black);
-    doc.text(`Name: ${order.customerName || order.shippingName || 'N/A'}`);
-    doc.text(`Phone: ${order.customerPhone || order.shippingPhone || 'N/A'}`);
-    doc.text(`Address: ${[order.shippingAddress, order.shippingCity].filter(Boolean).join(', ') || order.shippingAddress || 'N/A'}`);
+    doc.text(`Name: ${shipping.name || order.customerName || order.shippingName || 'N/A'}`);
+    doc.text(`Phone: ${shipping.phone || order.customerPhone || order.shippingPhone || 'N/A'}`);
+    doc.text(`Address: ${[shipping.address, shipping.city].filter(Boolean).join(', ') || shipping.address || order.shippingAddress || 'N/A'}`);
     doc.moveDown(0.8);
 
     const tableTop = doc.y;
