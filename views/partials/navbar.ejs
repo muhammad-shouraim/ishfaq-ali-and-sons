@@ -37,16 +37,6 @@
           <% }); %>
         <% } %>
       </div>
-
-      <div class="nav-mobile-extras">
-        <a href="/wishlist"><i class="far fa-heart"></i> Wishlist <span class="wishlist-count wishlist-count-mobile-nav" id="wishlistCountMobile">0</span></a>
-        <% if (user) { %>
-        <a href="/profile"><i class="far fa-user"></i> My Account</a>
-        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        <% } else { %>
-        <a href="#" onclick="openAuthModal('login');return false"><i class="far fa-user"></i> Sign In / Register</a>
-        <% } %>
-      </div>
     </nav>
 
     <div class="header-actions">

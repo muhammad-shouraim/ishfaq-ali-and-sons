@@ -696,6 +696,9 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 }
 @media (max-width: 768px) {
   .mobile-toggle { display: flex !important; z-index: 10000; }
+  .header .container { position: relative; }
+  .header-logo { position: absolute; left: 50%; transform: translateX(-50%); z-index: 1; }
+  .header-logo img { display: block; }
   .footer-grid { grid-template-columns: repeat(2, 1fr); }
   h1 { font-size: 2rem; }
   h2 { font-size: 1.6rem; }
