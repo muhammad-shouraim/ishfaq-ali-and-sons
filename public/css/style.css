@@ -196,7 +196,6 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 }
 .nav-dropdown-menu a:hover { background: var(--cream); color: var(--gold); }
 .nav-dropdown-menu a::after { display: none; }
-.nav-dropdown-extra { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 10px; font-weight: 600; color: var(--gold) !important; }
 .nav-dropdown-menu-wide { min-width: 280px; }
 
 /* Nested sub-menu for Necklace */
@@ -639,7 +638,6 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
   .nav-mobile-extras a i:first-child { width: 20px; text-align: center; color: var(--gold); font-size: 1rem; }
   .nav-mobile-extras a.active { color: var(--gold); background: rgba(200,169,110,0.06); }
   .nav-mobile-extras a::after { display: none; }
-  .nav-dropdown-extra { border-top: 1px solid var(--border); margin-top: 0; padding-top: 0; font-weight: 600; color: var(--gold) !important; }
 
   .nav-mobile-divider { height: 8px; background: var(--cream); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 
