@@ -65,6 +65,7 @@
             <span class="current-price"><%= currencySymbol %> <%= Number(product.price).toLocaleString() %></span>
             <% if (product.comparePrice > product.price) { %>
             <span class="compare-price"><%= currencySymbol %> <%= Number(product.comparePrice).toLocaleString() %></span>
+            <span class="discount-badge">-<%= Math.round((1 - Number(product.price) / Number(product.comparePrice)) * 100) %>%</span>
             <% } %>
           </div>
           <p class="product-description"><%= product.shortDescription || product.description %></p>
@@ -198,8 +199,8 @@
             <div class="product-card-body">
               <h3><a href="/product/<%= item.slug %>"><%= item.name %></a></h3>
               <% if (item.comparePrice > 0) { %>
-                <span class="price old-price"><%= currencySymbol %> <%= Number(item.price).toLocaleString() %></span>
-                <span class="price sale-price"><%= currencySymbol %> <%= Number(item.comparePrice).toLocaleString() %></span>
+                <span class="price old-price"><%= currencySymbol %> <%= Number(item.comparePrice).toLocaleString() %></span>
+                <span class="price sale-price"><%= currencySymbol %> <%= Number(item.price).toLocaleString() %></span>
               <% } else { %>
                 <span class="price"><%= currencySymbol %> <%= Number(item.price).toLocaleString() %></span>
               <% } %>
