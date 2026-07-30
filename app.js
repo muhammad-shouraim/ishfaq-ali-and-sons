@@ -152,6 +152,19 @@ app.use('/', require('./routes/contact'));
 app.use('/', require('./routes/order'));
 app.use('/', require('./routes/newsletter'));
 app.use('/', require('./routes/seo'));
+// Temporary migration endpoint (remove after running)
+app.get('/__migrate__', async (req, res) => {
+  if (req.query.key !== 'ias_migrate_2024') return res.status(403).json({ error: 'invalid key' });
+  const sequelize = require('./config/sequelize');
+  const addCol = async (table, col, def) => {
+    try { await sequelize.query('ALTER TABLE `' + table + '` ADD COLUMN `' + col + '` ' + def); return 'added'; }
+    catch (e) { return e.message.includes('Duplicate column') ? 'exists' : 'error: ' + e.message; }
+  };
+  const r1 = await addCol('orders', 'accountName', 'VARCHAR(255) DEFAULT NULL AFTER notes');
+  const r2 = await addCol('orders', 'transactionId', 'VARCHAR(255) DEFAULT NULL AFTER accountName');
+  res.json({ accountName: r1, transactionId: r2 });
+});
+
 app.use('/', require('./routes/admin'));
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
