@@ -34,7 +34,7 @@
     <% if (media && media.length) { %>
       <% media.forEach(function(item) { %>
         <div class="media-item">
-          <img src="<%= item.url || '/uploads/' + item.filename %>" alt="<%= item.originalname || item.filename %>">
+          <img src="<%= item.url || '/uploads/' + item.filename %>" alt="<%= item.originalname || item.filename %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
           <div class="media-item-overlay"><%= item.originalname || item.filename %></div>
           <button class="delete-media" data-id="<%= item.id %>" data-confirm="Delete this file?" onclick="var that=this;fetch('<%= adminPath %>/media/delete/'+this.dataset.id,{method:'POST'}).then(function(){that.closest('.media-item').remove();}).catch(function(e){adminToast('Delete failed','error');});"><i class="fas fa-trash"></i></button>
         </div>

@@ -145,8 +145,18 @@ exports.updateProduct = async (req, res) => {
     try { existingImages = JSON.parse(product.images || '[]'); } catch (e) { existingImages = []; }
     let newImages = req.files?.images ? req.files.images.map(f => f.secure_url || f.path) : [];
     let submittedImages = data.images ? (Array.isArray(data.images) ? data.images : [data.images]) : [];
-    let allImages = [...newImages, ...submittedImages];
-    if (allImages.length === 0) allImages = existingImages;
+    let removeImages = data.removeImages ? (Array.isArray(data.removeImages) ? data.removeImages : [data.removeImages]) : [];
+    let allImages = existingImages.filter(i => !removeImages.includes(i));
+    allImages = [...allImages, ...newImages];
+    // If hidden inputs were submitted (form with full image list), use those instead
+    if (submittedImages.length > 0) {
+      allImages = [...newImages, ...submittedImages.filter(i => !removeImages.includes(i))];
+    }
+    removeImages.forEach(url => {
+      const fname = url.replace('/uploads/', '');
+      const fp = require('path').join(__dirname, '..', 'public', 'uploads', fname);
+      try { if (require('fs').existsSync(fp)) require('fs').unlinkSync(fp); } catch (e) {}
+    });
     const thumbnail = req.files?.thumbnail?.[0]?.secure_url || req.files?.thumbnail?.[0]?.path || (data.removeThumbnail ? '' : (data.thumbnail || product.thumbnail));
     const categoryId = data.subSubcategoryId || data.subcategoryId || data.categoryId;
     await product.update({
@@ -199,6 +209,17 @@ exports.deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
     if (!product) return res.redirect(ADMIN_PATH + '/products?message=Product not found&messageType=danger');
+    const fs = require('fs');
+    const path = require('path');
+    const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+    const deleteFile = (ref) => {
+      if (!ref) return;
+      const fname = ref.replace('/uploads/', '');
+      const fp = path.join(uploadDir, fname);
+      try { if (fs.existsSync(fp)) fs.unlinkSync(fp); } catch (e) {}
+    };
+    (product.images || []).forEach(deleteFile);
+    deleteFile(product.thumbnail);
     await Product.destroy({ where: { id: req.params.id } });
     await ActivityLog.create({ user: req.user.id, action: 'delete_product', resource: 'Product', resourceId: product.id, details: JSON.stringify({ name: product.name }), ip: req.ip });
     await logAdminAction(req, 'delete_product', 'Product', product.id, product.name, `Deleted product "${product.name}"`);
@@ -216,7 +237,16 @@ exports.bulkAction = async (req, res) => {
     let result;
     switch (action) {
       case 'delete':
+        const products = await Product.findAll({ where: { id: ids }, attributes: ['id', 'images', 'thumbnail'] });
         result = await Product.destroy({ where: { id: ids } });
+        const fs = require('fs');
+        const path = require('path');
+        const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+        products.forEach(p => {
+          const del = (ref) => { if (!ref) return; const f = path.join(uploadDir, ref.replace('/uploads/', '')); try { if (fs.existsSync(f)) fs.unlinkSync(f); } catch (e) {} };
+          (p.images || []).forEach(del);
+          del(p.thumbnail);
+        });
         await logAdminAction(req, 'bulk_delete', 'Product', 0, '', `Bulk deleted ${result} products`);
         break;
       case 'activate':
@@ -297,6 +327,84 @@ exports.toggleStatus = async (req, res) => {
     res.json({ success: true, isActive: product.isActive });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+exports.removeImage = async (req, res) => {
+  try {
+    const product = await Product.findByPk(req.params.id);
+    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+    const { imageUrl } = req.body;
+    if (!imageUrl) return res.status(400).json({ success: false, message: 'Image URL required' });
+    let images = product.images || [];
+    if (!images.includes(imageUrl)) return res.status(400).json({ success: false, message: 'Image not found on product' });
+    images = images.filter(i => i !== imageUrl);
+    product.images = JSON.stringify(images);
+    if (product.thumbnail === imageUrl) product.thumbnail = '';
+    await product.save();
+    const fname = imageUrl.replace('/uploads/', '');
+    const fp = require('path').join(__dirname, '..', 'public', 'uploads', fname);
+    try { if (require('fs').existsSync(fp)) require('fs').unlinkSync(fp); } catch (e) {}
+    await ActivityLog.create({ user: req.user.id, action: 'remove_product_image', resource: 'Product', resourceId: product.id, details: JSON.stringify({ name: product.name, image: imageUrl }), ip: req.ip });
+    await logAdminAction(req, 'remove_product_image', 'Product', product.id, product.name, `Removed image from product "${product.name}"`);
+    res.json({ success: true, images: product.images, thumbnail: product.thumbnail });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.scanBrokenImages = async (req, res) => {
+  try {
+    const products = await Product.findAll({ attributes: ['id', 'name', 'images', 'thumbnail'] });
+    const fs = require('fs');
+    const path = require('path');
+    const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+    const broken = [];
+    for (const p of products) {
+      const imgs = p.images || [];
+      const allRefs = [...imgs];
+      if (p.thumbnail && !allRefs.includes(p.thumbnail)) allRefs.push(p.thumbnail);
+      const missing = allRefs.filter(ref => {
+        if (!ref) return false;
+        const fname = ref.replace('/uploads/', '');
+        return !fs.existsSync(path.join(uploadDir, fname));
+      });
+      if (missing.length > 0) {
+        broken.push({ id: p.id, name: p.name, images: imgs, thumbnail: p.thumbnail, missing });
+      }
+    }
+    res.json({ success: true, broken, count: broken.length });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.fixBrokenImages = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findByPk(id);
+    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+    const fs = require('fs');
+    const path = require('path');
+    const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+    let images = product.images || [];
+    images = images.filter(ref => {
+      if (!ref) return false;
+      const fname = ref.replace('/uploads/', '');
+      return fs.existsSync(path.join(uploadDir, fname));
+    });
+    if (product.thumbnail) {
+      const fname = product.thumbnail.replace('/uploads/', '');
+      if (!fs.existsSync(path.join(uploadDir, fname))) {
+        product.thumbnail = '';
+      }
+    }
+    product.images = JSON.stringify(images);
+    await product.save();
+    await ActivityLog.create({ user: req.user.id, action: 'fix_broken_images', resource: 'Product', resourceId: product.id, details: JSON.stringify({ name: product.name }), ip: req.ip });
+    res.json({ success: true, images: product.images, thumbnail: product.thumbnail });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 

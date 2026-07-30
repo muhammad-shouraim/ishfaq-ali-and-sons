@@ -28,7 +28,7 @@
             <td><%= cat.slug %></td>
             <td>
               <% if (cat.image) { %>
-                <img src="<%= cat.image %>" alt="<%= cat.name %>" class="category-icon">
+                <img src="<%= cat.image %>" alt="<%= cat.name %>" class="category-icon" onerror="this.onerror=null;this.src='/images/newlogo.png'">
               <% } else { %>
                 <i class="fas fa-folder"></i>
               <% } %>

@@ -16,6 +16,8 @@
 .btn-next:disabled { opacity: 0.5; cursor: not-allowed; }
 @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-6px); } 40%,80% { transform: translateX(6px); } }
 .shake { animation: shake 0.4s ease-in-out; }
+.btn-danger { background: #e74c3c; color: #fff; border: none; padding: 6px 14px; font-size: 0.78rem; border-radius: 4px; cursor: pointer; }
+.btn-danger:hover { background: #c0392b; }
 </style>
 
 <div class="page-header">
@@ -165,10 +167,8 @@
             <div id="thumbnailPreview" class="image-preview">
               <% if (isEditing && product.thumbnail) { %>
                 <div class="thumbnail-wrapper">
-                  <img src="<%= product.thumbnail %>" alt="Current thumbnail">
-                  <label class="form-check remove-check">
-                    <input type="checkbox" name="removeThumbnail" value="1"> Remove thumbnail
-                  </label>
+                  <img src="<%= product.thumbnail %>" alt="Current thumbnail" onerror="this.onerror=null;this.src='/images/newlogo.png'">
+                  <button type="button" class="btn btn-sm btn-danger" onclick="removeProductImage('<%= product.thumbnail %>', this)">Remove</button>
                 </div>
               <% } %>
             </div>
@@ -177,13 +177,11 @@
             <label for="images">Additional Images</label>
             <input type="file" id="images" name="images" class="form-input" accept="image/*" multiple>
             <% if (isEditing && product.images && product.images.length > 0) { %>
-            <div class="image-gallery image-gallery-sm">
+            <div class="image-gallery image-gallery-sm" id="productImagesGallery">
               <% product.images.forEach(function(img) { %>
-                <div class="gallery-item">
-                  <img src="<%= img %>" alt="Product image">
-                  <label class="form-check">
-                    <input type="checkbox" name="removeImages" value="<%= img %>"> Remove
-                  </label>
+                <div class="gallery-item" data-img="<%= img %>">
+                  <img src="<%= img %>" alt="Product image" onerror="this.onerror=null;this.src='/images/newlogo.png'">
+                  <button type="button" class="btn btn-sm btn-danger" onclick="removeProductImage('<%= img %>', this)">Remove</button>
                 </div>
               <% }) %>
             </div>
@@ -303,11 +301,43 @@
       var preview = document.getElementById(this.getAttribute('data-preview'));
       if (this.files && this.files[0]) {
         var reader = new FileReader();
-        reader.onload = function(e) { preview.innerHTML = '<img src="' + e.target.result + '">'; };
+        reader.onload = function(e) { preview.innerHTML = '<img src="' + e.target.result + '" onerror="this.onerror=null;this.src=\'/images/newlogo.png\'">'; };
         reader.readAsDataURL(this.files[0]);
       }
     });
   });
+
+  function showToast(msg, type) {
+    var t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:20px;right:20px;padding:12px 20px;background:'+(type==='error'?'#e74c3c':'#27ae74')+';color:#fff;border-radius:6px;z-index:9999;font-size:0.85rem';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function(){t.remove()}, 3000);
+  }
+
+  function removeProductImage(imageUrl, btn) {
+    if (!confirm('Remove this image? The file will be permanently deleted.')) return;
+    btn.disabled = true; btn.textContent = 'Deleting...';
+    fetch('<%= adminPath %>/products/<%= product.id %>/remove-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageUrl: imageUrl })
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      if (data.success) {
+        var items = document.querySelectorAll('.gallery-item[data-img="' + imageUrl.replace(/"/g, '\\"') + '"]');
+        items.forEach(function(el) { el.remove(); });
+        var thumbs = document.querySelectorAll('.thumbnail-wrapper');
+        thumbs.forEach(function(el) { el.remove(); });
+        showToast('Image removed', 'success');
+      } else {
+        alert('Error: ' + (data.message || 'Failed to remove image'));
+        btn.disabled = false; btn.textContent = 'Remove';
+      }
+    }).catch(function(err) {
+      alert('Error: ' + err.message);
+      btn.disabled = false; btn.textContent = 'Remove';
+    });
+  }
 
   document.getElementById('productForm').addEventListener('submit', function(e) {
     // Only validate the current tab, don't block if other tabs are empty

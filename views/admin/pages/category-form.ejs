@@ -35,7 +35,7 @@
           <input type="file" id="image" name="image" class="form-input" accept="image/*">
           <% if (isEditing && category.image) { %>
             <div class="image-preview">
-              <img src="<%= category.image %>" alt="Current image">
+              <img src="<%= category.image %>" alt="Current image" onerror="this.onerror=null;this.src='/images/newlogo.png'">
             </div>
           <% } %>
         </div>
@@ -44,7 +44,7 @@
           <input type="file" id="banner" name="banner" class="form-input" accept="image/*">
           <% if (isEditing && category.banner) { %>
             <div class="image-preview">
-              <img src="<%= category.banner %>" alt="Current banner">
+              <img src="<%= category.banner %>" alt="Current banner" onerror="this.onerror=null;this.src='/images/newlogo.png'">
             </div>
           <% } %>
         </div>

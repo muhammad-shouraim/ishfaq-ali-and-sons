@@ -38,7 +38,7 @@
         <label for="featuredImage">Featured Image</label>
         <input type="file" id="featuredImage" name="featuredImage" data-preview="featuredPreview" accept="image/*">
         <% if (page && page.featuredImage) { %>
-          <img id="featuredPreview" src="<%= page.featuredImage %>" style="display:block;max-width:200px;margin-top:8px;border-radius:6px;">
+          <img id="featuredPreview" src="<%= page.featuredImage %>" style="display:block;max-width:200px;margin-top:8px;border-radius:6px;" onerror="this.onerror=null;this.style.display='none'">
         <% } else { %>
           <img id="featuredPreview" style="display:none;max-width:200px;margin-top:8px;border-radius:6px;">
         <% } %>

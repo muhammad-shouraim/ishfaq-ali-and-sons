@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
     suggestionsDiv.style.display = 'block';
     suggestionsDiv.innerHTML = matches.map(p => `
       <a href="${p.url}" style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);text-decoration:none;color:var(--text);transition:var(--transition)">
-        <img src="${p.image}" alt="${p.title}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;background:var(--cream)">
+        <img src="${p.image}" alt="${p.title}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;background:var(--cream)" onerror="this.onerror=null;this.src='/images/newlogo.png'">
         <div style="flex:1">
           <div style="font-size:0.85rem;font-weight:500">${p.title}</div>
           <div style="font-size:0.72rem;color:var(--text-light)">SKU: ${p.sku}</div>

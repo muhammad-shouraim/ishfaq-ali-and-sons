@@ -41,8 +41,11 @@ router.post(ADMIN_PATH + '/products/edit/:id', upload.fields([{ name: 'images', 
 router.post(ADMIN_PATH + '/products/delete/:id', productCtrl.deleteProduct);
 router.post(ADMIN_PATH + '/products/bulk', productCtrl.bulkAction);
 router.post(ADMIN_PATH + '/products/:id/variants', productCtrl.manageVariants);
+router.post(ADMIN_PATH + '/products/:id/remove-image', productCtrl.removeImage);
 router.post(ADMIN_PATH + '/products/:id/duplicate', productCtrl.duplicateProduct);
 router.post(ADMIN_PATH + '/products/:id/toggle-status', productCtrl.toggleStatus);
+router.get(ADMIN_PATH + '/products/scan-broken', productCtrl.scanBrokenImages);
+router.post(ADMIN_PATH + '/products/fix-broken/:id', productCtrl.fixBrokenImages);
 router.get('/api/admin/products', productCtrl.apiListProducts);
 
 // ===== CATEGORIES =====
