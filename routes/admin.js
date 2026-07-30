@@ -60,6 +60,7 @@ router.post(ADMIN_PATH + '/categories/delete/:id', categoryCtrl.deleteCategory);
 router.get(ADMIN_PATH + '/orders', orderCtrl.listOrders);
 router.get(ADMIN_PATH + '/orders/:id', orderCtrl.getOrderDetail);
 router.post(ADMIN_PATH + '/orders/:id/status', orderCtrl.updateOrderStatus);
+router.post(ADMIN_PATH + '/orders/:id/delete', orderCtrl.deleteOrder);
 router.post(ADMIN_PATH + '/orders/:id/tracking', orderCtrl.setTracking);
 router.get(ADMIN_PATH + '/orders/:id/invoice', orderCtrl.getInvoice);
 router.get(ADMIN_PATH + '/orders/:id/invoice/pdf', generateInvoice);

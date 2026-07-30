@@ -142,7 +142,20 @@ exports.packingSlip = async (req, res) => {
       order, items, shipping, layout: false
     });
   } catch (err) {
-    res.redirect(ADMIN_PATH + '/orders');
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.deleteOrder = async (req, res) => {
+  try {
+    const order = await Order.findByPk(req.params.id);
+    if (!order) return res.redirect(ADMIN_PATH + '/orders?message=Order not found&messageType=danger');
+    await Order.destroy({ where: { id: req.params.id } });
+    await ActivityLog.create({ user: req.user.id, action: 'delete_order', resource: 'Order', resourceId: req.params.id, details: JSON.stringify({ orderNumber: order.orderNumber }), ip: req.ip });
+    await logAdminAction(req, 'delete_order', 'Order', req.params.id, order.orderNumber, `Deleted order #${order.orderNumber}`);
+    res.redirect(ADMIN_PATH + '/orders?message=Order deleted successfully&messageType=success');
+  } catch (err) {
+    res.redirect(ADMIN_PATH + '/orders?message=Error: ' + err.message + '&messageType=danger');
   }
 };
 

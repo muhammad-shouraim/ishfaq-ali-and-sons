@@ -97,6 +97,9 @@
               <a href="<%= adminPath %>/orders/<%= order.id %>" class="admin-btn admin-btn-sm" title="View"><i class="fas fa-eye"></i></a>
               <a href="<%= adminPath %>/orders/<%= order.id %>/invoice" class="admin-btn admin-btn-sm" title="Invoice" target="_blank"><i class="fas fa-file-invoice"></i></a>
               <a href="<%= adminPath %>/orders/<%= order.id %>/packing-slip" class="admin-btn admin-btn-sm" title="Packing Slip" target="_blank"><i class="fas fa-truck"></i></a>
+              <form action="<%= adminPath %>/orders/<%= order.id %>/delete" method="POST" style="display:inline" onsubmit="return confirm('Delete this order?')">
+                <button type="submit" class="admin-btn admin-btn-sm admin-btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+              </form>
             </td>
           </tr>
           <% }) %>
