@@ -155,8 +155,9 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 }
 .header .container { display: flex; align-items: center; justify-content: space-between; height: var(--nav-height); position: relative; }
 .header-logo { line-height: 0; }
-.header-logo img { height: 75px; width: auto; max-height: 75px; }
-@media (max-width: 768px) { .header-logo img { height: 50px; max-height: 50px; } }
+.header-logo img { height: 90px; width: auto; max-height: 90px; }
+@media (max-width: 768px) { .header-logo img { height: 65px; max-height: 65px; } }
+@media (max-width: 480px) { .header-logo img { height: 55px; max-height: 55px; } }
 .header-nav { display: flex; gap: 32px; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 .nav-mobile-header { display: none; }
 .nav-desktop-links { display: flex; gap: 32px; align-items: center; }

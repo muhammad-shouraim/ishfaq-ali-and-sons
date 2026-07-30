@@ -23,7 +23,14 @@ exports.getProducts = async (req, res) => {
     const where = { isActive: true };
     if (category) {
       const catRecord = await Category.findOne({ where: { slug: category } });
-      if (catRecord) where.category = catRecord.id;
+      if (catRecord) {
+        const ids = [catRecord.id];
+        if (!catRecord.parentId) {
+          const children = await Category.findAll({ where: { parentId: catRecord.id } });
+          children.forEach(c => ids.push(c.id));
+        }
+        where.category = { [Op.in]: ids };
+      }
     }
     if (search) where.name = { [Op.like]: `%${search}%` };
     if (minPrice || maxPrice) {
