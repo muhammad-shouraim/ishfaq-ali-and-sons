@@ -128,9 +128,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 
 @media (min-width: 1281px) {
   .announcement-bar { display: none; }
-  .header-nav { order: 1; }
   .header-logo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1; }
-  .header-actions { order: 3; }
 }
 @media (max-width: 768px) {
   .announcement-bar .container { justify-content: center; }
