@@ -39,25 +39,33 @@
         <h2>Shop by <span class="gold-text">Category</span></h2>
         <p>Browse our exquisite collections</p>
       </div>
-      <div class="category-carousel">
+      <div class="product-carousel">
         <button class="carousel-btn carousel-prev"><i class="fas fa-chevron-left"></i></button>
-        <div class="category-track">
+        <div class="product-carousel-track">
           <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
             <% categories.forEach(function(cat) { %>
-            <a href="/collection/<%= cat.slug %>" class="category-card">
-              <% if (cat.image) { %>
-                <img src="<%= cat.image %>" alt="<%= cat.name %>">
-              <% } else { %>
-                <div class="placeholder-box"><i class="fas fa-gem"></i><br><span style="font-size:0.75rem;margin-top:8px;display:block"><%= cat.name %></span></div>
-              <% } %>
-              <div class="category-card-overlay"><h3><%= cat.name %></h3></div>
-            </a>
+            <div class="product-card">
+              <a href="/collection/<%= cat.slug %>" class="product-card-image">
+                <% if (cat.image) { %>
+                  <img src="<%= cat.image %>" alt="<%= cat.name %>">
+                <% } else { %>
+                  <div class="placeholder-box"><i class="fas fa-gem"></i></div>
+                <% } %>
+              </a>
+              <div class="product-card-body">
+                <h3><a href="/collection/<%= cat.slug %>"><%= cat.name %></a></h3>
+              </div>
+            </div>
             <% }) %>
           <% } else { %>
-            <a href="/shop" class="category-card">
-              <div class="placeholder-box"><i class="fas fa-gem"></i><br><span style="font-size:0.75rem;margin-top:8px;display:block">All Jewelry</span></div>
-              <div class="category-card-overlay"><h3>All Jewelry</h3></div>
-            </a>
+            <div class="product-card">
+              <a href="/shop" class="product-card-image">
+                <div class="placeholder-box"><i class="fas fa-gem"></i></div>
+              </a>
+              <div class="product-card-body">
+                <h3><a href="/shop">All Jewelry</a></h3>
+              </div>
+            </div>
           <% } %>
         </div>
         <button class="carousel-btn carousel-next"><i class="fas fa-chevron-right"></i></button>
@@ -246,15 +254,6 @@
 </main>
 
 <script>
-// Category carousel
-document.querySelectorAll('.category-carousel').forEach(function(carousel) {
-  var track = carousel.querySelector('.category-track');
-  var prev = carousel.querySelector('.carousel-prev');
-  var next = carousel.querySelector('.carousel-next');
-  var scrollAmt = 300;
-  if (prev) prev.addEventListener('click', function() { track.scrollBy({ left: -scrollAmt, behavior: 'smooth' }); });
-  if (next) next.addEventListener('click', function() { track.scrollBy({ left: scrollAmt, behavior: 'smooth' }); });
-});
 
 // Product carousel
 function initProductCarousel(container) {
@@ -325,7 +324,7 @@ document.querySelectorAll('.product-card').forEach(function(card) {
   }
   card.addEventListener('click', function(e) {
     if (e.target.closest('a') || e.target.closest('button')) return;
-    var link = card.querySelector('a[href^="/product/"]');
+    var link = card.querySelector('a[href^="/product/"], a[href^="/collection/"]');
     if (link) window.location.href = link.getAttribute('href');
   });
 });
