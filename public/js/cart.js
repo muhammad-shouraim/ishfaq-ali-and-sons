@@ -35,7 +35,7 @@ async function loadCartSidebar() {
         '<div class="cart-item-image"><img src="' + img + '" alt="' + (p.name || 'Product') + '" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\\\'fas fa-gem\\\'></i>\'"></div>' +
         '<div class="cart-item-info">' +
           '<h4><a href="/product/' + (p.slug || '') + '" style="color:inherit;text-decoration:none">' + (p.name || 'Product') + '</a></h4>' +
-          '<span class="item-price">Rs. ' + Number(p.price || 0).toLocaleString() + '</span>' +
+          '<span class="item-price">Rs. ' + Number((p.comparePrice && p.comparePrice > 0 ? p.comparePrice : p.price) || 0).toLocaleString() + '</span>' +
           '<div class="cart-item-qty">' +
             '<button class="qty-change" data-id="' + (p.id || '') + '" data-action="minus">-</button>' +
             '<span>' + item.quantity + '</span>' +
@@ -144,7 +144,7 @@ async function loadCartPage() {
         '<div class="cart-item-image"><img src="' + img + '" alt="' + (p.name || 'Product') + '" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\\\'fas fa-gem\\\'></i>\'"></div>' +
         '<div class="cart-item-info">' +
           '<h4><a href="/product/' + (p.slug || '') + '" style="color:inherit;text-decoration:none">' + (p.name || 'Product') + '</a></h4>' +
-          '<span class="item-price">Rs. ' + Number(p.price || 0).toLocaleString() + '</span>' +
+          '<span class="item-price">Rs. ' + Number((p.comparePrice && p.comparePrice > 0 ? p.comparePrice : p.price) || 0).toLocaleString() + '</span>' +
           '<div class="cart-item-qty">' +
             '<button class="qty-change" data-id="' + (p.id || '') + '" data-action="minus">-</button>' +
             '<span>' + item.quantity + '</span>' +
@@ -152,14 +152,14 @@ async function loadCartPage() {
             '<button class="cart-item-remove" data-id="' + (p.id || '') + '"><i class="fas fa-trash-alt"></i></button>' +
           '</div>' +
         '</div>' +
-        '<div class="cart-item-total" style="font-weight:600;color:var(--gold);font-family:var(--font-heading);font-size:1.1rem">Rs. ' + Number((p.price || 0) * item.quantity).toLocaleString() + '</div>' +
+        '<div class="cart-item-total" style="font-weight:600;color:var(--gold);font-family:var(--font-heading);font-size:1.1rem">Rs. ' + Number(((p.comparePrice && p.comparePrice > 0 ? p.comparePrice : p.price) || 0) * item.quantity).toLocaleString() + '</div>' +
       '</div>';
     }).join('');
 
     const subtotal = data.subtotal;
-    const shipping = subtotal >= 5000 ? 0 : 200;
+    const shipping = 200;
     document.getElementById('summarySubtotal').textContent = `Rs. ${Number(subtotal).toLocaleString()}`;
-    document.getElementById('summaryShipping').textContent = shipping === 0 ? 'Free' : `Rs. ${shipping}`;
+    document.getElementById('summaryShipping').textContent = `Rs. ${shipping}`;
     document.getElementById('summaryTotal').textContent = `Rs. ${Number(subtotal + shipping).toLocaleString()}`;
 
     document.querySelectorAll('.qty-change').forEach(btn => btn.addEventListener('click', handleQtyChange));

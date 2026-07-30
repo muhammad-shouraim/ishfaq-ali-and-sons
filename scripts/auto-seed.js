@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const Category = require('../models/Category');
 const User = require('../models/User');
 const Setting = require('../models/Setting');
@@ -30,22 +31,17 @@ async function seedDatabase() {
           { name: 'Rings', slug: 'turkish-jewellery-rings', sortOrder: 1 },
           { name: 'Ear Rings', slug: 'turkish-jewellery-ear-rings', sortOrder: 2 },
           { name: 'Necklace', slug: 'turkish-jewellery-necklace', sortOrder: 3 },
-          { name: 'Bracelet', slug: 'turkish-jewellery-bracelet', sortOrder: 4 },
-          { name: 'Bengal', slug: 'turkish-jewellery-bengal', sortOrder: 5 },
-          { name: 'Clutch', slug: 'turkish-jewellery-clutch', sortOrder: 6 }
+          { name: 'Bangle', slug: 'turkish-jewellery-bangle', sortOrder: 4 },
+          { name: 'Clutch', slug: 'turkish-jewellery-clutch', sortOrder: 5 }
         ],
         '1-carat': [
           { name: 'Rings', slug: '1-carat-rings', sortOrder: 1 },
           { name: 'Ear Rings', slug: '1-carat-ear-rings', sortOrder: 2 },
           { name: 'Necklace', slug: '1-carat-necklace', sortOrder: 3 },
-          { name: 'Bracelet', slug: '1-carat-bracelet', sortOrder: 4 },
-          { name: 'Bengal', slug: '1-carat-bengal', sortOrder: 5 }
+          { name: 'Bangle', slug: '1-carat-bangle', sortOrder: 4 }
         ],
         'south-indian': [
-          { name: 'Bengal', slug: 'south-indian-bengal', sortOrder: 1 },
-          { name: 'Ring', slug: 'south-indian-ring', sortOrder: 2 },
-          { name: 'Necklace', slug: 'south-indian-necklace', sortOrder: 3 },
-          { name: 'Ear Ring', slug: 'south-indian-ear-ring', sortOrder: 4 }
+          { name: 'Necklace', slug: 'south-indian-necklace', sortOrder: 1 }
         ]
       };
       const grandchildren = {
@@ -57,10 +53,7 @@ async function seedDatabase() {
           { name: 'Bridal Necklace', slug: '1-carat-necklace-bridal', sortOrder: 1 },
           { name: 'Partywear Necklace', slug: '1-carat-necklace-partywear', sortOrder: 2 }
         ],
-        'south-indian-necklace': [
-          { name: 'Bridal Necklace', slug: 'south-indian-necklace-bridal', sortOrder: 1 },
-          { name: 'Party-wear Necklace', slug: 'south-indian-necklace-party-wear', sortOrder: 2 }
-        ]
+        'south-indian-necklace': []
       };
       const slugMap = {};
       for (const m of mainCategories) {
@@ -100,6 +93,24 @@ async function seedDatabase() {
       ];
       await Setting.bulkCreate(settings);
       console.log('✓ Default settings seeded');
+    }
+    // Migrate existing categories
+    if (catCount > 0) {
+      // Rename "Bengal" to "Bangle" in Turkish and 1 Carat
+      await Category.update({ name: 'Bangle' }, { where: { name: 'Bengal', parentId: { [Op.ne]: null } } });
+      // Remove Bracelet from Turkish and 1 Carat
+      await Category.destroy({ where: { name: 'Bracelet' } });
+      // Remove South Indian subcategories except Necklace
+      const southIndian = await Category.findOne({ where: { slug: 'south-indian' } });
+      if (southIndian) {
+        await Category.destroy({ where: { parentId: southIndian.id, name: { [Op.ne]: 'Necklace' } } });
+        // Remove South Indian necklace grandchildren
+        const siNecklace = await Category.findOne({ where: { slug: 'south-indian-necklace' } });
+        if (siNecklace) {
+          await Category.destroy({ where: { parentId: siNecklace.id } });
+        }
+      }
+      console.log('✓ Categories migrated');
     }
   } catch (err) {
     console.error('Auto-seed error:', err.message);

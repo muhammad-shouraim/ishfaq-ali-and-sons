@@ -36,16 +36,17 @@ exports.placeOrder = async (req, res) => {
     const { name, phone, address, city, postalCode, paymentMethod, notes, accountName, transactionId } = req.body;
     const orderItems = items.map(item => {
       const p = products.find(pr => Number(pr.id) === Number(item.product));
+      const unitPrice = (p && p.comparePrice && Number(p.comparePrice) > 0) ? Number(p.comparePrice) : Number(p?.price || 0);
       return {
         product: Number(item.product),
         name: p?.name || '',
         image: p?.images ? (typeof p.images === 'string' ? JSON.parse(p.images)[0] || '' : p.images[0] || '') : '',
-        price: Number(p?.price || 0),
+        price: unitPrice,
         quantity: item.quantity
       };
     });
     const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const shippingCost = subtotal >= 5000 ? 0 : 200;
+    const shippingCost = 200;
     const total = subtotal + shippingCost - Number(cart.discount || 0);
 
     const order = await Order.create({

@@ -83,10 +83,9 @@
               <div id="bankDetails" style="display:none;background:var(--cream);padding:20px;border-radius:var(--radius);margin-top:8px;border:1px solid var(--border)">
                 <h4 style="font-size:0.9rem;margin-bottom:12px;color:var(--gold)">Bank Account Details</h4>
                 <div style="font-size:0.85rem;line-height:2;color:var(--text-light)">
-                  <p><strong style="color:var(--text)">Bank:</strong> HBL (Habib Bank Limited)</p>
-                  <p><strong style="color:var(--text)">Account Title:</strong> ISHFAQ ALI & SONS</p>
-                  <p><strong style="color:var(--text)">Account Number:</strong> 1234-567890-01</p>
-                  <p><strong style="color:var(--text)">IBAN:</strong> PK36HABB0012345678901</p>
+                  <p><strong style="color:var(--text)">Bank:</strong> Faysal Bank</p>
+                  <p><strong style="color:var(--text)">Account Title:</strong> Javed Trading Co</p>
+                  <p><strong style="color:var(--text)">Account Number:</strong> 3416301000002755</p>
                 </div>
                 <div class="form-group">
                   <label for="accountName">Account Name</label>
@@ -130,7 +129,8 @@
               <% cart.items.forEach(function(item) { %>
                 <% var p = item.product || {}; %>
                 <% var img = p.thumbnail || (p.images && p.images.length > 0 ? (typeof p.images === 'string' ? JSON.parse(p.images)[0] : p.images[0]) : '/images/newlogo.png'); %>
-                <% var lineTotal = Number(p.price || 0) * Number(item.quantity || 1); %>
+                <% var unitPrice = (p.comparePrice && Number(p.comparePrice) > 0) ? Number(p.comparePrice) : Number(p.price || 0); %>
+                <% var lineTotal = unitPrice * Number(item.quantity || 1); %>
                 <% checkoutSubtotal += lineTotal; %>
                 <div class="cart-item" style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
                   <div class="cart-item-image" style="width:60px;height:60px;background:var(--cream);border-radius:6px;overflow:hidden;flex-shrink:0">
@@ -154,7 +154,7 @@
           </div>
           <div class="summary-row">
             <span>Shipping</span>
-            <span id="checkoutShipping">Rs. <%= checkoutSubtotal >= 5000 ? '0' : '200' %></span>
+            <span id="checkoutShipping">Rs. 200</span>
           </div>
           <div class="summary-row discount-row" id="checkoutDiscountRow" style="display:<%= cart && cart.discount && cart.discount > 0 ? 'flex' : 'none' %>">
             <span>Discount</span>
@@ -163,7 +163,7 @@
           <div class="summary-divider"></div>
           <div class="summary-row total-row">
             <span>Total</span>
-            <span id="checkoutTotal">Rs. <%= Number((checkoutSubtotal || 0) + (checkoutSubtotal >= 5000 ? 0 : 200) - (cart && cart.discount ? Number(cart.discount) : 0)).toLocaleString() %></span>
+            <span id="checkoutTotal">Rs. <%= Number((checkoutSubtotal || 0) + 200 - (cart && cart.discount ? Number(cart.discount) : 0)).toLocaleString() %></span>
           </div>
         </aside>
       </div>

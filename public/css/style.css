@@ -761,7 +761,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 }
 @media (max-width: 480px) {
   .container { padding: 0 12px; }
-  .header-logo img { height: 40px; max-height: 40px; }
+  .header-logo img { height: 55px; max-height: 55px; }
   .features-strip .container { grid-template-columns: 1fr; }
   .categories-grid { grid-template-columns: 1fr; }
   .collections-grid { grid-template-columns: 1fr; }

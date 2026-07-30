@@ -9,7 +9,7 @@
       <div class="breadcrumb" data-aos="fade-up" data-aos-delay="50">
         <a href="/">Home</a> <span>/</span>
         <% if (typeof category.mainCategory !== 'undefined' && category.mainCategory) { %>
-        <a href="/collection/<%= category.mainCategory %>"><%= category.mainCategory === 'turkish-jewellery' ? 'Turkish Jewellery' : '1 Carat' %></a> <span>/</span>
+        <a href="/collection/<%= category.mainCategory %>"><%= category.mainCategory === 'turkish-jewellery' ? 'Turkish Jewellery' : category.mainCategory === '1-carat' ? '1 Carat' : 'South Indian' %></a> <span>/</span>
         <% } else { %>
         <a href="/categories">Categories</a> <span>/</span>
         <% } %>

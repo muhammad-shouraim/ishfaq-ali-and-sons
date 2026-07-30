@@ -8,8 +8,7 @@ const subCategories = {
   'ear-rings': 'Ear Rings',
   'ear-ring': 'Ear Ring',
   'necklace': 'Necklace',
-  'bracelet': 'Bracelet',
-  'bengal': 'Bengal',
+  'bangle': 'Bangle',
   'clutch': 'Clutch',
   'bridal-necklace': 'Bridal Necklace',
   'partywear-necklace': 'Partywear Necklace',
@@ -70,11 +69,17 @@ exports.getCategoryLanding = (req, res) => {
     image: getCategoryImage(mainSlug)
   };
 
-  const subs = Object.entries(subCategories).filter(([slug]) => !slug.includes('-necklace')).map(([slug, name]) => ({
+  var showSubs;
+  if (mainSlug === 'south-indian') {
+    showSubs = ['necklace'];
+  } else {
+    showSubs = Object.keys(subCategories).filter(s => !s.includes('-necklace'));
+  }
+  const subs = showSubs.map(slug => ({
     slug: `${mainSlug}/${slug}`,
-    name,
+    name: subCategories[slug],
     image: getCategoryImage(`${mainSlug}-${slug}`) || `/images/categories/${mainSlug}-${slug}.jpg`,
-    description: `Exquisite ${mainCat.name.toLowerCase()} ${name.toLowerCase()}`
+    description: `Exquisite ${mainCat.name.toLowerCase()} ${subCategories[slug].toLowerCase()}`
   }));
 
   res.render('pages/category-landing', { title: category.name, category, subcategories: subs });

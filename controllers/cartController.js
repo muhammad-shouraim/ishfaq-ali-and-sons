@@ -20,6 +20,7 @@ const getCart = async (userId, sessionId) => {
     data.items.forEach(item => {
       if (item.product && typeof item.product === 'object') {
         item.product.price = Number(item.product.price);
+        item.product.comparePrice = Number(item.product.comparePrice);
       }
     });
   }
@@ -29,7 +30,11 @@ const getCart = async (userId, sessionId) => {
 exports.getCartData = async (req, res) => {
   const cart = await getCart(req.user?.id, req.guestSessionId);
   if (!cart) return res.json({ items: [], subtotal: 0, total: 0, count: 0 });
-  const subtotal = cart.items.reduce((sum, item) => sum + (item.product?.price || 0) * item.quantity, 0);
+  const subtotal = cart.items.reduce((sum, item) => {
+    const p = item.product;
+    const unitPrice = (p && p.comparePrice && p.comparePrice > 0) ? p.comparePrice : (p?.price || 0);
+    return sum + unitPrice * item.quantity;
+  }, 0);
   res.json({ items: cart.items, subtotal, total: subtotal, count: cart.items.reduce((s, i) => s + i.quantity, 0) });
 };
 
@@ -83,7 +88,8 @@ exports.updateCart = async (req, res) => {
     const products = productIds.length > 0 ? await Product.findAll({ where: { id: productIds } }) : [];
     const subtotal = items.reduce((sum, i) => {
       const p = products.find(pr => pr.id === Number(i.product));
-      return sum + (p?.price || 0) * i.quantity;
+      const unitPrice = (p && p.comparePrice && Number(p.comparePrice) > 0) ? Number(p.comparePrice) : Number(p?.price || 0);
+      return sum + unitPrice * i.quantity;
     }, 0);
     res.json({ success: true, items, subtotal, total: subtotal, count: items.reduce((s, i) => s + i.quantity, 0) });
   } catch (err) {
