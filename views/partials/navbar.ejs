@@ -1,3 +1,20 @@
+<style>
+.header .container { position: static !important; }
+.header-nav { position: static !important; left: auto !important; top: auto !important; transform: none !important; flex: 1 !important; justify-content: center !important; }
+.nav-desktop-links { display: flex !important; gap: 32px; align-items: center; }
+@media (max-width: 768px) {
+  .header-nav { position: fixed !important; left: -100% !important; top: 0 !important; width: 300px !important; height: 100vh !important; flex: none !important; justify-content: flex-start !important; transform: none !important; }
+  .header-nav.active { left: 0 !important; }
+  .nav-desktop-links { display: block !important; width: 100% !important; }
+  .mobile-toggle { display: flex !important; }
+}
+@media (min-width: 769px) {
+  .header-nav { position: static !important; display: flex !important; left: auto !important; top: auto !important; transform: none !important; flex: 1 !important; justify-content: center !important; }
+  .header-nav.active { left: auto !important; }
+  .nav-desktop-links { display: flex !important; }
+  .mobile-toggle { display: none !important; }
+}
+</style>
 <header class="header" id="header">
   <div class="container">
     <a href="/" class="header-logo">
