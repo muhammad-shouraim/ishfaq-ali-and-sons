@@ -29,7 +29,18 @@
               <% if (cat.children && cat.children.length > 0) { %>
               <div class="nav-dropdown-menu">
                 <% cat.children.forEach(function(child) { %>
+                  <% if (child.children && child.children.length > 0) { %>
+                  <div class="nav-item-sub">
+                    <span class="nav-sub-toggle"><%= child.name %> <i class="fas fa-chevron-right"></i></span>
+                    <div class="nav-sub-menu">
+                      <% child.children.forEach(function(gc) { %>
+                        <a href="/collection/<%= gc.slug %>"><%= gc.name %></a>
+                      <% }); %>
+                    </div>
+                  </div>
+                  <% } else { %>
                   <a href="/collection/<%= child.slug %>"><%= child.name %></a>
+                  <% } %>
                 <% }); %>
                 <a href="/shop?category=necklace" class="nav-dropdown-extra">Necklaces</a>
               </div>
