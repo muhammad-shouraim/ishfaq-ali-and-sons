@@ -22,6 +22,8 @@
           <span class="admin-badge <%= sClass[order.orderStatus] || 'admin-badge-secondary' %>"><%= order.orderStatus %></span>
         </td></tr>
         <tr><td>Payment</td><td><%= order.paymentMethod || '-' %></td></tr>
+        <% if (order.accountName) { %><tr><td>Account Name</td><td><%= order.accountName %></td></tr><% } %>
+        <% if (order.transactionId) { %><tr><td>Transaction ID</td><td><%= order.transactionId %></td></tr><% } %>
         <tr><td>Payment Status</td><td>
           <% var pClass = { paid: 'admin-badge-success', pending: 'admin-badge-warning', failed: 'admin-badge-danger', refunded: 'admin-badge-info' } %>
           <span class="admin-badge <%= pClass[order.paymentStatus] || 'admin-badge-secondary' %>"><%= order.paymentStatus || 'pending' %></span>

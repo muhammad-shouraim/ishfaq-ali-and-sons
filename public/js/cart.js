@@ -59,12 +59,14 @@ function setupCartListeners() {
     if (!btn) return;
     const productId = btn.dataset.productId;
     if (!productId) return;
+    var qtyInput = btn.closest('.product-actions')?.querySelector('.quantity-selector input');
+    var quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     try {
       const res = await fetch('/api/cart/add', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId, quantity: 1 })
+        body: JSON.stringify({ productId, quantity })
       });
       const data = await res.json();
       if (data.success) {

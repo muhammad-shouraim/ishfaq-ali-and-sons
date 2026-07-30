@@ -21,7 +21,9 @@
         <div class="order-details-card">
           <p><strong>Order Number:</strong> <%= order.orderNumber %></p>
           <p><strong>Total:</strong> <%= currencySymbol %> <%= Number(order.total).toLocaleString() %></p>
-          <p><strong>Payment Method:</strong> <% var pm = order.paymentMethod; if (pm === 'cod') { %>Cash on Delivery<% } else if (pm === 'easypaisa') { %>Easypaisa<% } else if (pm === 'jazzcash') { %>JazzCash<% } else { %>Bank Transfer<% } %></p>
+          <p><strong>Payment Method:</strong> <% var pm = order.paymentMethod; if (pm === 'cod') { %>Cash on Delivery<% } else { %>Bank Transfer<% } %></p>
+          <% if (order.accountName) { %><p><strong>Account Name:</strong> <%= order.accountName %></p><% } %>
+          <% if (order.transactionId) { %><p><strong>Transaction ID:</strong> <%= order.transactionId %></p><% } %>
           <p><strong>Estimated Delivery:</strong> 3-5 business days</p>
         </div>
         <div class="success-actions">

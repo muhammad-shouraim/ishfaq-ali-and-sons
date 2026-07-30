@@ -51,7 +51,7 @@
               </div>
               <div class="order-footer">
                 <span>Total: <strong><%= currencySymbol %> <%= Number(order.total).toLocaleString() %></strong></span>
-                <span>Payment: <% var pm = order.paymentMethod; if (pm === 'cod') { %>Cash on Delivery<% } else if (pm === 'easypaisa') { %>Easypaisa<% } else if (pm === 'jazzcash') { %>JazzCash<% } else { %>Bank Transfer<% } %></span>
+                <span>Payment: <% var pm = order.paymentMethod; if (pm === 'cod') { %>Cash on Delivery<% } else { %>Bank Transfer<% } %></span>
                 <a href="/invoice/<%= order.id %>" class="btn btn-sm btn-outline" target="_blank" style="margin-top:8px"><i class="fas fa-file-invoice"></i> Invoice</a>
               </div>
             </div>

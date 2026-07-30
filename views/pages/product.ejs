@@ -322,12 +322,14 @@ document.querySelectorAll('.tab-btn').forEach(function(btn) {
 document.querySelectorAll('.quick-buy-btn').forEach(function(btn) {
   btn.addEventListener('click', async function() {
     var productId = this.getAttribute('data-product-id');
+    var qtyInput = this.closest('.product-actions')?.querySelector('.quantity-selector input');
+    var quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
     var btn = this;
     btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     try {
       var res = await fetch('/api/cart/add', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: Number(productId), quantity: 1 })
+        body: JSON.stringify({ productId: Number(productId), quantity })
       });
       var data = await res.json();
       if (data.success) {

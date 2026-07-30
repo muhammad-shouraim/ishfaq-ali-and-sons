@@ -33,7 +33,7 @@ exports.placeOrder = async (req, res) => {
     const productIds = items.map(i => i.product);
     const products = productIds.length > 0 ? await Product.findAll({ where: { id: productIds } }) : [];
 
-    const { name, phone, address, city, postalCode, paymentMethod, notes } = req.body;
+    const { name, phone, address, city, postalCode, paymentMethod, notes, accountName, transactionId } = req.body;
     const orderItems = items.map(item => {
       const p = products.find(pr => Number(pr.id) === Number(item.product));
       return {
@@ -53,6 +53,8 @@ exports.placeOrder = async (req, res) => {
       items: JSON.stringify(orderItems),
       shippingInfo: JSON.stringify({ name, phone, address, city, postalCode }),
       paymentMethod,
+      accountName: paymentMethod === 'bank_transfer' ? accountName : null,
+      transactionId: paymentMethod === 'bank_transfer' ? transactionId : null,
       subtotal,
       shippingCost,
       discount: cart.discount || 0,
