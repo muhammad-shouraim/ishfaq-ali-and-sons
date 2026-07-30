@@ -1,63 +1,59 @@
-<style>
-  .header { position: sticky; top: 0; z-index: 1000; background: #fff; border-bottom: 1px solid var(--border); }
-  .header .container { display: flex; align-items: center; justify-content: space-between; height: var(--nav-height); gap: 20px; flex-wrap: wrap; }
-  .header-logo { flex-shrink: 0; }
-  .header-logo img { height: 90px; width: auto; }
-  .header-nav { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; position: static; left: auto; top: auto; transform: none; }
-  .header-nav a { font-size: 0.78rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: var(--text); padding: 4px 0; white-space: nowrap; }
-  .header-nav a:hover, .header-nav a.active { color: var(--gold); }
-  .header-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-  .header-action { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; color: var(--text); font-size: 1rem; border-radius: 50%; position: relative; }
-  .header-action:hover { color: var(--gold); background: rgba(200,169,110,0.08); }
-  .header-action .badge { position: absolute; top: 4px; right: 4px; width: 16px; height: 16px; background: var(--gold); color: #fff; font-size: 0.55rem; font-weight: 700; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-  .nav-item { position: relative; }
-  .nav-dropdown-toggle { display: flex; align-items: center; gap: 6px; cursor: pointer; }
-  .nav-dropdown-toggle i { font-size: 0.55rem; }
-  .nav-dropdown-menu { position: absolute; top: 100%; left: 0; min-width: 200px; background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-lg); opacity: 0; visibility: hidden; transform: translateY(8px); transition: all 0.3s ease; z-index: 100; padding: 8px 0; border-radius: var(--radius); }
-  .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown.active .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
-  .nav-dropdown-menu a { display: block; padding: 10px 20px; font-size: 0.85rem; color: var(--text); text-transform: none; letter-spacing: 0; }
-  .nav-dropdown-menu a:hover { background: var(--cream); color: var(--gold); }
-  .nav-dropdown:hover .nav-dropdown-toggle i { transform: rotate(180deg); transition: transform 0.3s ease; }
-  @media (max-width: 768px) {
-    .header .container { flex-direction: column; height: auto; padding: 10px 20px; gap: 10px; }
-    .header-nav { justify-content: center; }
-    .header-logo img { height: 60px; }
-  }
-</style>
-
 <header class="header" id="header">
   <div class="container">
     <a href="/" class="header-logo">
       <img src="/images/newlogo.png" alt="ISHFAQ ALI & SONS">
     </a>
 
-    <nav class="header-nav">
-      <a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>">Home</a>
-      <a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>">Shop</a>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
 
-      <% if (typeof navCategories !== 'undefined') { %>
-        <% navCategories.forEach(function(cat) { %>
-          <div class="nav-item<%= cat.children && cat.children.length > 0 ? ' nav-dropdown' : '' %>">
-            <a href="/collection/<%= cat.slug %>" class="<%= cat.children && cat.children.length > 0 ? 'nav-dropdown-toggle' : '' %>">
-              <%= cat.name %><% if (cat.children && cat.children.length > 0) { %><i class="fas fa-chevron-down"></i><% } %>
-            </a>
-            <% if (cat.children && cat.children.length > 0) { %>
-            <div class="nav-dropdown-menu">
-              <% cat.children.forEach(function(child) { %>
-                <a href="/collection/<%= child.slug %>"><%= child.name %></a>
-              <% }); %>
+    <nav class="header-nav" id="headerNav">
+      <div class="nav-mobile-header">
+        <div class="nav-mobile-logo">
+          <img src="/images/newlogo.png" alt="ISHFAQ ALI & SONS">
+        </div>
+        <button class="nav-mobile-close" id="navMobileClose" aria-label="Close Menu"><i class="fas fa-times"></i></button>
+      </div>
+
+      <div class="nav-desktop-links">
+        <a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>">Home</a>
+        <a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>">Shop</a>
+
+        <% if (typeof navCategories !== 'undefined') { %>
+          <% navCategories.forEach(function(cat) { %>
+            <div class="nav-item<%= cat.children && cat.children.length > 0 ? ' nav-dropdown' : '' %>">
+              <a href="/collection/<%= cat.slug %>" class="<%= cat.children && cat.children.length > 0 ? 'nav-dropdown-toggle' : '' %>">
+                <%= cat.name %><% if (cat.children && cat.children.length > 0) { %><i class="fas fa-chevron-down"></i><% } %>
+              </a>
+              <% if (cat.children && cat.children.length > 0) { %>
+              <div class="nav-dropdown-menu">
+                <% cat.children.forEach(function(child) { %>
+                  <a href="/collection/<%= child.slug %>"><%= child.name %></a>
+                <% }); %>
+              </div>
+              <% } %>
             </div>
-            <% } %>
-          </div>
-        <% }); %>
-      <% } %>
+          <% }); %>
+        <% } %>
+      </div>
+
+      <div class="nav-mobile-extras">
+        <a href="/wishlist"><i class="far fa-heart"></i> Wishlist <span class="wishlist-count wishlist-count-mobile-nav" id="wishlistCountMobile">0</span></a>
+        <% if (user) { %>
+        <a href="/profile"><i class="far fa-user"></i> My Account</a>
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <% } else { %>
+        <a href="#" onclick="openAuthModal('login');return false"><i class="far fa-user"></i> Sign In / Register</a>
+        <% } %>
+      </div>
     </nav>
 
     <div class="header-actions">
       <a href="/shop" class="header-action" aria-label="Search">
         <i class="fas fa-search"></i>
       </a>
-      <a href="/wishlist" class="header-action" aria-label="Wishlist">
+      <a href="/wishlist" class="header-action mobile-wishlist-hide" aria-label="Wishlist">
         <i class="far fa-heart"></i>
         <span class="badge wishlist-count" id="wishlistCount">0</span>
       </a>
@@ -67,20 +63,20 @@
       </button>
 
       <% if (user) { %>
-      <div class="user-dropdown" style="position:relative">
-        <button class="header-action" aria-label="Account">
+      <div class="user-dropdown mobile-user-hide">
+        <button class="header-action" id="userToggle" aria-label="Account">
           <i class="far fa-user"></i>
         </button>
-        <div class="dropdown-menu" style="position:absolute;top:100%;right:0;min-width:200px;background:#fff;border:1px solid var(--border);box-shadow:var(--shadow-lg);opacity:0;visibility:hidden;z-index:100;padding:8px 0;border-radius:var(--radius)">
-          <a href="/profile" style="display:block;padding:10px 20px;font-size:0.85rem;color:var(--text)"><i class="fas fa-user"></i> My Profile</a>
-          <a href="/orders" style="display:block;padding:10px 20px;font-size:0.85rem;color:var(--text)"><i class="fas fa-box"></i> My Orders</a>
-          <a href="/wishlist" style="display:block;padding:10px 20px;font-size:0.85rem;color:var(--text)"><i class="far fa-heart"></i> Wishlist</a>
-          <div style="height:1px;background:var(--border);margin:4px 0"></div>
-          <a href="/logout" style="display:block;padding:10px 20px;font-size:0.85rem;color:var(--text)"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <a href="/profile"><i class="fas fa-user"></i> My Profile</a>
+          <a href="/orders"><i class="fas fa-box"></i> My Orders</a>
+          <a href="/wishlist"><i class="far fa-heart"></i> Wishlist</a>
+          <div class="dropdown-divider"></div>
+          <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
       </div>
       <% } else { %>
-      <button class="header-action" id="authModalBtn" aria-label="Login" onclick="openAuthModal('login')">
+      <button class="header-action mobile-user-hide" id="authModalBtn" aria-label="Login" onclick="openAuthModal('login')">
         <i class="far fa-user"></i>
       </button>
       <% } %>
