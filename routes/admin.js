@@ -21,6 +21,18 @@ const promoCtrl = require('../controllers/adminPromotionController');
 router.use(protectAdmin);
 router.use(ADMIN_PATH, requireAdmin);
 
+// ===== MIGRATION (one-time) =====
+router.get(ADMIN_PATH + '/run-migration', async (req, res) => {
+  const sequelize = require('../config/sequelize');
+  const addCol = async (table, col, def) => {
+    try { await sequelize.query('ALTER TABLE `' + table + '` ADD COLUMN `' + col + '` ' + def); return 'added'; }
+    catch (e) { return e.message.includes('Duplicate column') ? 'exists' : 'error: ' + e.message; }
+  };
+  const r1 = await addCol('orders', 'accountName', 'VARCHAR(255) DEFAULT NULL AFTER notes');
+  const r2 = await addCol('orders', 'transactionId', 'VARCHAR(255) DEFAULT NULL AFTER accountName');
+  res.json({ accountName: r1, transactionId: r2 });
+});
+
 // ===== DASHBOARD =====
 router.get(ADMIN_PATH, adminCtrl.getDashboard);
 router.get(ADMIN_PATH + '/reports/:type', adminCtrl.getReports);

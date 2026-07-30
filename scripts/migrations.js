@@ -43,6 +43,9 @@ const addColumn = async (table, column, definition) => {
     await addColumn('coupons', 'usedCount', 'INT DEFAULT 0');
     await addColumn('coupons', 'totalDiscount', 'DECIMAL(12,2) DEFAULT 0');
 
+    await addColumn('orders', 'accountName', 'VARCHAR(255) DEFAULT NULL AFTER notes');
+    await addColumn('orders', 'transactionId', 'VARCHAR(255) DEFAULT NULL AFTER accountName');
+
     console.log('All migrations completed.');
     process.exit(0);
   } catch (err) {
