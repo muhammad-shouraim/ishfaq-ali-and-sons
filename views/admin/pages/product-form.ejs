@@ -29,7 +29,7 @@
   <div class="admin-card-body">
     <form action="<%= adminPath %>/products<%= isEditing ? '/edit/' + product.id : '/create' %>" method="POST" enctype="multipart/form-data" class="admin-form" id="productForm">
       <% if (isEditing) { %>
-        <input type="hidden" name="_method" value="PUT">
+        <input type="hidden" name="isEditing" value="true">
       <% } %>
 
       <% if (typeof error !== 'undefined' && error) { %>
@@ -98,7 +98,7 @@
             <div class="form-group">
               <label for="comparePrice">Discount Price</label>
               <input type="number" id="comparePrice" name="comparePrice" class="form-input" step="0.01" min="0" value="<%= product.comparePrice !== undefined ? product.comparePrice : '' %>">
-              <span class="form-hint">Optional. If set, original price will show with strikethrough</span>
+              <span class="form-hint">Optional. If set, this becomes the selling price and the regular price shows with strikethrough</span>
             </div>
           </div>
           <div class="tab-nav-buttons">
@@ -340,8 +340,8 @@
   }
 
   document.getElementById('productForm').addEventListener('submit', function(e) {
-    // Only validate the current tab, don't block if other tabs are empty
-    if (currentTab < totalTabs - 1 && !validateTab(currentTab)) {
+    var skipValidation = <%= isEditing ? 'true' : 'false' %>;
+    if (!skipValidation && currentTab < totalTabs - 1 && !validateTab(currentTab)) {
       e.preventDefault();
       var tab = document.querySelector('.tab-pane.active');
       if (tab) {
