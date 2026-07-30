@@ -35,19 +35,21 @@
       <a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>">Home</a>
       <a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>">Shop</a>
 
-      <% if (typeof navCategories !== 'undefined' && navCategories.length > 0) { %>
-      <div class="nav-item nav-dropdown">
-        <a href="/shop" class="nav-dropdown-toggle">
-          Categories <i class="fas fa-chevron-down"></i>
-        </a>
-        <div class="nav-dropdown-menu nav-dropdown-menu-wide">
-          <% navCategories.forEach(function(cat) { %>
-            <a href="/collection/<%= cat.slug %>"><%= cat.name %></a>
-          <% }); %>
-        </div>
-      </div>
-      <% } else { %>
-        <a href="/shop">Categories</a>
+      <% if (typeof navCategories !== 'undefined') { %>
+        <% navCategories.forEach(function(cat) { %>
+          <div class="nav-item<%= cat.children && cat.children.length > 0 ? ' nav-dropdown' : '' %>">
+            <a href="/collection/<%= cat.slug %>" class="<%= cat.children && cat.children.length > 0 ? 'nav-dropdown-toggle' : '' %>">
+              <%= cat.name %><% if (cat.children && cat.children.length > 0) { %><i class="fas fa-chevron-down"></i><% } %>
+            </a>
+            <% if (cat.children && cat.children.length > 0) { %>
+            <div class="nav-dropdown-menu">
+              <% cat.children.forEach(function(child) { %>
+                <a href="/collection/<%= child.slug %>"><%= child.name %></a>
+              <% }); %>
+            </div>
+            <% } %>
+          </div>
+        <% }); %>
       <% } %>
     </nav>
 

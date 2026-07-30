@@ -310,17 +310,14 @@
   });
 
   document.getElementById('productForm').addEventListener('submit', function(e) {
-    for (var i = 0; i < totalTabs - 1; i++) {
-      if (!validateTab(i)) {
-        e.preventDefault();
-        showTab(i);
-        var tab = document.querySelector('.tab-pane.active');
-        if (tab) {
-          tab.classList.add('shake');
-          setTimeout(function() { tab.classList.remove('shake'); }, 500);
-          tab.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-        return;
+    // Only validate the current tab, don't block if other tabs are empty
+    if (currentTab < totalTabs - 1 && !validateTab(currentTab)) {
+      e.preventDefault();
+      var tab = document.querySelector('.tab-pane.active');
+      if (tab) {
+        tab.classList.add('shake');
+        setTimeout(function() { tab.classList.remove('shake'); }, 500);
+        tab.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
   });
