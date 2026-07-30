@@ -197,6 +197,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 }
 .nav-dropdown-menu a:hover { background: var(--cream); color: var(--gold); }
 .nav-dropdown-menu a::after { display: none; }
+.nav-dropdown-menu-wide { min-width: 280px; }
 
 /* Nested sub-menu for Necklace */
 .nav-item-sub { position: relative; }

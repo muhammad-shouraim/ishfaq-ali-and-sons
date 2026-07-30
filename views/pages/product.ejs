@@ -189,8 +189,8 @@
           <div class="product-card">
             <div class="product-card-image">
               <a href="/product/<%= item.slug %>">
-                <img class="main-img" src="<%= relImg %>" alt="<%= item.name %>" onerror="this.style.display='none'">
-                <img class="hover-img" src="<%= relHover %>" alt="<%= item.name %>" onerror="this.style.display='none'">
+                <img class="main-img" src="<%= relImg %>" alt="<%= item.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
+                <img class="hover-img" src="<%= relHover %>" alt="<%= item.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
               </a>
               <% if (item.comparePrice > 0) { %><span class="badge badge-sale">Sale</span><% } %>
               <button class="wishlist-toggle-sm" data-product-id="<%= item.id %>"><i class="far fa-heart"></i></button>

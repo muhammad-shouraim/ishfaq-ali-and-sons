@@ -22,8 +22,8 @@
                 <div class="product-card" data-images='<%= JSON.stringify(item.images || []) %>'>
                   <div class="product-card-image">
                     <a href="/product/<%= item.slug %>">
-                      <img class="main-img" src="<%= item.thumbnail || '/images/newlogo.png' %>" alt="<%= item.name %>">
-                      <img class="hover-img" src="<%= (item.images && item.images[0]) ? item.images[0] : (item.thumbnail || '/images/newlogo.png') %>" alt="<%= item.name %>">
+                      <img class="main-img" src="<%= item.thumbnail || '/images/newlogo.png' %>" alt="<%= item.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
+                      <img class="hover-img" src="<%= (item.images && item.images[0]) ? item.images[0] : (item.thumbnail || '/images/newlogo.png') %>" alt="<%= item.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
                     </a>
                     <button class="wishlist-toggle-sm active wishlist-remove-btn" data-product-id="<%= item.id %>"><i class="fas fa-heart" style="color:#e74c3c"></i></button>
                   </div>

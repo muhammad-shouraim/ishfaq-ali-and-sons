@@ -89,8 +89,8 @@
               <div class="product-card" data-images='<%= JSON.stringify(product.images || []) %>'>
                 <div class="product-card-image">
                   <a href="/product/<%= product.slug %>">
-                    <img class="main-img" src="<%= product.thumbnail || '/images/newlogo.png' %>" alt="<%= product.name %>">
-                    <img class="hover-img" src="<%= (product.images && product.images[0]) ? product.images[0] : (product.thumbnail || '/images/newlogo.png') %>" alt="<%= product.name %>">
+                    <img class="main-img" src="<%= product.thumbnail || '/images/newlogo.png' %>" alt="<%= product.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
+                    <img class="hover-img" src="<%= (product.images && product.images[0]) ? product.images[0] : (product.thumbnail || '/images/newlogo.png') %>" alt="<%= product.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
                   </a>
                   <% if (product.comparePrice > 0) { %>
                     <span class="badge badge-sale">Sale</span>
@@ -141,8 +141,8 @@
               <div class="product-card" data-images='<%= JSON.stringify(product.images || []) %>'>
                 <div class="product-card-image">
                   <a href="/product/<%= product.slug %>">
-                    <img class="main-img" src="<%= product.thumbnail || '/images/newlogo.png' %>" alt="<%= product.name %>">
-                    <img class="hover-img" src="<%= (product.images && product.images[0]) ? product.images[0] : (product.thumbnail || '/images/newlogo.png') %>" alt="<%= product.name %>">
+                    <img class="main-img" src="<%= product.thumbnail || '/images/newlogo.png' %>" alt="<%= product.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
+                    <img class="hover-img" src="<%= (product.images && product.images[0]) ? product.images[0] : (product.thumbnail || '/images/newlogo.png') %>" alt="<%= product.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
                   </a>
                   <span class="badge badge-new">New</span>
                 </div>
@@ -187,8 +187,8 @@
             <div class="product-card" data-images='<%= JSON.stringify(product.images || []) %>'>
               <div class="product-card-image">
                 <a href="/product/<%= product.slug %>">
-                  <img class="main-img" src="<%= product.thumbnail || '/images/newlogo.png' %>" alt="<%= product.name %>">
-                  <img class="hover-img" src="<%= (product.images && product.images[0]) ? product.images[0] : (product.thumbnail || '/images/newlogo.png') %>" alt="<%= product.name %>">
+                  <img class="main-img" src="<%= product.thumbnail || '/images/newlogo.png' %>" alt="<%= product.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
+                  <img class="hover-img" src="<%= (product.images && product.images[0]) ? product.images[0] : (product.thumbnail || '/images/newlogo.png') %>" alt="<%= product.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
                 </a>
                 <span class="badge badge-sale">Sale</span>
               </div>
@@ -221,8 +221,8 @@
             <div class="product-card" data-images='<%= JSON.stringify(product.images || []) %>'>
               <div class="product-card-image">
                 <a href="/product/<%= product.slug %>">
-                  <img class="main-img" src="<%= product.thumbnail || '/images/newlogo.png' %>" alt="<%= product.name %>">
-                  <img class="hover-img" src="<%= (product.images && product.images[0]) ? product.images[0] : (product.thumbnail || '/images/newlogo.png') %>" alt="<%= product.name %>">
+                  <img class="main-img" src="<%= product.thumbnail || '/images/newlogo.png' %>" alt="<%= product.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
+                  <img class="hover-img" src="<%= (product.images && product.images[0]) ? product.images[0] : (product.thumbnail || '/images/newlogo.png') %>" alt="<%= product.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
                 </a>
                 <% if (product.comparePrice > 0) { %>
                   <span class="badge badge-sale">Sale</span>

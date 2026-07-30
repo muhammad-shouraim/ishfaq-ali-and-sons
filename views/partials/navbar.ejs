@@ -17,32 +17,18 @@
         <a href="/shop" class="<%= currentUrl.includes('/shop') ? 'active' : '' %>">Shop</a>
 
         <% if (typeof navCategories !== 'undefined' && navCategories.length > 0) { %>
-          <% navCategories.forEach(function(cat) { %>
-            <% var catPrefix = cat.slug.replace(/[^a-z0-9]+/g, '-') + '-'; %>
-            <div class="nav-item nav-dropdown">
-              <a href="/collection/<%= cat.slug %>" class="nav-dropdown-toggle <%= currentUrl.startsWith('/collection/' + cat.slug) ? 'active' : '' %>">
-                <%= cat.name %> <i class="fas fa-chevron-down"></i>
-              </a>
-              <div class="nav-dropdown-menu">
-                <% (cat.children || []).forEach(function(child) { %>
-                  <% var childSuffix = child.slug.startsWith(catPrefix) ? child.slug.slice(catPrefix.length) : child.slug; %>
-                  <% if (child.children && child.children.length > 0) { %>
-                    <div class="nav-item-sub">
-                      <a href="/collection/<%= cat.slug %>/<%= childSuffix %>" class="nav-sub-toggle"><%= child.name %> <i class="fas fa-chevron-right"></i></a>
-                      <div class="nav-sub-menu">
-                        <% child.children.forEach(function(gc) { %>
-                          <% var gcSuffix = gc.slug.startsWith(child.slug + '-') ? gc.slug.slice(child.slug.length + 1) : gc.slug; %>
-                          <a href="/collection/<%= cat.slug %>/<%= childSuffix %>/<%= gcSuffix %>"><%= gc.name %></a>
-                        <% }); %>
-                      </div>
-                    </div>
-                  <% } else { %>
-                    <a href="/collection/<%= cat.slug %>/<%= childSuffix %>"><%= child.name %></a>
-                  <% } %>
-                <% }); %>
-              </div>
-            </div>
-          <% }); %>
+        <div class="nav-item nav-dropdown">
+          <a href="/shop" class="nav-dropdown-toggle">
+            Categories <i class="fas fa-chevron-down"></i>
+          </a>
+          <div class="nav-dropdown-menu nav-dropdown-menu-wide">
+            <% navCategories.forEach(function(cat) { %>
+              <a href="/collection/<%= cat.slug %>"><%= cat.name %></a>
+            <% }); %>
+          </div>
+        </div>
+        <% } else { %>
+          <a href="/shop">Categories</a>
         <% } %>
       </div>
 

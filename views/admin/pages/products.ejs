@@ -77,7 +77,7 @@ document.querySelector('[name="action"]').addEventListener('change', function() 
             <td><input type="checkbox" name="ids" form="bulkForm" value="<%= product.id %>" class="select-item"></td>
             <td>
               <% if (product.thumbnail) { %>
-                <img src="<%= product.thumbnail %>" alt="<%= product.name %>" class="product-thumb">
+                <img src="<%= product.thumbnail %>" alt="<%= product.name %>" class="product-thumb" onerror="this.onerror=null;this.parentElement.innerHTML='<i class=\\\'fas fa-gem\\\'></i>'">
               <% } else { %>
                 <i class="fas fa-gem"></i>
               <% } %>
