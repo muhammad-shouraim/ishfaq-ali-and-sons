@@ -51,15 +51,16 @@ exports.getOrderDetail = async (req, res) => {
   try {
     const order = await Order.findByPk(req.params.id);
     if (!order) return res.redirect(ADMIN_PATH + '?message=&messageType=danger');
+    const orderData = order.toJSON();
     const activityLogs = await ActivityLog.findAll({
       where: { resource: 'Order', resourceId: req.params.id },
       order: [['createdAt', 'DESC']]
     });
-    const allowedTransitions = STATUS_FLOW[order.orderStatus] || [];
+    const allowedTransitions = STATUS_FLOW[orderData.orderStatus] || [];
     res.render('admin/pages/order-detail', {
-      title: `Order #${order.orderNumber}`, order, activityLogs,
+      title: `Order #${orderData.orderNumber}`, order: orderData, activityLogs,
       allowedTransitions, statuses: Object.keys(STATUS_FLOW),
-      internalNotes: order.internalNotes || ''
+      internalNotes: orderData.internalNotes || ''
     });
   } catch (err) {
     res.redirect(ADMIN_PATH + '?message=' + encodeURIComponent(err.message) + '&messageType=danger');
@@ -159,17 +160,7 @@ exports.setTracking = async (req, res) => {
 };
 
 exports.getInvoice = async (req, res) => {
-  try {
-    const order = await Order.findByPk(req.params.id);
-    if (!order) return res.redirect(ADMIN_PATH + '?message=&messageType=danger');
-    const Setting = require('../models/Setting');
-    const settings = await Setting.findAll();
-    const settingMap = {};
-    settings.forEach(s => { settingMap[s.key] = s.value; });
-    res.render('admin/pages/order-detail', { title: `Invoice #${order.orderNumber}`, order, settings: settingMap });
-  } catch (err) {
-    res.redirect(ADMIN_PATH + '?message=' + encodeURIComponent(err.message) + '&messageType=danger');
-  }
+  res.redirect(ADMIN_PATH + '/orders/' + req.params.id + '/invoice/pdf');
 };
 
 exports.downloadInvoicePdf = async (req, res) => {
