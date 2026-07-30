@@ -45,7 +45,9 @@ exports.listProducts = async (req, res) => {
       pages: Math.ceil(total / Number(limit)), currentPage: Number(page), query: req.query,
       lowStockThreshold,
       search: req.query.search || '',
-      filterCategory: req.query.category || ''
+      filterCategory: req.query.category || '',
+      message: req.query.message || '',
+      messageType: req.query.messageType || 'success'
     });
   } catch (err) {
     res.redirect(ADMIN_PATH + '?message=' + encodeURIComponent(err.message) + '&messageType=danger');

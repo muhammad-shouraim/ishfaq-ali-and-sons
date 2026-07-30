@@ -44,18 +44,16 @@
         <div class="product-carousel-track">
           <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
             <% categories.forEach(function(cat) { %>
+            <% if (cat.image) { %>
             <div class="product-card">
               <a href="/collection/<%= cat.slug %>" class="product-card-image">
-                <% if (cat.image) { %>
-                  <img src="<%= cat.image %>" alt="<%= cat.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
-                <% } else { %>
-                  <div class="placeholder-box"><i class="fas fa-gem"></i></div>
-                <% } %>
+                <img src="<%= cat.image %>" alt="<%= cat.name %>" onerror="this.onerror=null;this.src='/images/newlogo.png'">
               </a>
               <div class="product-card-body">
                 <h3><a href="/collection/<%= cat.slug %>"><%= cat.name %></a></h3>
               </div>
             </div>
+            <% } %>
             <% }) %>
           <% } else { %>
             <div class="product-card">
