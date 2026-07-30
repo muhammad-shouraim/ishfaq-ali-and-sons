@@ -151,11 +151,11 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
   background: var(--white);
   border-bottom: 1px solid var(--border);
 }
-.header .container { display: flex; align-items: center; justify-content: space-between; height: var(--nav-height); }
+.header .container { display: flex; align-items: center; justify-content: space-between; height: var(--nav-height); position: relative; }
 .header-logo { line-height: 0; }
 .header-logo img { height: 75px; width: auto; max-height: 75px; }
 @media (max-width: 768px) { .header-logo img { height: 50px; max-height: 50px; } }
-.header-nav { display: flex; gap: 32px; }
+.header-nav { display: flex; gap: 32px; position: absolute; left: 50%; transform: translateX(-50%); }
 .nav-mobile-header { display: none; }
 .nav-desktop-links { display: flex; gap: 32px; align-items: center; }
 .nav-mobile-extras { display: none; }
@@ -183,7 +183,8 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
   transform: translateY(8px); transition: all 0.3s ease;
   z-index: 100; padding: 8px 0; border-radius: var(--radius);
 }
-.nav-dropdown:hover .nav-dropdown-menu {
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown.active .nav-dropdown-menu {
   opacity: 1; visibility: visible; transform: translateY(0);
 }
 .nav-dropdown-menu a {
@@ -200,6 +201,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 .nav-sub-toggle:hover { background: var(--cream); color: var(--gold); }
 .nav-sub-toggle i { font-size: 0.55rem; transition: transform 0.3s ease; margin-left: 8px; }
 .nav-item-sub:hover .nav-sub-toggle i { transform: rotate(90deg); }
+.nav-item-sub.active .nav-sub-menu { opacity: 1; visibility: visible; transform: translateX(0); }
 .nav-sub-menu {
   position: absolute; top: 0; left: 100%; min-width: 200px;
   background: var(--white); border: 1px solid var(--border);
@@ -610,6 +612,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
     background: var(--white); flex-direction: column; gap: 0;
     z-index: 9999; transition: left 0.35s ease;
     box-shadow: 4px 0 30px rgba(0,0,0,0.1); overflow-y: auto;
+    transform: none;
   }
   .header-nav.active { left: 0; }
 
@@ -699,7 +702,7 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
   .announcement-bar .container { gap: 16px; font-size: 0.7rem; flex-wrap: wrap; }
   .announcement-bar span { white-space: normal; }
   .header { top: 0; }
-  .header-nav { width: 100%; left: -100%; }
+  .header-nav { width: 80vw; left: -80vw; }
   .header-nav.active { left: 0; }
   .hero-overlay-content { padding: 20px 16px; }
   .hero-overlay-content h1 { font-size: 2.2rem; }
@@ -748,26 +751,40 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
   .tab-btn { padding: 10px 16px; font-size: 0.78rem; }
 }
 @media (max-width: 480px) {
-  .container { padding: 0 16px; }
+  .container { padding: 0 12px; }
+  .header-logo img { height: 40px; max-height: 40px; }
   .features-strip .container { grid-template-columns: 1fr; }
   .categories-grid { grid-template-columns: 1fr; }
   .collections-grid { grid-template-columns: 1fr; }
   .subcategories-grid { grid-template-columns: 1fr; }
   .categories-slider { grid-template-columns: 1fr; }
-  .products-slider { grid-template-columns: repeat(2, 1fr); }
-  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .products-slider { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .wishlist-grid { grid-template-columns: repeat(2, 1fr); }
   .values-grid { grid-template-columns: 1fr; }
-  .hero-overlay-content h1 { font-size: 1.8rem; }
-  .hero-overlay-content p { font-size: 0.82rem; }
+  .hero-overlay-content h1 { font-size: 1.5rem; }
+  .hero-overlay-content p { font-size: 0.78rem; }
+  .hero-overlay-content .btn { padding: 8px 16px; font-size: 0.65rem; }
   .footer-grid { grid-template-columns: 1fr; }
-  .announcement-bar span { font-size: 0.62rem; }
-  .page-header h1 { font-size: 1.3rem; }
-  .product-card-body { padding: 12px; }
-  .product-card-body h3 { font-size: 0.85rem; }
-  .empty-collection { padding: 40px 16px; }
+  .announcement-bar span { font-size: 0.6rem; }
+  .page-header h1 { font-size: 1.2rem; }
+  .page-header { padding: 24px 0 16px; }
+  .product-card-body { padding: 10px; }
+  .product-card-body h3 { font-size: 0.82rem; }
+  .product-card-body .price { font-size: 0.85rem; }
+  .product-card-body .btn { font-size: 0.65rem; padding: 6px 10px; }
+  .empty-collection { padding: 32px 12px; }
   .pagination { gap: 4px; }
-  .pagination button { padding: 6px 10px; font-size: 0.78rem; }
+  .pagination button { padding: 6px 10px; font-size: 0.72rem; }
+  .product-title { font-size: 1.3rem; }
+  .current-price { font-size: 1.3rem; }
+  .product-actions { flex-wrap: wrap; }
+  .product-actions .btn-gold { flex: 1 1 auto; min-width: 120px; }
+  .cart-sidebar { width: 100%; }
+  .auth-card { padding: 0 12px; }
+  .auth-card h2 { font-size: 1.3rem; }
+  .profile-layout { grid-template-columns: 1fr; }
+  .orders-content { padding: 0 4px; }
 }
 
 .nav-overlay { position: fixed; inset: 0; z-index: 9998; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; pointer-events:none; }
@@ -1019,8 +1036,10 @@ p { font-size: 0.95rem; color: var(--text-light); line-height: 1.7; }
 
 /* Product gallery */
 .product-gallery { position: sticky; top: 100px; }
+@media (max-width: 768px) { .product-gallery { position: static; } }
 .product-main-image { width: 100%; aspect-ratio: 1; background: var(--cream); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
-.product-main-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.product-main-image img { width: 100%; height: 100%; object-fit: cover; display: block; max-width: 100%; }
+@media (max-width: 768px) { .product-main-image { max-width: 100%; } }
 .product-thumbnails { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; }
 .thumb-item { flex: 0 0 70px; aspect-ratio: 1; border-radius: 6px; overflow: hidden; border: 2px solid transparent; cursor: pointer; transition: var(--transition); }
 .thumb-item:hover, .thumb-item.active { border-color: var(--gold); }

@@ -69,7 +69,7 @@ function initNavDropdowns() {
   const toggles = document.querySelectorAll('.nav-dropdown-toggle');
   toggles.forEach(toggle => {
     toggle.addEventListener('click', (e) => {
-      if (window.innerWidth <= 1024) {
+      if (e.target.tagName === 'I' || window.innerWidth <= 1024) {
         e.preventDefault();
         toggle.parentElement.classList.toggle('active');
       }
