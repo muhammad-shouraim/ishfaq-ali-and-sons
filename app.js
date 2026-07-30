@@ -172,7 +172,14 @@ app.get('/__migrate__', async (req, res) => {
 
 app.use('/', require('./routes/admin'));
 
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/uploads', (req, res, next) => {
+  const filePath = path.join(__dirname, 'public', 'uploads', req.path);
+  if (require('fs').existsSync(filePath)) {
+    express.static(path.join(__dirname, 'public/uploads'))(req, res, next);
+  } else {
+    res.redirect('/images/newlogo.png');
+  }
+});
 
 // Redirect old /category/ URLs to /collection/
 app.use((req, res, next) => {
